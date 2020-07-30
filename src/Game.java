@@ -19,6 +19,8 @@ public class Game
   //Game Associations
   private List<Player> players;
   private Board board;
+  private CardTriplet envelope;
+  private Scanner input = new Scanner(System.in);
 
 
   //------------------------
@@ -75,6 +77,12 @@ public class Game
     for (Player player : players) {
       System.out.println(player.getToken());
     }
+    //collect all the cards for dealing
+    List<Card> allCards = new ArrayList<>();
+    allCards.addAll(Character.getCharacters());
+    allCards.addAll(Weapon.getWeapons());
+    allCards.addAll(Room.getRooms());
+    dealCards(allCards);
   }
 
 
@@ -182,6 +190,23 @@ public class Game
     }
   }
 
+  public void dealCards(Collection<Card> cards){
+    Random rand = new Random();
+    ArrayList<Card> tempCardBag = new ArrayList<>(cards);
+    Character envelopeCharacter = (Character)cards.stream().filter(card -> card instanceof Character).skip(rand.nextInt(5)).findAny().get();
+    Weapon envelopeWeapon = (Weapon)cards.stream().filter(card -> card instanceof Weapon).skip(rand.nextInt(5)).findAny().get();
+    Room envelopeRoom = (Room)cards.stream().filter(card -> card instanceof Room).skip(rand.nextInt(8)).findAny().get();
+    envelope = new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
+
+    while(!tempCardBag.isEmpty()){
+      for (Player player : players) {
+        int cardIndex = rand.nextInt(tempCardBag.size());
+        player.addCard(tempCardBag.get(cardIndex));
+        tempCardBag.remove(cardIndex);
+      }
+    }
+  }
+
   // line 8 "model.ump"
    public void decideSolution(){
     
@@ -194,18 +219,32 @@ public class Game
 
   // line 14 "model.ump"
    public int rollDice(){
-
-    return 0;
+    Random rand = new Random();
+    int firstDice = rand.nextInt(6);
+    int secondDice = rand.nextInt(6);
+    return firstDice + secondDice;
   }
 
   // line 16 "model.ump"
    public void runGame(){
+    while(!won){
+
+      for (Player player : players) {
+        doTurn(player);
+      }
+    }
     
   }
 
   // line 18 "model.ump"
    public void doTurn(Player p){
-    
+    //place holder code
+    int numberOfMoves = rollDice();
+     System.out.println("You rolled: " + numberOfMoves);
+     System.out.println("You may move " + numberOfMoves + " spaces");
+     for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
+       //TODO: display what moves player can make from a their position and give options to move in those directions.
+     }
   }
 
   // line 21 "model.ump"

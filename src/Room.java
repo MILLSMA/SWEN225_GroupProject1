@@ -1,3 +1,5 @@
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,6 +14,9 @@ public enum Room implements Card{
 	LIBRARY,
 	STUDY;
 
+	public static Collection<Room> getRooms(){
+		return Arrays.asList(values());
+	}
 	@Override
 	public String getName() {
 		return name().toLowerCase();

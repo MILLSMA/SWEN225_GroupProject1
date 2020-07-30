@@ -1,3 +1,6 @@
+import java.util.Arrays;
+import java.util.Collection;
+
 public enum Weapon implements Card{
 	CANDLESTICK,
 	DAGGER,
@@ -6,6 +9,9 @@ public enum Weapon implements Card{
 	ROPE,
 	SPANNER;
 
+	public static Collection<Weapon> getWeapons(){
+		return Arrays.asList(values());
+	}
 	@Override
 	public String getName() {
 		return name().toLowerCase();

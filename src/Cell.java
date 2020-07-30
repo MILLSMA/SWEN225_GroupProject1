@@ -9,13 +9,16 @@ import java.util.*;
 public class Cell
 {
 
+  public enum Directions{
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST;
+  }
   //------------------------
   // MEMBER VARIABLES
   //------------------------
-
-  //Cell Attributes
-  private Position pos;
-
+  
   //Cell Associations
   private Position position;
   private List<Room> rooms;
@@ -25,15 +28,14 @@ public class Cell
   // CONSTRUCTOR
   //------------------------
 
-  public Cell(Position aPos, Position aPosition, Board aBoard, Room... allRooms)
+  public Cell( Position aPosition, Board aBoard, Room... room)
   {
-    pos = aPos;
     if (!setPosition(aPosition))
     {
       throw new RuntimeException("Unable to create Cell due to aPosition. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     rooms = new ArrayList<Room>();
-    boolean didAddRooms = setRooms(allRooms);
+    boolean didAddRooms = setRooms(room);
     if (!didAddRooms)
     {
       throw new RuntimeException("Unable to create Cell, must have at least 1 rooms. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
@@ -49,18 +51,6 @@ public class Cell
   // INTERFACE
   //------------------------
 
-  public boolean setPos(Position aPos)
-  {
-    boolean wasSet = false;
-    pos = aPos;
-    wasSet = true;
-    return wasSet;
-  }
-
-  public Position getPos()
-  {
-    return pos;
-  }
   /* Code from template association_GetOne */
   public Position getPosition()
   {
@@ -252,7 +242,6 @@ public class Cell
   public String toString()
   {
     return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "pos" + "=" + (getPos() != null ? !getPos().equals(this)  ? getPos().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "position = "+(getPosition()!=null?Integer.toHexString(System.identityHashCode(getPosition())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "board = "+(getBoard()!=null?Integer.toHexString(System.identityHashCode(getBoard())):"null");
   }

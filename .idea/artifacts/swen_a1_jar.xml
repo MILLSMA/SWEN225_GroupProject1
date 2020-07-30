@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="swen-a1:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/swen_a1_jar</output-path>
+    <root id="archive" name="swen-a1.jar">
+      <element id="module-output" name="swen-a1" />
+    </root>
+  </artifact>
+</component>
