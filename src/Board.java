@@ -28,33 +28,14 @@ public class Board
   // CONSTRUCTOR
   //------------------------
 
-  public Board(Game aGame, Player... allPlayers)
+  public Board(Collection<Player> allPlayers)
   {
     cells = new ArrayList<Cell>();
-    if (aGame == null || aGame.getBoard() != null)
-    {
-      throw new RuntimeException("Unable to create Board due to aGame. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    game = aGame;
     players = new ArrayList<Player>();
-    boolean didAddPlayers = setPlayers(allPlayers);
-    if (!didAddPlayers)
-    {
-      throw new RuntimeException("Unable to create Board, must have 6 players. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
+    setPlayers(allPlayers);
+
   }
 
-  public Board(Player... allPlayersForGame, Player... allPlayers)
-  {
-    cells = new ArrayList<Cell>();
-    game = new Game(this, allPlayersForGame);
-    players = new ArrayList<Player>();
-    boolean didAddPlayers = setPlayers(allPlayers);
-    if (!didAddPlayers)
-    {
-      throw new RuntimeException("Unable to create Board, must have 6 players. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-  }
 
   //------------------------
   // INTERFACE
@@ -212,7 +193,7 @@ public class Board
     return 6;
   }
   /* Code from template association_SetUnidirectionalN */
-  public boolean setPlayers(Player... newPlayers)
+  public boolean setPlayers(Collection<Player> newPlayers)
   {
     boolean wasSet = false;
     ArrayList<Player> verifiedPlayers = new ArrayList<Player>();
@@ -225,7 +206,7 @@ public class Board
       verifiedPlayers.add(aPlayer);
     }
 
-    if (verifiedPlayers.size() != newPlayers.length || verifiedPlayers.size() != requiredNumberOfPlayers())
+    if (verifiedPlayers.size() != newPlayers.size() || verifiedPlayers.size() != requiredNumberOfPlayers())
     {
       return wasSet;
     }
@@ -256,7 +237,8 @@ public class Board
 
   // line 34 "model.ump"
    public Position checkValidMove(Player p, String code, int steps){
-    
+
+    return null;
   }
 
   // line 36 "model.ump"

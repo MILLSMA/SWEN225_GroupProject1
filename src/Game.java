@@ -2,18 +2,14 @@
 /*This code was generated using the UMPLE 1.30.0.515.d9da8f6c modeling language!*/
 
 
+import javax.xml.bind.SchemaOutputResolver;
 import java.util.*;
 
 // line 2 "model.ump"
 // line 98 "model.ump"
 public class Game
 {
-
-  //------------------------
-  // ENUMERATIONS
-  //------------------------
-
-  public enum CharacterCard { MISS_SCARLETT }
+  private static Game instance = null;
 
   //------------------------
   // MEMBER VARIABLES
@@ -26,41 +22,58 @@ public class Game
   private List<Player> players;
   private Board board;
 
+
+  //------------------------
+  // STATIC INTIALISATION METHODS
+  //------------------------
+
+  public static void main(String...args){
+    Scanner input = new Scanner(System.in);
+    //replace this int with int given by the user
+    //int amountOfPlayers = input.nextInt();
+    int amountOfPlayers = 3;
+    ArrayList<Player> gamePlayers = new ArrayList<>(createGamePlayers(amountOfPlayers));
+    Board newBoard = new Board(gamePlayers);
+    instance = new Game(newBoard, gamePlayers);
+
+  }
+  private static Collection<Player> createGamePlayers(int numPlayers){
+    ArrayList<Player> tempPlayerList = new ArrayList<>(6);
+    ArrayList<Character> characters = new ArrayList<>(Character.getCharacters());
+    for (int index = 0; index < numPlayers; index++) {
+      int randomCardIndex = new Random().nextInt(characters.size());
+      Character randomCharacter = characters.get(randomCardIndex);
+      Player tempPlayer = new Player(randomCharacter, null, false);
+      tempPlayerList.add(tempPlayer);
+      characters.remove(randomCardIndex);
+    }
+    return tempPlayerList;
+  }
+
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Game(Board aBoard, Player... allPlayers)
+  private Game(Board aBoard, Collection<Player> allPlayers)
   {
     won = false;
     players = new ArrayList<Player>();
-    boolean didAddPlayers = setPlayers(allPlayers);
-    if (!didAddPlayers)
+    if (aBoard == null || aBoard.getGame() != null || !setPlayers(allPlayers))
     {
-      throw new RuntimeException("Unable to create Game, must have 6 players. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    if (aBoard == null || aBoard.getGame() != null)
-    {
-      throw new RuntimeException("Unable to create Game due to aBoard. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create Game due to no Board found or no Players being added");
     }
     board = aBoard;
+    for (Player player : players) {
+      System.out.println(player.getToken());
+    }
   }
 
-  public Game(Player... allPlayersForBoard, Player... allPlayers)
-  {
-    won = false;
-    players = new ArrayList<Player>();
-    boolean didAddPlayers = setPlayers(allPlayers);
-    if (!didAddPlayers)
-    {
-      throw new RuntimeException("Unable to create Game, must have 6 players. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    board = new Board(this, allPlayersForBoard);
-  }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+
 
   public boolean setWon(boolean aWon)
   {
@@ -114,11 +127,6 @@ public class Game
   {
     return board;
   }
-  /* Code from template association_RequiredNumberOfMethod */
-  public static int requiredNumberOfPlayers()
-  {
-    return 6;
-  }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfPlayers()
   {
@@ -130,7 +138,7 @@ public class Game
     return 6;
   }
   /* Code from template association_SetUnidirectionalN */
-  public boolean setPlayers(Player... newPlayers)
+  public boolean setPlayers(Collection<Player> newPlayers)
   {
     boolean wasSet = false;
     ArrayList<Player> verifiedPlayers = new ArrayList<Player>();
@@ -143,7 +151,7 @@ public class Game
       verifiedPlayers.add(aPlayer);
     }
 
-    if (verifiedPlayers.size() != newPlayers.length || verifiedPlayers.size() != requiredNumberOfPlayers())
+    if (verifiedPlayers.size() != newPlayers.size())
     {
       return wasSet;
     }
@@ -177,7 +185,8 @@ public class Game
 
   // line 14 "model.ump"
    public int rollDice(){
-    
+
+    return 0;
   }
 
   // line 16 "model.ump"
