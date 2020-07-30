@@ -24,14 +24,13 @@ public class Game
 
 
   //------------------------
-  // STATIC INTIALISATION METHODS
+  // STATIC INITIALISATION METHODS
   //------------------------
 
   public static void main(String...args){
     Scanner input = new Scanner(System.in);
-    //replace this int with int given by the user
-    //int amountOfPlayers = input.nextInt();
-    int amountOfPlayers = 3;
+    System.out.print("How many Players will be participating?: ");
+    int amountOfPlayers = input.nextInt();
     ArrayList<Player> gamePlayers = new ArrayList<>(createGamePlayers(amountOfPlayers));
     Board newBoard = new Board(gamePlayers);
     instance = new Game(newBoard, gamePlayers);
