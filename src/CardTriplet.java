@@ -8,28 +8,22 @@
 public class CardTriplet
 {
 
-  //------------------------
-  // ENUMERATIONS
-  //------------------------
 
-  public enum CharacterCard { MISS_SCARLETT }
-  public enum WeaponCard { CANDLESTICK }
-  public enum RoomCard { KITCHEN }
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
 
   //CardTriplet Attributes
-  private CharacterCard character;
-  private WeaponCard weapon;
-  private RoomCard room;
+  private Character character;
+  private Weapon weapon;
+  private Room room;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public CardTriplet(CharacterCard aCharacter, WeaponCard aWeapon, RoomCard aRoom)
+  public CardTriplet(Character aCharacter, Weapon aWeapon, Room aRoom)
   {
     character = aCharacter;
     weapon = aWeapon;
@@ -40,7 +34,7 @@ public class CardTriplet
   // INTERFACE
   //------------------------
 
-  public boolean setCharacter(CharacterCard aCharacter)
+  public boolean setCharacter(Character aCharacter)
   {
     boolean wasSet = false;
     character = aCharacter;
@@ -48,7 +42,7 @@ public class CardTriplet
     return wasSet;
   }
 
-  public boolean setWeapon(WeaponCard aWeapon)
+  public boolean setWeapon(Weapon aWeapon)
   {
     boolean wasSet = false;
     weapon = aWeapon;
@@ -56,7 +50,7 @@ public class CardTriplet
     return wasSet;
   }
 
-  public boolean setRoom(RoomCard aRoom)
+  public boolean setRoom(Room aRoom)
   {
     boolean wasSet = false;
     room = aRoom;
@@ -64,17 +58,17 @@ public class CardTriplet
     return wasSet;
   }
 
-  public CharacterCard getCharacter()
+  public Character getCharacter()
   {
     return character;
   }
 
-  public WeaponCard getWeapon()
+  public Weapon getWeapon()
   {
     return weapon;
   }
 
-  public RoomCard getRoom()
+  public Room getRoom()
   {
     return room;
   }

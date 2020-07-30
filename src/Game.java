@@ -1,8 +1,6 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.0.515.d9da8f6c modeling language!*/
 
-
-import javax.xml.bind.SchemaOutputResolver;
 import java.util.*;
 
 // line 2 "model.ump"
@@ -29,16 +27,28 @@ public class Game
 
   public static void main(String...args){
     Scanner input = new Scanner(System.in);
-    System.out.print("How many Players will be participating?: ");
-    int amountOfPlayers = input.nextInt();
+    int amountOfPlayers = 0;
+    //ask users for an integer between 3 and 6, repeat until valid integer recieved
+    do {
+      System.out.print("How many Players will be participating? (3 - 6): ");
+      try {
+        amountOfPlayers = input.nextInt();
+      }catch(InputMismatchException e){
+        System.out.println("Must be an integer between 3 - 6");
+        input.nextLine();
+      }
+    }while(amountOfPlayers < 3 || amountOfPlayers > 6);
     ArrayList<Player> gamePlayers = new ArrayList<>(createGamePlayers(amountOfPlayers));
     Board newBoard = new Board(gamePlayers);
+    //create new instance of game (Singleton Pattern)
     instance = new Game(newBoard, gamePlayers);
-
   }
   private static Collection<Player> createGamePlayers(int numPlayers){
+    //creates an arraylist for the new characters to be stored
     ArrayList<Player> tempPlayerList = new ArrayList<>(6);
+    //creates an arrayList with all of the characters in the Character enum
     ArrayList<Character> characters = new ArrayList<>(Character.getCharacters());
+    //creates a defined number of players with random Character card assigned
     for (int index = 0; index < numPlayers; index++) {
       int randomCardIndex = new Random().nextInt(characters.size());
       Character randomCharacter = characters.get(randomCardIndex);

@@ -111,7 +111,7 @@ public class Board
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Cell addCell(Position aPos, Position aPosition, Room... allRooms)
+  public Cell addCell(Position aPos, Position aPosition, RoomLogic... allRooms)
   {
     return new Cell(aPos, aPosition, this, allRooms);
   }

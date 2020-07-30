@@ -126,52 +126,17 @@ public class Cell
   /* Code from template association_AddManyToManyMethod */
   public boolean addRoom(Room aRoom)
   {
-    boolean wasAdded = false;
-    if (rooms.contains(aRoom)) { return false; }
-    rooms.add(aRoom);
-    if (aRoom.indexOfCell(this) != -1)
-    {
-      wasAdded = true;
+    if(!rooms.contains(aRoom)) {
+      rooms.add(aRoom);
+      return true;
     }
-    else
-    {
-      wasAdded = aRoom.addCell(this);
-      if (!wasAdded)
-      {
-        rooms.remove(aRoom);
-      }
-    }
-    return wasAdded;
+    return false;
   }
   /* Code from template association_AddMStarToMany */
   public boolean removeRoom(Room aRoom)
   {
-    boolean wasRemoved = false;
-    if (!rooms.contains(aRoom))
-    {
-      return wasRemoved;
-    }
-
-    if (numberOfRooms() <= minimumNumberOfRooms())
-    {
-      return wasRemoved;
-    }
-
-    int oldIndex = rooms.indexOf(aRoom);
-    rooms.remove(oldIndex);
-    if (aRoom.indexOfCell(this) == -1)
-    {
-      wasRemoved = true;
-    }
-    else
-    {
-      wasRemoved = aRoom.removeCell(this);
-      if (!wasRemoved)
-      {
-        rooms.add(oldIndex,aRoom);
-      }
-    }
-    return wasRemoved;
+    rooms.remove(aRoom);
+    return !rooms.contains(aRoom);
   }
   /* Code from template association_SetMStarToMany */
   public boolean setRooms(Room... newRooms)
