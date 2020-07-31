@@ -45,6 +45,7 @@ public class Game
     //create new instance of game (Singleton Pattern)
     instance = new Game(newBoard, gamePlayers);
   }
+
   private static Collection<Player> createGamePlayers(int numPlayers){
     //creates an arraylist for the new characters to be stored
     ArrayList<Player> tempPlayerList = new ArrayList<>(6);
@@ -68,7 +69,7 @@ public class Game
   private Game(Board aBoard, Collection<Player> allPlayers)
   {
     won = false;
-    players = new ArrayList<Player>();
+    players = new ArrayList<>();
     if (aBoard == null || aBoard.getGame() != null || !setPlayers(allPlayers))
     {
       throw new RuntimeException("Unable to create Game due to no Board found or no Players being added");
@@ -94,10 +95,8 @@ public class Game
 
   public boolean setWon(boolean aWon)
   {
-    boolean wasSet = false;
     won = aWon;
-    wasSet = true;
-    return wasSet;
+    return true;
   }
 
   public boolean getWon()
@@ -112,31 +111,28 @@ public class Game
   /* Code from template association_GetMany */
   public Player getPlayer(int index)
   {
-    Player aPlayer = players.get(index);
-    return aPlayer;
+    return players.get(index);
   }
 
   public List<Player> getPlayers()
   {
-    List<Player> newPlayers = Collections.unmodifiableList(players);
-    return newPlayers;
+    return Collections.unmodifiableList(players);
   }
 
   public int indexOfPlayer(Player aPlayer)
   {
-    int index = players.indexOf(aPlayer);
-    return index;
+    return players.indexOf(aPlayer);
   }
   /* Code from template association_GetOne */
   public Board getBoard()
   {
     return board;
   }
+
   /* Code from template association_SetUnidirectionalN */
   public boolean setPlayers(Collection<Player> newPlayers)
   {
-    boolean wasSet = false;
-    ArrayList<Player> verifiedPlayers = new ArrayList<Player>();
+    ArrayList<Player> verifiedPlayers = new ArrayList<>();
     for (Player aPlayer : newPlayers)
     {
       if (verifiedPlayers.contains(aPlayer))
@@ -148,13 +144,12 @@ public class Game
 
     if (verifiedPlayers.size() != newPlayers.size())
     {
-      return wasSet;
+      return false;
     }
 
     players.clear();
     players.addAll(verifiedPlayers);
-    wasSet = true;
-    return wasSet;
+    return true;
   }
 
   public void delete()
