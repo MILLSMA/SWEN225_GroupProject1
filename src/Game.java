@@ -49,11 +49,11 @@ public class Game
     //creates an arraylist for the new characters to be stored
     ArrayList<Player> tempPlayerList = new ArrayList<>(6);
     //creates an arrayList with all of the characters in the Character enum
-    ArrayList<Character> characters = new ArrayList<>(Character.getCharacters());
+    ArrayList<CharacterCard> characters = new ArrayList<>(CharacterCard.getCharacters());
     //creates a defined number of players with random Character card assigned
     for (int index = 0; index < numPlayers; index++) {
       int randomCardIndex = new Random().nextInt(characters.size());
-      Character randomCharacter = characters.get(randomCardIndex);
+      CharacterCard randomCharacter = characters.get(randomCardIndex);
       Player tempPlayer = new Player(randomCharacter, null, false);
       tempPlayerList.add(tempPlayer);
       characters.remove(randomCardIndex);
@@ -79,9 +79,9 @@ public class Game
     }
     //collect all the cards for dealing
     List<Card> allCards = new ArrayList<>();
-    allCards.addAll(Character.getCharacters());
-    allCards.addAll(Weapon.getWeapons());
-    allCards.addAll(Room.getRooms());
+    allCards.addAll(CharacterCard.getCharacters());
+    allCards.addAll(WeaponCard.getWeapons());
+    allCards.addAll(RoomCard.getRooms());
     dealCards(allCards);
   }
 
@@ -193,9 +193,9 @@ public class Game
   public void dealCards(Collection<Card> cards){
     Random rand = new Random();
     ArrayList<Card> tempCardBag = new ArrayList<>(cards);
-    Character envelopeCharacter = (Character)cards.stream().filter(card -> card instanceof Character).skip(rand.nextInt(5)).findAny().get();
-    Weapon envelopeWeapon = (Weapon)cards.stream().filter(card -> card instanceof Weapon).skip(rand.nextInt(5)).findAny().get();
-    Room envelopeRoom = (Room)cards.stream().filter(card -> card instanceof Room).skip(rand.nextInt(8)).findAny().get();
+    CharacterCard envelopeCharacter = (CharacterCard)cards.stream().filter(card -> card instanceof CharacterCard).skip(rand.nextInt(5)).findAny().get();
+    WeaponCard envelopeWeapon = (WeaponCard)cards.stream().filter(card -> card instanceof WeaponCard).skip(rand.nextInt(5)).findAny().get();
+    RoomCard envelopeRoom = (RoomCard)cards.stream().filter(card -> card instanceof Room).skip(rand.nextInt(8)).findAny().get();
     envelope = new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
 
     while(!tempCardBag.isEmpty()){

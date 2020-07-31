@@ -3,29 +3,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public enum Room implements Card{
-	KITCHEN,
-	BALLROOM,
-	CONSERVATORY,
-	BILLIARD_ROOM,
-	DINING_ROOM,
-	LOUNGE,
-	HALL,
-	LIBRARY,
-	STUDY;
-
-	public static Collection<Room> getRooms(){
-		return Arrays.asList(values());
-	}
-	@Override
-	public String getName() {
-		return name().toLowerCase();
-	}
-	@Override
-	public String toString() {
-		return getName();
-	}
-
+public class Room {
 	//Room Associations
 	private List<Cell> cells;
 	private List<Card> cards;

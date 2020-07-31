@@ -15,15 +15,15 @@ public class CardTriplet
   //------------------------
 
   //CardTriplet Attributes
-  private Character character;
-  private Weapon weapon;
-  private Room room;
+  private CharacterCard character;
+  private WeaponCard weapon;
+  private RoomCard room;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public CardTriplet(Character aCharacter, Weapon aWeapon, Room aRoom)
+  public CardTriplet(CharacterCard aCharacter, WeaponCard aWeapon, RoomCard aRoom)
   {
     character = aCharacter;
     weapon = aWeapon;
@@ -34,7 +34,7 @@ public class CardTriplet
   // INTERFACE
   //------------------------
 
-  public boolean setCharacter(Character aCharacter)
+  public boolean setCharacter(CharacterCard aCharacter)
   {
     boolean wasSet = false;
     character = aCharacter;
@@ -42,7 +42,7 @@ public class CardTriplet
     return wasSet;
   }
 
-  public boolean setWeapon(Weapon aWeapon)
+  public boolean setWeapon(WeaponCard aWeapon)
   {
     boolean wasSet = false;
     weapon = aWeapon;
@@ -50,7 +50,7 @@ public class CardTriplet
     return wasSet;
   }
 
-  public boolean setRoom(Room aRoom)
+  public boolean setRoom(RoomCard aRoom)
   {
     boolean wasSet = false;
     room = aRoom;
@@ -58,17 +58,17 @@ public class CardTriplet
     return wasSet;
   }
 
-  public Character getCharacter()
+  public CharacterCard getCharacter()
   {
     return character;
   }
 
-  public Weapon getWeapon()
+  public WeaponCard getWeapon()
   {
     return weapon;
   }
 
-  public Room getRoom()
+  public RoomCard getRoom()
   {
     return room;
   }
