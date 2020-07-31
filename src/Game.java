@@ -122,18 +122,6 @@ public class Game
     return newPlayers;
   }
 
-  public int numberOfPlayers()
-  {
-    int number = players.size();
-    return number;
-  }
-
-  public boolean hasPlayers()
-  {
-    boolean has = players.size() > 0;
-    return has;
-  }
-
   public int indexOfPlayer(Player aPlayer)
   {
     int index = players.indexOf(aPlayer);
@@ -143,16 +131,6 @@ public class Game
   public Board getBoard()
   {
     return board;
-  }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfPlayers()
-  {
-    return 6;
-  }
-  /* Code from template association_MaximumNumberOfMethod */
-  public static int maximumNumberOfPlayers()
-  {
-    return 6;
   }
   /* Code from template association_SetUnidirectionalN */
   public boolean setPlayers(Collection<Player> newPlayers)
