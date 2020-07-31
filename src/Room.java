@@ -1,29 +1,52 @@
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-public enum Room implements Card{
-	KITCHEN,
-	BALLROOM,
-	CONSERVATORY,
-	BILLIARD_ROOM,
-	DINING_ROOM,
-	LOUNGE,
-	HALL,
-	LIBRARY,
-	STUDY;
+public enum Room{
+	KITCHEN(new RoomCard("Kitchen")),
+	BALLROOM(new RoomCard("Ballroom")),
+	CONSERVATORY(new RoomCard("Conservatory")),
+	BILLIARD_ROOM(new RoomCard("Billiard Room")),
+	DINING_ROOM(new RoomCard("Dining Room")),
+	LOUNGE(new RoomCard("Lounge")),
+	HALL(new RoomCard("Hall")),
+	LIBRARY(new RoomCard("Library")),
+	STUDY(new RoomCard("Study"));
 
+	private final RoomCard card;
+
+	/**
+	 * gets a hashset of all the room cards
+	 * @return - HashSet<Room>
+	 */
+	static Collection<RoomCard> getRoomCards() {
+		return new HashSet<>(Arrays.asList(
+				KITCHEN.getCard(),
+				BALLROOM.getCard(),
+				CONSERVATORY.getCard(),
+				BILLIARD_ROOM.getCard(),
+				DINING_ROOM.getCard(),
+				LOUNGE.getCard(),
+				HALL.getCard(),
+				LIBRARY.getCard(),
+				STUDY.getCard()
+		));
+	}
+
+	Room(RoomCard roomCard) {
+		card = roomCard;
+	}
 	public static Collection<Room> getRooms(){
 		return Arrays.asList(values());
 	}
-	@Override
 	public String getName() {
 		return name().toLowerCase();
 	}
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	public RoomCard getCard(){
+		return card;
 	}
 
 	//Room Associations

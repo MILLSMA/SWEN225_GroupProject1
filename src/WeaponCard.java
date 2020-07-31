@@ -1,16 +1,15 @@
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-public enum Character implements Card {
-	MISS_SCARLETT,
-	COLONEL_MUSTARD,
-	MRS_WHITE,
-	MR_GREEN,
-	MRS_PEACOCK,
-	PROFESSOR_PLUM;
+public enum WeaponCard implements Card{
+	CANDLESTICK,
+	DAGGER,
+	LEAD_PIPE,
+	REVOLVER,
+	ROPE,
+	SPANNER;
 
-	public static Collection<Character> getCharacters(){
+	public static Collection<WeaponCard> getWeapons(){
 		return Arrays.asList(values());
 	}
 	@Override

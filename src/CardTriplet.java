@@ -2,6 +2,10 @@
 /*This code was generated using the UMPLE 1.30.0.515.d9da8f6c modeling language!*/
 
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 // line 86 "model.ump"
 // line 151 "model.ump"
@@ -15,26 +19,34 @@ public class CardTriplet
   //------------------------
 
   //CardTriplet Attributes
-  private Character character;
-  private Weapon weapon;
-  private Room room;
+  private CharacterCard character;
+  private WeaponCard weapon;
+  private RoomCard room;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public CardTriplet(Character aCharacter, Weapon aWeapon, Room aRoom)
+  public CardTriplet(CharacterCard aCharacter, WeaponCard aWeapon, RoomCard aRoomCard)
   {
     character = aCharacter;
     weapon = aWeapon;
-    room = aRoom;
+    room = aRoomCard;
   }
 
   //------------------------
   // INTERFACE
   //------------------------
 
-  public boolean setCharacter(Character aCharacter)
+  public Collection<Card> getSet(){
+    return new HashSet<>(Arrays.asList(
+            weapon,
+            character,
+            room
+    ));
+  }
+
+  public boolean setCharacter(CharacterCard aCharacter)
   {
     boolean wasSet = false;
     character = aCharacter;
@@ -42,7 +54,7 @@ public class CardTriplet
     return wasSet;
   }
 
-  public boolean setWeapon(Weapon aWeapon)
+  public boolean setWeapon(WeaponCard aWeapon)
   {
     boolean wasSet = false;
     weapon = aWeapon;
@@ -50,7 +62,7 @@ public class CardTriplet
     return wasSet;
   }
 
-  public boolean setRoom(Room aRoom)
+  public boolean setRoom(RoomCard aRoom)
   {
     boolean wasSet = false;
     room = aRoom;
@@ -58,17 +70,17 @@ public class CardTriplet
     return wasSet;
   }
 
-  public Character getCharacter()
+  public CharacterCard getCharacter()
   {
     return character;
   }
 
-  public Weapon getWeapon()
+  public WeaponCard getWeapon()
   {
     return weapon;
   }
 
-  public Room getRoom()
+  public RoomCard getRoom()
   {
     return room;
   }

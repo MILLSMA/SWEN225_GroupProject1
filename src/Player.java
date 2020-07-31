@@ -14,7 +14,7 @@ public class Player
   //------------------------
 
   //Player Attributes
-  private Character token;
+  private CharacterCard token;
   private Cell location;
   private boolean isExcluded;
 
@@ -25,7 +25,7 @@ public class Player
   // CONSTRUCTOR
   //------------------------
 
-  public Player(Character aToken, Cell aLocation, boolean aIsExcluded)
+  public Player(CharacterCard aToken, Cell aLocation, boolean aIsExcluded)
   {
     token = aToken;
     location = aLocation;
@@ -37,7 +37,7 @@ public class Player
   // INTERFACE
   //------------------------
 
-  public boolean setToken(Character aToken)
+  public boolean setToken(CharacterCard aToken)
   {
     boolean wasSet = false;
     token = aToken;
@@ -61,7 +61,7 @@ public class Player
     return wasSet;
   }
 
-  public Character getToken()
+  public CharacterCard getToken()
   {
     return token;
   }
