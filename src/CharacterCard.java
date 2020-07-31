@@ -12,12 +12,15 @@ public enum CharacterCard implements Card {
 	public static Collection<CharacterCard> getCharacters(){
 		return Arrays.asList(values());
 	}
+
 	@Override
 	public String getName() {
 		return name().toLowerCase();
 	}
+
 	@Override
 	public String toString() {
-		return getName();
+		String[] codes = {"s", "c", "w", "g", "k", "p"};
+		return codes[ordinal()];
 	}
 }

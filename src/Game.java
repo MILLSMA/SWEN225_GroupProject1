@@ -7,7 +7,7 @@ import java.util.*;
 // line 98 "model.ump"
 public class Game
 {
-  private static Game instance = null;
+  private static Game instance;
 
   //------------------------
   // MEMBER VARIABLES
@@ -17,10 +17,10 @@ public class Game
   private boolean won;
 
   //Game Associations
-  private List<Player> players;
+  private final List<Player> players;
   private Board board;
   private CardTriplet envelope;
-  private Scanner input = new Scanner(System.in);
+  private final Scanner input = new Scanner(System.in);
 
 
   //------------------------
@@ -65,12 +65,10 @@ public class Game
   // CONSTRUCTOR
   //------------------------
 
-  private Game(Board aBoard, Collection<Player> allPlayers)
-  {
+  private Game(Board aBoard, Collection<Player> allPlayers) {
     won = false;
     players = new ArrayList<Player>();
-    if (aBoard == null || aBoard.getGame() != null || !setPlayers(allPlayers))
-    {
+    if (aBoard == null || !setPlayers(allPlayers)) {
       throw new RuntimeException("Unable to create Game due to no Board found or no Players being added");
     }
     board = aBoard;
@@ -179,27 +177,20 @@ public class Game
     return wasSet;
   }
 
-  public void delete()
-  {
-    players.clear();
-    Board existingBoard = board;
-    board = null;
-    if (existingBoard != null)
-    {
-      existingBoard.delete();
-    }
-  }
-
   public void dealCards(Collection<Card> cards){
     Random rand = new Random();
     ArrayList<Card> tempCardBag = new ArrayList<>(cards);
+    //create envelope with card triplet
     CharacterCard envelopeCharacter = (CharacterCard)cards.stream().filter(card -> card instanceof CharacterCard).skip(rand.nextInt(5)).findAny().get();
     WeaponCard envelopeWeapon = (WeaponCard)cards.stream().filter(card -> card instanceof WeaponCard).skip(rand.nextInt(5)).findAny().get();
-    RoomCard envelopeRoom = (RoomCard)cards.stream().filter(card -> card instanceof Room).skip(rand.nextInt(8)).findAny().get();
+    RoomCard envelopeRoom = (RoomCard)cards.stream().filter(card -> card instanceof RoomCard).skip(rand.nextInt(8)).findAny().get();
     envelope = new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
+    tempCardBag.removeAll(envelope.getSet());
 
+    //deal rest of the cards to the players
     while(!tempCardBag.isEmpty()){
       for (Player player : players) {
+        if(tempCardBag.isEmpty()) continue;
         int cardIndex = rand.nextInt(tempCardBag.size());
         player.addCard(tempCardBag.get(cardIndex));
         tempCardBag.remove(cardIndex);
@@ -220,8 +211,8 @@ public class Game
   // line 14 "model.ump"
    public int rollDice(){
     Random rand = new Random();
-    int firstDice = rand.nextInt(6);
-    int secondDice = rand.nextInt(6);
+    int firstDice = rand.nextInt(6)+1;
+    int secondDice = rand.nextInt(6)+1;
     return firstDice + secondDice;
   }
 
