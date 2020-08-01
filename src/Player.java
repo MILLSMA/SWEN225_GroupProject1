@@ -179,7 +179,7 @@ public class Player
 
   // line 67 "model.ump"
    public void displayHand(){
-    System.out.println("Cards held by player: " + this.token.getName());
+    System.out.println("Cards held by player: " + this.token.getNameString());
     for(Card c : cards){
       System.out.println(c);
     }

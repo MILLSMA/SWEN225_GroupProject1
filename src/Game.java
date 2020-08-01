@@ -75,7 +75,7 @@ public class Game
     board = aBoard;
     System.out.println("Players in this Game: ");
     for (int i = 0; i < players.size(); i++) {
-      System.out.println("Player " + (int)(i+1) + ": " + players.get(i).getToken().toString());
+      System.out.println("Player " + (int)(i+1) + ": " + players.get(i).getToken().getNameString());
     }
     //collect all the cards for dealing
     List<Card> allCards = new ArrayList<>();
@@ -209,8 +209,7 @@ public class Game
    */
    public void doTurn(Player p){
     //place holder code
-     System.out.println(p.getToken().toString() +"\'s turn:");
-
+     System.out.println(p.getToken().getNameString() +"\'s turn:");
      move(p);
 
      //TODO: The player can make either an accusation or a suggestion only if they are in a room.
