@@ -1,3 +1,4 @@
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -16,8 +17,16 @@ public enum CharacterCard implements Card {
 	public String getName() {
 		return name().toLowerCase();
 	}
+
 	@Override
 	public String toString() {
-		return getName();
+		StringBuilder sb = new StringBuilder();
+		boolean capital = true;
+		for (char c : getName().replace("_", " ").toCharArray()) {
+			if(capital){c = Character.toUpperCase(c);}
+			sb.append(c);
+			capital = (" ".indexOf((int) c) >= 0);
+		}
+		return sb.toString();
 	}
 }
