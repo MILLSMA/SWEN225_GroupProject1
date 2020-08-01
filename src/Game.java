@@ -17,10 +17,10 @@ public class Game
   private boolean won;
 
   //Game Associations
-  private List<Player> players;
+  private final List<Player> players;
   private Board board;
   private CardTriplet envelope;
-  private Scanner input = new Scanner(System.in);
+  private final Scanner input = new Scanner(System.in);
 
 
   //------------------------
@@ -69,7 +69,7 @@ public class Game
     won = false;
     players = new ArrayList<Player>();
     setPlayers(allPlayers);
-    if (aBoard == null || aBoard.getGame() != null || players.size() == 0) {
+    if (aBoard == null) {
       throw new RuntimeException("Unable to create Game due to no Board found or no Players being added");
     }
     board = aBoard;
@@ -81,7 +81,7 @@ public class Game
     List<Card> allCards = new ArrayList<>();
     allCards.addAll(CharacterCard.getCharacters());
     allCards.addAll(WeaponCard.getWeapons());
-    allCards.addAll(Room.getRoomCards());
+    allCards.addAll(RoomCard.getRooms());
     decideSolution(allCards);
     dealCards(allCards);
     doTurn(players.get(0));
@@ -137,28 +137,17 @@ public class Game
 
   }
 
-  public void delete()
-  {
-    players.clear();
-    Board existingBoard = board;
-    board = null;
-    if (existingBoard != null)
-    {
-      existingBoard.delete();
-    }
-  }
-
   /**
    * deals cards to players
    * @param cards
    */
   public void dealCards(Collection<Card> cards){
-
     Random rand = new Random();
     ArrayList<Card> tempCardBag = new ArrayList<>(cards);
     //decideSolution(tempCardBag);
     System.out.println(envelope);
     tempCardBag.removeAll(envelope.getSet());
+
     //deal rest of the cards to the players
     while(!tempCardBag.isEmpty()){
       for (Player player : players) {
@@ -179,15 +168,14 @@ public class Game
    * selects a random room, weapon and character card from deck to set as solution
    * @param cards : all the possible cards
    */
-   public void decideSolution(Collection<Card> cards){
+   public void decideSolution(Collection<Card> cards) {
      //create envelope with card triplet
      Random rand = new Random();
-     CharacterCard envelopeCharacter = (CharacterCard)cards.stream().filter(card -> card instanceof CharacterCard).skip(rand.nextInt(5)).findAny().get();
-     WeaponCard envelopeWeapon = (WeaponCard)cards.stream().filter(card -> card instanceof WeaponCard).skip(rand.nextInt(5)).findAny().get();
-     RoomCard envelopeRoom = (RoomCard)cards.stream().filter(card -> card instanceof RoomCard).skip(rand.nextInt(8)).findAny().get();
+     CharacterCard envelopeCharacter = (CharacterCard) cards.stream().filter(card -> card instanceof CharacterCard).skip(rand.nextInt(5)).findAny().get();
+     WeaponCard envelopeWeapon = (WeaponCard) cards.stream().filter(card -> card instanceof WeaponCard).skip(rand.nextInt(5)).findAny().get();
+     RoomCard envelopeRoom = (RoomCard) cards.stream().filter(card -> card instanceof RoomCard).skip(rand.nextInt(8)).findAny().get();
      envelope = new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
-
-  }
+   }
 
   // line 14 "model.ump"
 
@@ -195,10 +183,10 @@ public class Game
    * roll two six sided die
    * @return int : sum of die
    */
-   public int rollDice(){
+   public int rollDice() {
     Random rand = new Random();
-    int firstDice = rand.nextInt(6);
-    int secondDice = rand.nextInt(6);
+    int firstDice = rand.nextInt(6)+1;
+    int secondDice = rand.nextInt(6)+1;
     return firstDice + secondDice;
   }
 
@@ -253,6 +241,7 @@ public class Game
       //TODO: display what moves player can make from a their position and give options to move in those directions.
     }
   }
+
   // line 21 "model.ump"
    public void makeSuggestion(){
     System.out.println("Making a suggestion here");

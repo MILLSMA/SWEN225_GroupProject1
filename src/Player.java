@@ -19,7 +19,7 @@ public class Player
   private boolean isExcluded;
 
   //Player Associations
-  private List<Card> cards;
+  private final List<Card> cards;
 
   //------------------------
   // CONSTRUCTOR

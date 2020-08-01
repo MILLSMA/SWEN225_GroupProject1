@@ -1,19 +1,29 @@
-public class RoomCard implements Card{
+import java.util.Arrays;
+import java.util.Collection;
 
-	String name;
+public enum RoomCard implements Card {
+	KITCHEN,
+	BALLROOM,
+	CONSERVATORY,
+	BILLIARD_ROOM,
+	DINING_ROOM,
+	LOUNGE,
+	HALL,
+	LIBRARY,
+	STUDY;
 
-	RoomCard(String name){
-		this.name = name;
+	public static Collection<RoomCard> getRooms(){
+		return Arrays.asList(values());
 	}
+
 	@Override
 	public String getName() {
-		return name;
+		return name().toLowerCase();
 	}
+
 	@Override
 	public String toString() {
-		return name;
+		String[] codes = {"K", "O", "C", "B", "D", "L", "H", "I", "S"};
+		return codes[ordinal()];
 	}
-
-
-
 }

@@ -12,12 +12,15 @@ public enum WeaponCard implements Card{
 	public static Collection<WeaponCard> getWeapons(){
 		return Arrays.asList(values());
 	}
+
 	@Override
 	public String getName() {
 		return name().toLowerCase();
 	}
+
 	@Override
 	public String toString() {
-		return getName();
+		String[] codes = {"+", "#", "|", "%", "@", "?"};
+		return codes[ordinal()];
 	}
 }
