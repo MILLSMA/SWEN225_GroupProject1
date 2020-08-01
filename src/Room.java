@@ -1,7 +1,6 @@
 import java.util.*;
 
 public class Room {
-
 	private final RoomCard card;
 
 	Room(RoomCard roomCard) {

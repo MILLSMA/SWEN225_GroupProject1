@@ -68,19 +68,23 @@ public class Game
   private Game(Board aBoard, Collection<Player> allPlayers) {
     won = false;
     players = new ArrayList<Player>();
-    if (aBoard == null || !setPlayers(allPlayers)) {
+    setPlayers(allPlayers);
+    if (aBoard == null) {
       throw new RuntimeException("Unable to create Game due to no Board found or no Players being added");
     }
     board = aBoard;
-    for (Player player : players) {
-      System.out.println(player.getToken());
+    System.out.println("Players in this Game: ");
+    for (int i = 0; i < players.size(); i++) {
+      System.out.println("Player " + (int)(i+1) + ": " + players.get(i).getToken().toString());
     }
     //collect all the cards for dealing
     List<Card> allCards = new ArrayList<>();
     allCards.addAll(CharacterCard.getCharacters());
     allCards.addAll(WeaponCard.getWeapons());
     allCards.addAll(RoomCard.getRooms());
+    decideSolution(allCards);
     dealCards(allCards);
+    doTurn(players.get(0));
   }
 
 
@@ -90,23 +94,11 @@ public class Game
 
 
 
-  public boolean setWon(boolean aWon)
-  {
-    boolean wasSet = false;
-    won = aWon;
-    wasSet = true;
-    return wasSet;
-  }
-
   public boolean getWon()
   {
     return won;
   }
-  /* Code from template attribute_IsBoolean */
-  public boolean isWon()
-  {
-    return won;
-  }
+
   /* Code from template association_GetMany */
   public Player getPlayer(int index)
   {
@@ -120,42 +112,16 @@ public class Game
     return newPlayers;
   }
 
-  public int numberOfPlayers()
-  {
-    int number = players.size();
-    return number;
-  }
-
-  public boolean hasPlayers()
-  {
-    boolean has = players.size() > 0;
-    return has;
-  }
-
-  public int indexOfPlayer(Player aPlayer)
-  {
-    int index = players.indexOf(aPlayer);
-    return index;
-  }
   /* Code from template association_GetOne */
   public Board getBoard()
   {
     return board;
   }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfPlayers()
-  {
-    return 6;
-  }
-  /* Code from template association_MaximumNumberOfMethod */
-  public static int maximumNumberOfPlayers()
-  {
-    return 6;
-  }
+
   /* Code from template association_SetUnidirectionalN */
-  public boolean setPlayers(Collection<Player> newPlayers)
+  public void setPlayers(Collection<Player> newPlayers)
   {
-    boolean wasSet = false;
+    //boolean wasSet = false;
     ArrayList<Player> verifiedPlayers = new ArrayList<Player>();
     for (Player aPlayer : newPlayers)
     {
@@ -166,25 +132,20 @@ public class Game
       verifiedPlayers.add(aPlayer);
     }
 
-    if (verifiedPlayers.size() != newPlayers.size())
-    {
-      return wasSet;
-    }
-
     players.clear();
     players.addAll(verifiedPlayers);
-    wasSet = true;
-    return wasSet;
+
   }
 
+  /**
+   * deals cards to players
+   * @param cards
+   */
   public void dealCards(Collection<Card> cards){
     Random rand = new Random();
     ArrayList<Card> tempCardBag = new ArrayList<>(cards);
-    //create envelope with card triplet
-    CharacterCard envelopeCharacter = (CharacterCard)cards.stream().filter(card -> card instanceof CharacterCard).skip(rand.nextInt(5)).findAny().get();
-    WeaponCard envelopeWeapon = (WeaponCard)cards.stream().filter(card -> card instanceof WeaponCard).skip(rand.nextInt(5)).findAny().get();
-    RoomCard envelopeRoom = (RoomCard)cards.stream().filter(card -> card instanceof RoomCard).skip(rand.nextInt(8)).findAny().get();
-    envelope = new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
+    //decideSolution(tempCardBag);
+    System.out.println(envelope);
     tempCardBag.removeAll(envelope.getSet());
 
     //deal rest of the cards to the players
@@ -196,20 +157,33 @@ public class Game
         tempCardBag.remove(cardIndex);
       }
     }
+    for(Player p : players){
+      p.displayHand();
+    }
   }
 
   // line 8 "model.ump"
-   public void decideSolution(){
-    
-  }
 
-  // line 11 "model.ump"
-   public void deal(){
-    
-  }
+  /**
+   * selects a random room, weapon and character card from deck to set as solution
+   * @param cards : all the possible cards
+   */
+   public void decideSolution(Collection<Card> cards) {
+     //create envelope with card triplet
+     Random rand = new Random();
+     CharacterCard envelopeCharacter = (CharacterCard) cards.stream().filter(card -> card instanceof CharacterCard).skip(rand.nextInt(5)).findAny().get();
+     WeaponCard envelopeWeapon = (WeaponCard) cards.stream().filter(card -> card instanceof WeaponCard).skip(rand.nextInt(5)).findAny().get();
+     RoomCard envelopeRoom = (RoomCard) cards.stream().filter(card -> card instanceof RoomCard).skip(rand.nextInt(8)).findAny().get();
+     envelope = new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
+   }
 
   // line 14 "model.ump"
-   public int rollDice(){
+
+  /**
+   * roll two six sided die
+   * @return int : sum of die
+   */
+   public int rollDice() {
     Random rand = new Random();
     int firstDice = rand.nextInt(6)+1;
     int secondDice = rand.nextInt(6)+1;
@@ -228,24 +202,54 @@ public class Game
   }
 
   // line 18 "model.ump"
+
+  /**
+   * main method for a single turn
+   * @param p : the player making the turn
+   */
    public void doTurn(Player p){
     //place holder code
-    int numberOfMoves = rollDice();
-     System.out.println("You rolled: " + numberOfMoves);
-     System.out.println("You may move " + numberOfMoves + " spaces");
-     for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
-       //TODO: display what moves player can make from a their position and give options to move in those directions.
+     System.out.println(p.getToken().toString() +"\'s turn:");
+
+     move(p);
+
+     //TODO: The player can make either an accusation or a suggestion only if they are in a room.
+     Scanner sc = new Scanner(System.in);
+     String turnEntry;
+     do {
+       System.out.print("Accusation (A) | Suggestion (S): ");
+       turnEntry = sc.next();
+     }while(!(turnEntry.matches("(?i)a|s|accusation|suggestion")));
+     System.out.printf("valid  entry"); //TODO: cont. here
+     if(turnEntry.matches("(?i)a|accusation")){
+       makeSuggestion();
      }
+     else{
+       makeAccusation();
+     }
+  }
+
+  /**
+   * Rolls the dice, controls a player's moves
+   * @param p : the player moving
+   */
+  public void move(Player p){
+    int numberOfMoves = rollDice();
+    System.out.println("You rolled: " + numberOfMoves);
+    System.out.println("You may move " + numberOfMoves + " spaces");
+    for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
+      //TODO: display what moves player can make from a their position and give options to move in those directions.
+    }
   }
 
   // line 21 "model.ump"
    public void makeSuggestion(){
-    
+    System.out.println("Making a suggestion here");
   }
 
   // line 24 "model.ump"
    public void makeAccusation(){
-    
+     System.out.println("Making an accusation here");
   }
 
   // line 27 "model.ump"
