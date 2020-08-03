@@ -37,28 +37,20 @@ public class Player
 	// INTERFACE
 	//------------------------
 
-	public boolean setToken(CharacterCard aToken)
+	public void setToken(CharacterCard aToken)
 	{
-		boolean wasSet = false;
 		token = aToken;
-		wasSet = true;
-		return wasSet;
 	}
 
-	public boolean setLocation(Cell aLocation)
+	public void setLocation(Cell aLocation)
 	{
-		boolean wasSet = false;
 		location = aLocation;
-		wasSet = true;
-		return wasSet;
+
 	}
 
-	public boolean setIsExcluded(boolean aIsExcluded)
+	public void setIsExcluded(boolean aIsExcluded)
 	{
-		boolean wasSet = false;
 		isExcluded = aIsExcluded;
-		wasSet = true;
-		return wasSet;
 	}
 
 	public CharacterCard getToken()
@@ -164,6 +156,7 @@ public class Player
 		return wasAdded;
 	}
 
+
 	public void delete()
 	{
 
@@ -181,7 +174,7 @@ public class Player
 	public void displayHand(){
 		System.out.println("Cards held by player: " + this.token.getName());
 		for(Card c : cards){
-			System.out.println(c);
+			System.out.println(c.getName());
 		}
 	}
 

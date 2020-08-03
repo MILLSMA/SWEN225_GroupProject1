@@ -1,6 +1,8 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.0.515.d9da8f6c modeling language!*/
 
+import com.sun.org.apache.xml.internal.security.utils.WeakObjectPool;
+
 import java.util.*;
 
 // line 2 "model.ump"
@@ -86,7 +88,7 @@ public class Game
 		allCards.addAll(RoomCard.getRooms());
 		decideSolution(allCards);
 		dealCards(allCards);
-		doTurn(players.get(0));
+		runGame();
 	}
 
 
@@ -159,9 +161,6 @@ public class Game
 				tempCardBag.remove(cardIndex);
 			}
 		}
-		for(Player p : players){
-			p.displayHand();
-		}
 	}
 
 	// line 8 "model.ump"
@@ -204,7 +203,6 @@ public class Game
 	// line 16 "model.ump"
 	public void runGame(){
 		while(!won){
-
 			for (Player player : players) {
 				doTurn(player);
 			}
@@ -232,10 +230,10 @@ public class Game
 		}while(!(turnEntry.matches("(?i)a|s|accusation|suggestion")));
 		System.out.printf("valid  entry"); //TODO: cont. here
 		if(turnEntry.matches("(?i)a|accusation")){
-			makeSuggestion();
+			makeAccusation(p);
 		}
 		else{
-			makeAccusation();
+			makeSuggestion(p);
 		}
 	}
 
@@ -253,13 +251,101 @@ public class Game
 	}
 
 	// line 21 "model.ump"
-	public void makeSuggestion(){
+	public void makeSuggestion(Player p){
 		System.out.println("Making a suggestion here");
+		CardTriplet guess = getGuess();
+		System.out.println("Suggestion is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
 	}
 
-	// line 24 "model.ump"
-	public void makeAccusation(){
+	/**
+	 * Gets a player's accusation and checks if it is correct
+	 * the player wins if correct, else is out
+	 * @param p: player making accusation
+	 */
+	public void makeAccusation(Player p){
 		System.out.println("Making an accusation here");
+		CardTriplet guess = getGuess();
+		System.out.println("Suggestion is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
+		if(guess.getCharacter().equals(envelope.getCharacter()) && guess.getWeapon().equals(envelope.getWeapon()) && guess.getRoom().equals(envelope.getRoom())){
+			//correct, game won
+			won = true;
+			System.out.println("This is the correct solution");
+			System.out.println(p.getToken().getName() + " has won the game!");
+		}else{
+			//the player was incorrect and so is  now out
+			System.out.println("Incorrect solution");
+			System.out.println(p.getToken().getName() + " is out!");
+			System.out.println("You still need to make refutations");
+			p.setIsExcluded(true);
+		}
+	}
+
+	/**
+	 * Get the user inputted guess
+	 * @return CardTriplet object - user guess
+	 */
+	public CardTriplet getGuess(){
+		CharacterCard character = getCharacterEntry();
+		WeaponCard weapon = getWeaponEntry();
+		RoomCard room = getRoomEntry();
+		return new CardTriplet(character,weapon, room);
+
+	}
+
+	/**
+	 * Check for valid weapon entry, match with weaponCard enum
+	 * @return enum WeaponCard value
+	 */
+	public WeaponCard getWeaponEntry(){
+		while(true) {
+			Scanner sc = new Scanner(System.in);
+			System.out.print("Enter Weapon: ");
+			String weaponGuess = sc.next();
+			for (WeaponCard w : WeaponCard.values()) {
+				if(w.name().equalsIgnoreCase(weaponGuess)){
+					System.out.println(w.name());
+					return w;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get valid Character
+	 * Match given string with characterCard enum
+	 * @return enum CharacterCard value
+	 */
+	public CharacterCard getCharacterEntry(){
+		while(true) {
+			Scanner sc = new Scanner(System.in);
+			System.out.print("Enter Character: ");
+			String characterGuess = sc.next();
+			for (CharacterCard c : CharacterCard.values()) {
+				if(c.name().equalsIgnoreCase(characterGuess)){
+					System.out.println(c.name());
+					return c;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get Valid room
+	 * Match given string with RoomCard enum
+	 * @return enum RoomCard value
+	 */
+	public RoomCard getRoomEntry(){
+		while(true) {
+			Scanner sc = new Scanner(System.in);
+			System.out.print("Enter Room: ");
+			String roomGuess = sc.next();
+			for (RoomCard r : RoomCard.values()) {
+				if(r.name().equalsIgnoreCase(roomGuess)){
+					System.out.println(r.name());
+					return r;
+				}
+			}
+		}
 	}
 
 	// line 27 "model.ump"
