@@ -16,6 +16,10 @@ public enum RoomCard implements Card {
 		return Arrays.asList(values());
 	}
 
+	public static int size() {
+		return values().length;
+	}
+
 	@Override
 	public String getName() {
 		return name().toLowerCase();

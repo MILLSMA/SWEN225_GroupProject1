@@ -13,30 +13,30 @@ public enum CharacterCard implements Card {
 		return Arrays.asList(values());
 	}
 
-	@Override
-	public String getName() {
-		return name().toLowerCase();
-	}
-
-	@Override
-	public String toString() {
-		String[] codes = {"s", "c", "w", "g", "k", "p"};
-		return codes[ordinal()];
+	public static int size() {
+		return values().length;
 	}
 
 	/**
 	 * prints the name of a character with correct spacing can in title case
 	 * @return String of character name
 	 */
-	public String getNameString(){
+	public String getName() {
 		StringBuilder sb = new StringBuilder();
 		boolean capital = true;
-		for (char c : getName().replace("_", " ").toCharArray()) {
-			if(capital){c = Character.toUpperCase(c);}
+		// Change enum names to lower case, underscores as spaces
+		for (char c : name().toLowerCase().replace("_", " ").toCharArray()) {
+			if (capital) c = Character.toUpperCase(c);
 			sb.append(c);
-			capital = (" ".indexOf((int) c) >= 0);
+			// Capitalise next character if the current character is a space
+			capital = c == ' ';
 		}
 		return sb.toString();
+	}
 
+	@Override
+	public String toString() {
+		String[] codes = {"s", "c", "w", "g", "k", "p"};
+		return codes[ordinal()];
 	}
 }

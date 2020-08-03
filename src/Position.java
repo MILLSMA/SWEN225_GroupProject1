@@ -8,62 +8,62 @@
 public class Position
 {
 
-  //------------------------
-  // MEMBER VARIABLES
-  //------------------------
+	//------------------------
+	// MEMBER VARIABLES
+	//------------------------
 
-  //Position Attributes
-  private int row;
-  private int col;
+	//Position Attributes
+	private int row;
+	private int col;
 
-  //------------------------
-  // CONSTRUCTOR
-  //------------------------
+	//------------------------
+	// CONSTRUCTOR
+	//------------------------
 
-  public Position(int aRow, int aCol)
-  {
-    row = aRow;
-    col = aCol;
-  }
+	public Position(int aRow, int aCol)
+	{
+		row = aRow;
+		col = aCol;
+	}
 
-  //------------------------
-  // INTERFACE
-  //------------------------
+	//------------------------
+	// INTERFACE
+	//------------------------
 
-  public boolean setRow(int aRow)
-  {
-    boolean wasSet = false;
-    row = aRow;
-    wasSet = true;
-    return wasSet;
-  }
+	public boolean setRow(int aRow)
+	{
+		boolean wasSet = false;
+		row = aRow;
+		wasSet = true;
+		return wasSet;
+	}
 
-  public boolean setCol(int aCol)
-  {
-    boolean wasSet = false;
-    col = aCol;
-    wasSet = true;
-    return wasSet;
-  }
+	public boolean setCol(int aCol)
+	{
+		boolean wasSet = false;
+		col = aCol;
+		wasSet = true;
+		return wasSet;
+	}
 
-  public int getRow()
-  {
-    return row;
-  }
+	public int getRow()
+	{
+		return row;
+	}
 
-  public int getCol()
-  {
-    return col;
-  }
+	public int getCol()
+	{
+		return col;
+	}
 
-  public void delete()
-  {}
+	public void delete()
+	{}
 
 
-  public String toString()
-  {
-    return super.toString() + "["+
-            "row" + ":" + getRow()+ "," +
-            "col" + ":" + getCol()+ "]";
-  }
+	public String toString()
+	{
+		return super.toString() + "["+
+				"row" + ":" + getRow()+ "," +
+				"col" + ":" + getCol()+ "]";
+	}
 }

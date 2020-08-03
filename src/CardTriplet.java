@@ -3,72 +3,72 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class CardTriplet {
-  //------------------------
-  // MEMBER VARIABLES
-  //------------------------
+	//------------------------
+	// MEMBER VARIABLES
+	//------------------------
 
-  private CharacterCard character;
-  private WeaponCard weapon;
-  private RoomCard room;
+	private CharacterCard character;
+	private WeaponCard weapon;
+	private RoomCard room;
 
-  //------------------------
-  // CONSTRUCTOR
-  //------------------------
+	//------------------------
+	// CONSTRUCTOR
+	//------------------------
 
-  public CardTriplet(CharacterCard c, WeaponCard w, RoomCard r) {
-    character = c;
-    weapon = w;
-    room = r;
-  }
+	public CardTriplet(CharacterCard c, WeaponCard w, RoomCard r) {
+		character = c;
+		weapon = w;
+		room = r;
+	}
 
-  //------------------------
-  // INTERFACE
-  //------------------------
+	//------------------------
+	// INTERFACE
+	//------------------------
 
-  public Collection<Card> getSet() {
-    return new HashSet<>(Arrays.asList(
-            weapon,
-            character,
-            room
-    ));
-  }
+	public Collection<Card> getSet() {
+		return new HashSet<>(Arrays.asList(
+				weapon,
+				character,
+				room
+		));
+	}
 
-  public boolean setCharacter(CharacterCard aCharacter)
-  {
-    character = aCharacter;
-    return true;
-  }
+	public boolean setCharacter(CharacterCard aCharacter)
+	{
+		character = aCharacter;
+		return true;
+	}
 
-  public boolean setWeapon(WeaponCard aWeapon)
-  {
-    weapon = aWeapon;
-    return true;
-  }
+	public boolean setWeapon(WeaponCard aWeapon)
+	{
+		weapon = aWeapon;
+		return true;
+	}
 
-  public boolean setRoom(RoomCard aRoom)
-  {
-    room = aRoom;
-    return true;
-  }
+	public boolean setRoom(RoomCard aRoom)
+	{
+		room = aRoom;
+		return true;
+	}
 
-  public CharacterCard getCharacter()
-  {
-    return character;
-  }
+	public CharacterCard getCharacter()
+	{
+		return character;
+	}
 
-  public WeaponCard getWeapon()
-  {
-    return weapon;
-  }
+	public WeaponCard getWeapon()
+	{
+		return weapon;
+	}
 
-  public RoomCard getRoom()
-  {
-    return room;
-  }
+	public RoomCard getRoom()
+	{
+		return room;
+	}
 
-  public void delete() {}
+	public void delete() {}
 
-  public String toString() {
-    return "<" + character.getName() + ", " + weapon.getName() + ", " + room.getName() + ">";
-  }
+	public String toString() {
+		return "<" + character.getName() + ", " + weapon.getName() + ", " + room.getName() + ">";
+	}
 }
