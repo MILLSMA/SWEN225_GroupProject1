@@ -1,8 +1,6 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.0.515.d9da8f6c modeling language!*/
 
-import com.sun.org.apache.xml.internal.security.utils.WeakObjectPool;
-
 import java.util.*;
 
 // line 2 "model.ump"
