@@ -202,7 +202,7 @@ public class Game
 	public void runGame(){
 		while(!won){
 			for (Player player : players) {
-				doTurn(player);
+				if(!won) doTurn(player);
 			}
 		}
 
@@ -216,7 +216,7 @@ public class Game
 	 */
 	public void doTurn(Player p){
 		//place holder code
-		System.out.println(p.getToken().getName() +"\'s turn:");
+		System.out.println("\n"+p.getToken().getName() +"\'s turn:");
 		move(p);
 
 		//TODO: The player can make either an accusation or a suggestion only if they are in a room.
@@ -251,8 +251,74 @@ public class Game
 	// line 21 "model.ump"
 	public void makeSuggestion(Player p){
 		System.out.println("Making a suggestion here");
-		CardTriplet guess = getGuess();
+		CardTriplet guess = getGuess();//TODO: change when movement implemented - room is always that which token is in
 		System.out.println("Suggestion is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
+		//TODO: character and weapon tokens move to room
+		boolean found = false;
+		int asked = 0;
+		while(!found && asked < players.size()-1){
+			Player asking;
+			if(players.indexOf(p) + asked + 1 >= players.size() ){
+				//loop back through char collection from index zero
+				//System.out.println("Asking: " + players.get(asked - (players.size() - players.indexOf(p)) + 1).getToken().getName());
+				asking = players.get(asked - (players.size() - players.indexOf(p)) + 1);
+			}else{
+				//ask from player position
+				//System.out.println("Asking: " + players.get(players.indexOf(p) + asked + 1).getToken().getName());
+				asking = players.get(players.indexOf(p) + asked + 1);
+			}
+			asked ++;
+			System.out.println("\nChecking cards...");
+			waitForPlayer(asking);
+			//Does the next player have any possible cards to show
+			ArrayList<Card> possibleCards = new ArrayList<>();
+			if(asking.getCards().contains(guess.getCharacter())){
+				possibleCards.add(guess.getCharacter());
+			}
+			if(asking.getCards().contains(guess.getWeapon())){
+				possibleCards.add(guess.getWeapon());
+			}
+			if(asking.getCards().contains(guess.getRoom())){
+				possibleCards.add(guess.getRoom());
+			}
+			if(possibleCards.isEmpty()){
+				System.out.println("You have no cards that match this guess");
+			}else{
+				System.out.println("You must reveal one of these cards");
+				for(Card c : possibleCards){
+					System.out.println((int)(possibleCards.indexOf(c)+1 )+ " : " + c.getName());
+					found = true;
+				}
+				int itemToShow = 0;
+				Scanner sc = new Scanner(System.in);
+				do {
+					System.out.print("Enter a number to reveal a card: ");
+					try {
+						itemToShow = input.nextInt();
+					}catch(InputMismatchException e){
+						System.out.println("Must be between 1 and " + possibleCards.size());
+						input.nextLine();
+					}
+				} while (itemToShow < 1 || itemToShow > possibleCards.size());
+
+				System.out.println("\nRevealing card...");
+				waitForPlayer(p);
+				System.out.println("The revealed card is: " + possibleCards.get(itemToShow-1).getName());
+			}
+		}
+		if(!found)System.out.println("\nNo cards were reveled this round");
+	}
+
+	/**
+	 * precedes sensitive information intended for a single player to view
+	 * waits to display output after input from player
+	 * @param p: player who is performin action
+	 */
+	public void waitForPlayer(Player p){
+		System.out.println("ACTION REQUIRED: Player " + (int)(players.indexOf(p)+1) + " : " + p.getToken().getName());
+		Scanner sc = new Scanner(System.in);
+		System.out.print("Push a character and enter key to continue");
+		sc.next();
 	}
 
 	/**
@@ -263,12 +329,12 @@ public class Game
 	public void makeAccusation(Player p){
 		System.out.println("Making an accusation here");
 		CardTriplet guess = getGuess();
-		System.out.println("Suggestion is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
+		System.out.println("Accusation is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
 		if(guess.getCharacter().equals(envelope.getCharacter()) && guess.getWeapon().equals(envelope.getWeapon()) && guess.getRoom().equals(envelope.getRoom())){
 			//correct, game won
 			won = true;
 			System.out.println("This is the correct solution");
-			System.out.println(p.getToken().getName() + " has won the game!");
+			System.out.println("Player " + (int)(players.indexOf(p)+1) + " : " + p.getToken().getName() + " has won the game!");
 		}else{
 			//the player was incorrect and so is  now out
 			System.out.println("Incorrect solution");
@@ -301,7 +367,6 @@ public class Game
 			String weaponGuess = sc.next();
 			for (WeaponCard w : WeaponCard.values()) {
 				if(w.name().equalsIgnoreCase(weaponGuess)){
-					System.out.println(w.name());
 					return w;
 				}
 			}
@@ -320,7 +385,6 @@ public class Game
 			String characterGuess = sc.next();
 			for (CharacterCard c : CharacterCard.values()) {
 				if(c.name().equalsIgnoreCase(characterGuess)){
-					System.out.println(c.name());
 					return c;
 				}
 			}
@@ -330,6 +394,7 @@ public class Game
 	/**
 	 * Get Valid room
 	 * Match given string with RoomCard enum
+	 * should only be called when accusation made
 	 * @return enum RoomCard value
 	 */
 	public RoomCard getRoomEntry(){
@@ -339,7 +404,6 @@ public class Game
 			String roomGuess = sc.next();
 			for (RoomCard r : RoomCard.values()) {
 				if(r.name().equalsIgnoreCase(roomGuess)){
-					System.out.println(r.name());
 					return r;
 				}
 			}
