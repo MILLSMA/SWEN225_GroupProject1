@@ -37,6 +37,7 @@ public class Board
 			Position playerPos = CharacterCard.characterStartPosition(player.getToken());
 			board[playerPos.getRow()][playerPos.getCol()].setObject(player.getToken());
 			playerPositionMap.put(player, playerPos);
+			player.setLocation(board[playerPos.getRow()][playerPos.getCol()]);
 		}
 	}
 

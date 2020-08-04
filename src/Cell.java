@@ -44,7 +44,7 @@ public class Cell
 		if(!getRoom().walkable) {
 			directionsAvailable = Collections.unmodifiableList(new ArrayList<>());
 		}else {
-			if (possible) directionsAvailable.add(dir);
+			if (possible && !directionsAvailable.contains(dir)) directionsAvailable.add(dir);
 			else directionsAvailable.remove(dir);
 		}
 	}

@@ -245,6 +245,7 @@ public class Game
 		System.out.println("You may move " + numberOfMoves + " spaces");
 		for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
 			//TODO: display what moves player can make from a their position and give options to move in those directions.
+			System.out.println(p.getLocation().directionsAvailable);
 		}
 	}
 
