@@ -1,19 +1,26 @@
 import java.util.*;
 
 public class Room {
-	private final RoomCard card;
-
+	private RoomCard card;
+	private String type;
+	Boolean walkable = false;
 	Room(RoomCard roomCard) {
 		card = roomCard;
+		walkable = true;
+	}
+	Room(String str, boolean walkable){
+		type = str;
+		this.walkable = walkable;
 	}
 
 	public RoomCard getCard(){
 		return card;
 	}
 
+
 	//Room Associations
-	private List<Cell> cells;
-	private List<Card> cards;
+	private List<Cell> cells = new ArrayList<>();
+	private List<Card> cards = new ArrayList<>();
 
 	public List<Cell> getCells()
 	{
@@ -56,5 +63,13 @@ public class Room {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		if(card != null) return card.toString();
+		else if(type.equals("Hallway")) return "_";
+		else if(type.equals("Door")) return ")";
+		else return "/";
 	}
 }

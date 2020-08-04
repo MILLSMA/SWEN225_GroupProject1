@@ -34,6 +34,25 @@ public enum CharacterCard implements Card {
 		return sb.toString();
 	}
 
+	public static Position characterStartPosition(CharacterCard character){
+		switch(character){
+			case MRS_WHITE:
+				return new Position(0,9);
+			case MR_GREEN:
+				return new Position(17, 0);
+			case MRS_PEACOCK:
+				return new Position(24, 7);
+			case MISS_SCARLETT:
+				return new Position(19, 23);
+			case PROFESSOR_PLUM:
+				return new Position(7, 23);
+			case COLONEL_MUSTARD:
+				return new Position(7, 0);
+			 default:
+			 	return new Position(1, 1);
+		}
+	}
+
 	@Override
 	public String toString() {
 		String[] codes = {"s", "c", "w", "g", "k", "p"};

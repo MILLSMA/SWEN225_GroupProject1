@@ -15,49 +15,48 @@ public class Cell
 
 	//Cell Associations
 	private Position position;
-	private final List<Room> rooms;
-
+	public List<Directions> directionsAvailable = new ArrayList<>();
+	private final Room room;
+	private Card object;
 	//------------------------
 	// CONSTRUCTOR
 	//------------------------
 
-	public Cell( Position aPosition, Board aBoard, Room... room)
+	public Cell( Position aPosition, Room room)
 	{
 		if (!setPosition(aPosition))
 		{
 			throw new RuntimeException("Unable to create Cell due to aPosition. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
 		}
-		rooms = new ArrayList<Room>();
-		boolean didAddRooms = setRooms(room);
-		if (!didAddRooms)
-		{
-			throw new RuntimeException("Unable to create Cell, must have at least 1 rooms. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-		}
+		this.room = room;
 	}
 
 	//------------------------
 	// INTERFACE
 	//------------------------
 
+	public void setObject(Card card){
+		this.object = card;
+	}
+
+
+	public void setDirection(Directions dir, boolean possible){
+		if(!getRoom().walkable) {
+			directionsAvailable = Collections.unmodifiableList(new ArrayList<>());
+		}else {
+			if (possible) directionsAvailable.add(dir);
+			else directionsAvailable.remove(dir);
+		}
+	}
 	/* Code from template association_GetOne */
 	public Position getPosition()
 	{
 		return position;
 	}
 	/* Code from template association_GetMany */
-	public Room getRoom(int index)
+	public Room getRoom()
 	{
-		return rooms.get(index);
-	}
-
-	public List<Room> getRooms()
-	{
-		return Collections.unmodifiableList(rooms);
-	}
-
-	public int numberOfRooms()
-	{
-		return rooms.size();
+		return room;
 	}
 
 	/* Code from template association_SetUnidirectionalOne */
@@ -72,53 +71,14 @@ public class Cell
 		return wasSet;
 	}
 
-	/* Code from template association_AddManyToManyMethod */
-	public boolean addRoom(Room aRoom)
-	{
-		if(!rooms.contains(aRoom)) {
-			rooms.add(aRoom);
-			return true;
-		}
-		return false;
-	}
-
-	/* Code from template association_SetMStarToMany */
-	public boolean setRooms(Room... newRooms)
-	{
-		ArrayList<Room> verifiedRooms = new ArrayList<Room>();
-		for (Room aRoom : newRooms) {
-			if (verifiedRooms.contains(aRoom)) {
-				continue;
-			}
-			verifiedRooms.add(aRoom);
-		}
-
-		if (verifiedRooms.size() != newRooms.length || verifiedRooms.size() < 1) {
-			return false;
-		}
-
-		ArrayList<Room> oldRooms = new ArrayList<Room>(rooms);
-		rooms.clear();
-		for (Room aNewRoom : verifiedRooms) {
-			rooms.add(aNewRoom);
-			if (oldRooms.contains(aNewRoom)) {
-				oldRooms.remove(aNewRoom);
-			}
-			else
-			{
-				aNewRoom.addCell(this);
-			}
-		}
-
-		for (Room anOldRoom : oldRooms) {
-			anOldRoom.removeCell(this);
-		}
-		return true;
-	}
-
+   public Card getObject(){
+		return object;
+   }
 
 	public String toString()
 	{
-		return ""; //TODO
+		if(object != null) return object.toString();
+		return room.toString(); //TODO
+
 	}
 }

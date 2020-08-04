@@ -186,11 +186,7 @@ public class Player
 	}
 
 
-	public String toString()
-	{
-		return super.toString() + "["+
-				"isExcluded" + ":" + getIsExcluded()+ "]" + System.getProperties().getProperty("line.separator") +
-				"  " + "token" + "=" + (getToken() != null ? !getToken().equals(this)  ? getToken().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-				"  " + "location" + "=" + (getLocation() != null ? !getLocation().equals(this)  ? getLocation().toString().replaceAll("  ","    ") : "this" : "null");
+	public String toString() {
+		return token.toString();
 	}
 }

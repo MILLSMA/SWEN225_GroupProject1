@@ -220,6 +220,7 @@ public class Game
 	 */
 	public void doTurn(Player p){
 		//place holder code
+		System.out.println(board.toString());
 		System.out.println(p.getToken().getName() +"\'s turn:");
 		move(p);
 
