@@ -3,7 +3,7 @@ import java.util.*;
 public class Cell
 {
 
-	public enum Directions{
+	public enum Direction{
 		NORTH,
 		SOUTH,
 		EAST,
@@ -15,7 +15,7 @@ public class Cell
 
 	//Cell Associations
 	private Position position;
-	public List<Directions> directionsAvailable = new ArrayList<>();
+	public List<Direction> directionsAvailable = new ArrayList<>();
 	private final Room room;
 	private Card object;
 	//------------------------
@@ -40,7 +40,7 @@ public class Cell
 	}
 
 
-	public void setDirection(Directions dir, boolean possible){
+	public void setDirection(Direction dir, boolean possible){
 			if (possible && !directionsAvailable.contains(dir)) directionsAvailable.add(dir);
 			else directionsAvailable.remove(dir);
 	}
