@@ -22,6 +22,10 @@ public class Room {
 	private List<Cell> cells = new ArrayList<>();
 	private List<Card> cards = new ArrayList<>();
 
+	public boolean isProperRoom(){
+		return card != null;
+	}
+
 	public List<Cell> getCells()
 	{
 		return Collections.unmodifiableList(cells);

@@ -1,6 +1,8 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.0.515.d9da8f6c modeling language!*/
 
+import com.sun.scenario.effect.impl.prism.ps.PPSBlend_SRC_OUTPeer;
+
 import java.util.*;
 
 // line 2 "model.ump"
@@ -216,23 +218,26 @@ public class Game
 	 */
 	public void doTurn(Player p){
 		//place holder code
+		System.out.println(board);
 		System.out.println("\n"+p.getToken().getName() +"\'s turn:");
 		move(p);
 
-		//TODO: The player can make either an accusation or a suggestion only if they are in a room.
-		Scanner sc = new Scanner(System.in);
-		String turnEntry;
-		do {
-			System.out.print("Accusation (A) | Suggestion (S): ");
-			turnEntry = sc.next();
-		}while(!(turnEntry.matches("(?i)a|s|accusation|suggestion")));
-		System.out.printf("valid  entry"); //TODO: cont. here
-		if(turnEntry.matches("(?i)a|accusation")){
-			makeAccusation(p);
+		if(p.getLocation().getRoom().isProperRoom()){
+			Scanner sc = new Scanner(System.in);
+			String turnEntry;
+			do {
+				System.out.print("Accusation (A) | Suggestion (S): ");
+				turnEntry = sc.next();
+			}while(!(turnEntry.matches("(?i)a|s|accusation|suggestion")));
+			System.out.printf("valid  entry"); //TODO: cont. here
+			if(turnEntry.matches("(?i)a|accusation")){
+				makeAccusation(p);
+			}
+			else{
+				makeSuggestion(p);
+			}
 		}
-		else{
-			makeSuggestion(p);
-		}
+
 	}
 
 	/**
@@ -243,9 +248,43 @@ public class Game
 		int numberOfMoves = rollDice();
 		System.out.println("You rolled: " + numberOfMoves);
 		System.out.println("You may move " + numberOfMoves + " spaces");
+		Scanner input = new Scanner(System.in);
 		for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
-			//TODO: display what moves player can make from a their position and give options to move in those directions.
-			System.out.println(p.getLocation().directionsAvailable);
+			//prints the board to the screen
+			System.out.println(board);
+			//displays whose turn it is and how many moves they have left
+			System.out.println(p.getToken().getName()+ " you have " + (numberOfMoves - moveNumber) + " moves left");
+			System.out.println("You may move in these directions: ");
+			//Stores the directions that the player can legally move
+			ArrayList<Cell.Directions> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
+			int answer = 0;
+			boolean correctAnswer = false;
+			//repeats asking the question until player enters a correct answer
+			while(!correctAnswer){
+				//prints the available directions and which number key to press to choose
+				for (Cell.Directions direction : p.getLocation().directionsAvailable) {
+					System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")" );
+				}
+				//if the user puts in an answer that isn't an integer it will set there answer to 5
+				//which will always be outside of the index range
+				try {
+					answer = input.nextInt();
+				}catch(InputMismatchException e){
+					answer = 5;
+				}
+				//if the answer is correct break, else tell them to pick a correct direction
+				if(answer >= 0 && answer <= correctAnswers.size()){
+					correctAnswer = true;
+				}else System.out.println("Please enter a correct direction");
+			}
+			//moves the player on the board based on their answer
+			Cell newPlayerCell = board.move(p, correctAnswers.get(answer));
+			//removes the player from the cell
+			p.getLocation().setObject(null);
+			//tell the player which cell they are in
+			p.setLocation(newPlayerCell);
+			//place the player in the cell
+			p.getLocation().setObject(p.getToken());
 		}
 	}
 

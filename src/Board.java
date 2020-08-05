@@ -25,6 +25,7 @@ public class Board
 		players = new ArrayList<>(allPlayers);
 		playerPositionMap = new HashMap<>();
 		rooms = new HashMap<>();
+		//creates the dummy rooms which are only needed for mechanics (not gameplay)
 		rooms.put("Door", new Room("Door", true));
 		rooms.put("Wall", new Room("Wall", false));
 		rooms.put("Hallway", new Room("Hallway", true));
@@ -34,10 +35,16 @@ public class Board
 		board = new Cell[ROWS][COLS];
 		createCells();
 		for (Player player : players) {
+			//gets the characters start position
 			Position playerPos = CharacterCard.characterStartPosition(player.getToken());
-			board[playerPos.getRow()][playerPos.getCol()].setObject(player.getToken());
+			//gets the cell the player is on (based on players position)
+			Cell playerCell = board[playerPos.getRow()][playerPos.getCol()];
+			//tells the cell which player is on them
+			playerCell.setObject(player.getToken());
+			//puts the player and the position in the map (never has to be updated)
 			playerPositionMap.put(player, playerPos);
-			player.setLocation(board[playerPos.getRow()][playerPos.getCol()]);
+			//tell the player which cell they are in
+			player.setLocation(playerCell);
 		}
 	}
 
@@ -52,6 +59,13 @@ public class Board
 	public Room getRoom(String name){
 		return rooms.get(name);
 	}
+
+	/**
+	 * for reading the text file, when a character is given return
+	 * whichever room that character corresponds with
+	 * @param c - character to check against
+	 * @return - the Room which the character corresponds too (or null if not found)
+	 */
 	private Room getRoomFromChar(char c) {
 		for(RoomCard card : RoomCard.getRooms()) {
 			if (card.toString().charAt(0) == c) return getRoomFromCard(card);
@@ -61,14 +75,21 @@ public class Board
 		if(c == '_')return rooms.get("Hallway");
 		return null;
 	}
+
+	/**
+	 * reads the input file and creates the board accordingly
+	 */
 	private void createCells(){
 		try {
+			//scanner to read the CluedoBoard.txt file with a delimiter that reads all characters including whitespace
 			Scanner sc = new Scanner(new File("CluedoBoard.txt")).useDelimiter("(\\b|\\B)");
 			int xPosition = 0, yPosition = 0;
 			String left, cell, right;
+			//read whats on the left and right of the cell aswell as the cell
 			left = sc.next();
 			cell = sc.next();
 			right = sc.next();
+			//while the board file still has characters to read
 			while(sc.hasNext()){
 				Position cellPosition = new Position(xPosition, yPosition);
 				Room cellRoom = getRoomFromChar(cell.charAt(0));
@@ -95,25 +116,27 @@ public class Board
 		}
 		updateCellDirections();
 	}
+
+	/**
+	 * goes through all the cells and checks what is above and
+	 * beneath it and adds the correct directions to the available
+	 * directions list in each cell.
+	 */
 	private void updateCellDirections(){
-		for (int xIndex = 0; xIndex < ROWS ; xIndex++) {
-			for (int yIndex = 1; yIndex < COLS -3; yIndex++) {
+		for (int xIndex = 0; xIndex < ROWS - 1 ; xIndex++) {
+			for (int yIndex = 0; yIndex < COLS - 2 ; yIndex++) {
 				Cell currentCell = board[xIndex][yIndex];
-				Cell cellAbove = board[xIndex][yIndex-1];
-				Cell cellBelow = board[xIndex][yIndex+1];
+				Cell belowCell = board[xIndex + 1][yIndex];
+				if(currentCell.getRoom() == belowCell.getRoom()){
+					currentCell.setDirection(Cell.Directions.SOUTH, true);
+					belowCell.setDirection(Cell.Directions.NORTH, true);
+				}
 				if(currentCell.getRoom() == rooms.get("Door")){
-					currentCell.setDirection(Cell.Directions.NORTH, true);
+					//sets the cell above able to move down into the doorway
+					board[xIndex - 1][yIndex].setDirection(Cell.Directions.SOUTH, true);
 					currentCell.setDirection(Cell.Directions.SOUTH, true);
-					cellBelow.setDirection(Cell.Directions.NORTH, true);
-					cellAbove.setDirection(Cell.Directions.SOUTH, true);
-				}
-				else if(currentCell.getRoom() == cellBelow.getRoom()){
-					currentCell.setDirection(Cell.Directions.SOUTH, true);
-					cellBelow.setDirection(Cell.Directions.NORTH, true);
-				}
-				else if(currentCell.getRoom() == cellAbove.getRoom()){
 					currentCell.setDirection(Cell.Directions.NORTH, true);
-					cellBelow.setDirection(Cell.Directions.SOUTH, true);
+					belowCell.setDirection(Cell.Directions.NORTH, true);
 				}
 			}
 		}
@@ -176,10 +199,36 @@ public class Board
 	}
 
 	// line 36 "model.ump"
-	public void move(Player p, Position old){
 
+	/**
+	 * moves the player on the board in which every direction is chosen
+	 * @param p - player to be moved
+	 * @param dir - relative direction for player to be moved
+	 * @return - the cell the player was moved into
+	 */
+	public Cell move(Player p, Cell.Directions dir) {
+		Position playerPos = playerPositionMap.get(p);
+		switch(dir){
+			case NORTH:
+				playerPos.setRow(playerPos.getRow() - 1);
+				break;
+			case SOUTH:
+				playerPos.setRow(playerPos.getRow() + 1);
+				break;
+			case EAST:
+				playerPos.setCol(playerPos.getCol() + 1);
+				break;
+			case WEST:
+				playerPos.setCol(playerPos.getCol() - 1);
+				break;
+		}
+		return board[playerPos.getRow()][playerPos.getCol()];
 	}
 
+	/**
+	 * prints the board to the terminal for benefit of the player
+	 * @return graphical ascii representation of the board
+	 */
 	@Override
 	public String toString() {
 		StringBuilder boardLayout = new StringBuilder();

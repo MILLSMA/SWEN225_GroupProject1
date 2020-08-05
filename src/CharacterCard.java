@@ -9,6 +9,16 @@ public enum CharacterCard implements Card {
 	MRS_PEACOCK,
 	PROFESSOR_PLUM;
 
+	//color codes so that the players may have color in the ASCII display
+	//may not work on all terminal environments (eg. windows console)
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
+
 	public static Collection<CharacterCard> getCharacters(){
 		return Arrays.asList(values());
 	}
@@ -55,7 +65,7 @@ public enum CharacterCard implements Card {
 
 	@Override
 	public String toString() {
-		String[] codes = {"s", "c", "w", "g", "k", "p"};
-		return codes[ordinal()];
+		String[] codes = {ANSI_RED+"s", ANSI_YELLOW+"c", ANSI_WHITE+"w", ANSI_GREEN+"g", ANSI_CYAN+"k", ANSI_PURPLE + "p"};
+		return codes[ordinal()] + ANSI_RESET;
 	}
 }
