@@ -3,14 +3,11 @@ import java.util.*;
 public class Room {
 	private RoomCard card;
 	private String type = "";
-	Boolean walkable = false;
 	Room(RoomCard roomCard) {
 		card = roomCard;
-		walkable = true;
 	}
-	Room(String str, boolean walkable){
+	Room(String str){
 		type = str;
-		this.walkable = walkable;
 	}
 
 	public RoomCard getCard(){

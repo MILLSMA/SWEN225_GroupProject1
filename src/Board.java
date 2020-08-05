@@ -26,9 +26,9 @@ public class Board
 		playerPositionMap = new HashMap<>();
 		rooms = new HashMap<>();
 		//creates the dummy rooms which are only needed for mechanics (not gameplay)
-		rooms.put("Door", new Room("Door", true));
-		rooms.put("Wall", new Room("Wall", false));
-		rooms.put("Hallway", new Room("Hallway", true));
+		rooms.put("Door", new Room("Door"));
+		rooms.put("Wall", new Room("Wall"));
+		rooms.put("Hallway", new Room("Hallway"));
 		for(RoomCard card : RoomCard.getRooms()){
 			rooms.put(card.getName(), new Room(card));
 		}
@@ -70,7 +70,7 @@ public class Board
 		for(RoomCard card : RoomCard.getRooms()) {
 			if (card.toString().charAt(0) == c) return getRoomFromCard(card);
 		}
-		if(c == ')')return new Room("Door", true);
+		if(c == ')')return new Room("Door");
 		if(c == '/')return rooms.get("Wall");
 		if(c == '_')return rooms.get("Hallway");
 		return null;
