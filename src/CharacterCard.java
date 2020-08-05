@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Scanner;
 
 public enum CharacterCard implements Card {
 	MISS_SCARLETT,
@@ -42,6 +43,24 @@ public enum CharacterCard implements Card {
 			capital = c == ' ';
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * Get valid Character
+	 * Match given string with characterCard enum
+	 * @return enum CharacterCard value
+	 */
+	public static CharacterCard input(){
+		while(true) {
+			Scanner sc = new Scanner(System.in);
+			System.out.print("Enter Character: ");
+			String characterGuess = sc.next();
+			for (CharacterCard c : CharacterCard.values()) {
+				if(c.name().equalsIgnoreCase(characterGuess)){
+					return c;
+				}
+			}
+		}
 	}
 
 	public static Position characterStartPosition(CharacterCard character){

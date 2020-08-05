@@ -1,7 +1,6 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.30.0.515.d9da8f6c modeling language!*/
 
-import com.sun.scenario.effect.impl.prism.ps.PPSBlend_SRC_OUTPeer;
 
 import java.util.*;
 
@@ -96,31 +95,27 @@ public class Game
 	// INTERFACE
 	//------------------------
 
+//	public boolean getWon()
+//	{
+//		return won;
+//	}
 
-
-	public boolean getWon()
-	{
-		return won;
-	}
-
-	/* Code from template association_GetMany */
-	public Player getPlayer(int index)
-	{
-		Player aPlayer = players.get(index);
-		return aPlayer;
-	}
-
-	public List<Player> getPlayers()
-	{
-		List<Player> newPlayers = Collections.unmodifiableList(players);
-		return newPlayers;
-	}
-
-	/* Code from template association_GetOne */
-	public Board getBoard()
-	{
-		return board;
-	}
+//	/* Code from template association_GetMany */
+//	public Player getPlayer(int index)
+//	{
+//		return players.get(index);
+//	}
+//
+//	public List<Player> getPlayers()
+//	{
+//		return Collections.unmodifiableList(players);
+//	}
+//
+//	/* Code from template association_GetOne */
+//	public Board getBoard()
+//	{
+//		return board;
+//	}
 
 	/* Code from template association_SetUnidirectionalN */
 	public void setPlayers(Collection<Player> newPlayers)
@@ -228,11 +223,10 @@ public class Game
 				System.out.print("Accusation (A) | Suggestion (S): ");
 				turnEntry = sc.next();
 			}while(!(turnEntry.matches("(?i)a|s|accusation|suggestion")));
-			System.out.printf("valid  entry"); //TODO: cont. here
+			System.out.printf("valid entry"); //TODO: cont. here
 			if(turnEntry.matches("(?i)a|accusation")){
 				makeAccusation(p);
-			}
-			else{
+			} else {
 				makeSuggestion(p);
 			}
 		}
@@ -250,10 +244,10 @@ public class Game
 			while(true){
 				//prints the board to the screen
 				System.out.println(board);
-				Cell.Directions chosenDirection = askForDirection(p);
+				Cell.Direction chosenDirection = askForDirection(p);
 				Cell oldPlayerCell = p.getLocation();
 				Cell newPlayerCell = board.move(p, chosenDirection);
-				updatePlayerPosition(p, newPlayerCell);
+				p.updatePosition(newPlayerCell);
 				if(newPlayerCell.getRoom().getCard() != oldPlayerCell.getRoom().getCard()) break;
 			}
 		}
@@ -266,33 +260,24 @@ public class Game
 			//displays whose turn it is and how many moves they have left
 			System.out.println(p.getToken().getName()+ " you have " + (numberOfMoves - moveNumber) + " moves left");
 			System.out.println("You may move in these directions: ");
-			Cell.Directions chosenDirection = askForDirection(p);
+			Cell.Direction chosenDirection = askForDirection(p);
 			//moves the player on the board based on their answer
 			Cell newPlayerCell = board.move(p, chosenDirection);
-			updatePlayerPosition(p, newPlayerCell);
+			p.updatePosition(newPlayerCell);
 			if(p.getLocation().getRoom().isProperRoom()) return;
 		}
 	}
 
-	public void updatePlayerPosition(Player p, Cell cell){
-		//removes the player from the cell
-		p.getLocation().setObject(null);
-		//tell the player which cell they are in
-		p.setLocation(cell);
-		//place the player in the cell
-		p.getLocation().setObject(p.getToken());
-	}
-
-	public Cell.Directions askForDirection(Player p){
+	public Cell.Direction askForDirection(Player p){
 		Scanner input = new Scanner(System.in);
 		//Stores the directions that the player can legally move
-		ArrayList<Cell.Directions> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
+		ArrayList<Cell.Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
 		int answer = 0;
 		boolean correctAnswer = false;
 		//repeats asking the question until player enters a correct answer
 		while(!correctAnswer){
 			//prints the available directions and which number key to press to choose
-			for (Cell.Directions direction : p.getLocation().directionsAvailable) {
+			for (Cell.Direction direction : p.getLocation().directionsAvailable) {
 				System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")" );
 			}
 			//if the user puts in an answer that isn't an integer it will set there answer to 5
@@ -313,7 +298,7 @@ public class Game
 	// line 21 "model.ump"
 	public void makeSuggestion(Player p){
 		System.out.println("Making a suggestion here");
-		CardTriplet guess = getGuess();//TODO: change when movement implemented - room is always that which token is in
+		CardTriplet guess = new CardTriplet();//TODO: change when movement implemented - room is always that which token is in
 		System.out.println("Suggestion is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
 		//TODO: character and weapon tokens move to room
 		boolean found = false;
@@ -390,7 +375,7 @@ public class Game
 	 */
 	public void makeAccusation(Player p){
 		System.out.println("Making an accusation here");
-		CardTriplet guess = getGuess();
+		CardTriplet guess = new CardTriplet();
 		System.out.println("Accusation is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
 		if(guess.getCharacter().equals(envelope.getCharacter()) && guess.getWeapon().equals(envelope.getWeapon()) && guess.getRoom().equals(envelope.getRoom())){
 			//correct, game won
@@ -406,82 +391,8 @@ public class Game
 		}
 	}
 
-	/**
-	 * Get the user inputted guess
-	 * @return CardTriplet object - user guess
-	 */
-	public CardTriplet getGuess(){
-		CharacterCard character = getCharacterEntry();
-		WeaponCard weapon = getWeaponEntry();
-		RoomCard room = getRoomEntry();
-		return new CardTriplet(character,weapon, room);
-
-	}
-
-	/**
-	 * Check for valid weapon entry, match with weaponCard enum
-	 * @return enum WeaponCard value
-	 */
-	public WeaponCard getWeaponEntry(){
-		while(true) {
-			Scanner sc = new Scanner(System.in);
-			System.out.print("Enter Weapon: ");
-			String weaponGuess = sc.next();
-			for (WeaponCard w : WeaponCard.values()) {
-				if(w.name().equalsIgnoreCase(weaponGuess)){
-					return w;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Get valid Character
-	 * Match given string with characterCard enum
-	 * @return enum CharacterCard value
-	 */
-	public CharacterCard getCharacterEntry(){
-		while(true) {
-			Scanner sc = new Scanner(System.in);
-			System.out.print("Enter Character: ");
-			String characterGuess = sc.next();
-			for (CharacterCard c : CharacterCard.values()) {
-				if(c.name().equalsIgnoreCase(characterGuess)){
-					return c;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Get Valid room
-	 * Match given string with RoomCard enum
-	 * should only be called when accusation made
-	 * @return enum RoomCard value
-	 */
-	public RoomCard getRoomEntry(){
-		while(true) {
-			Scanner sc = new Scanner(System.in);
-			System.out.print("Enter Room: ");
-			String roomGuess = sc.next();
-			for (RoomCard r : RoomCard.values()) {
-				if(r.name().equalsIgnoreCase(roomGuess)){
-					return r;
-				}
-			}
-		}
-	}
-
 	// line 27 "model.ump"
 	public void doRefutations(){
 
-	}
-
-
-	public String toString()
-	{
-		return super.toString() + "["+
-				"won" + ":" + getWon()+ "]" + System.getProperties().getProperty("line.separator") +
-				"  " + "board = "+(getBoard()!=null?Integer.toHexString(System.identityHashCode(getBoard())):"null");
 	}
 }

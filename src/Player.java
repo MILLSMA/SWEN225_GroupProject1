@@ -91,6 +91,15 @@ public class Player
 		return number;
 	}
 
+	public void updatePosition(Cell cell){
+		// removes the player from the cell
+		location.setObject(null);
+		//tell the player which cell they are in
+		location = cell;
+		//place the player in the cell
+		location.setObject(getToken());
+	}
+
 	public boolean hasCards()
 	{
 		boolean has = cards.size() > 0;
