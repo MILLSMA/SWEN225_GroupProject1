@@ -11,4 +11,6 @@ public interface Card
 	 * @return board code of card
 	 */
 	String toString();
+
+
 }

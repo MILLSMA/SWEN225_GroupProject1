@@ -56,9 +56,10 @@ public class Board
 	public Room getRoomFromCard(RoomCard card){
 		return rooms.get(card.getName());
 	}
-	public Room getRoom(String name){
-		return rooms.get(name);
-	}
+
+//	public Room getRoom(String name){
+//		return rooms.get(name);
+//	}
 
 	/**
 	 * for reading the text file, when a character is given return
@@ -95,8 +96,8 @@ public class Board
 				Room cellRoom = getRoomFromChar(cell.charAt(0));
 				Cell newCell = new Cell(cellPosition, cellRoom);
 				board[yPosition][xPosition] = newCell;
-				if(left.charAt(0) != '/') newCell.setDirection(Cell.Directions.WEST, true);
-				if(right.charAt(0) != '/') newCell.setDirection(Cell.Directions.EAST, true);
+				if(left.charAt(0) != '/') newCell.setDirection(Cell.Direction.WEST, true);
+				if(right.charAt(0) != '/') newCell.setDirection(Cell.Direction.EAST, true);
 
 				if(sc.hasNext("\n")){
 					sc.next();
@@ -128,8 +129,8 @@ public class Board
 				Cell currentCell = board[xIndex][yIndex];
 				Cell belowCell = board[xIndex + 1][yIndex];
 				if(currentCell.getRoom() == belowCell.getRoom()){
-					currentCell.setDirection(Cell.Directions.SOUTH, true);
-					belowCell.setDirection(Cell.Directions.NORTH, true);
+					currentCell.setDirection(Cell.Direction.SOUTH, true);
+					belowCell.setDirection(Cell.Direction.NORTH, true);
 				}
 				if(currentCell.getRoom().getType().equals("Door")){
 					Cell leftCell = board[xIndex][yIndex - 1];
@@ -139,76 +140,76 @@ public class Board
 					doorCard = (leftCell.getRoom().isProperRoom()) ? leftCell.getRoom().getCard() : rightCell.getRoom().getCard();
 					currentCell.getRoom().setCard(doorCard);
 					//sets the cell above able to move down into the doorway
-					board[xIndex - 1][yIndex].setDirection(Cell.Directions.SOUTH, true);
-					currentCell.setDirection(Cell.Directions.SOUTH, true);
-					currentCell.setDirection(Cell.Directions.NORTH, true);
-					belowCell.setDirection(Cell.Directions.NORTH, true);
+					board[xIndex - 1][yIndex].setDirection(Cell.Direction.SOUTH, true);
+					currentCell.setDirection(Cell.Direction.SOUTH, true);
+					currentCell.setDirection(Cell.Direction.NORTH, true);
+					belowCell.setDirection(Cell.Direction.NORTH, true);
 				}
 				if(currentCell.getRoom() == rooms.get("Wall")){
-					currentCell.setDirection(Cell.Directions.SOUTH, false);
-					currentCell.setDirection(Cell.Directions.NORTH, false);
-					currentCell.setDirection(Cell.Directions.WEST, false);
-					currentCell.setDirection(Cell.Directions.EAST, false);
+					currentCell.setDirection(Cell.Direction.SOUTH, false);
+					currentCell.setDirection(Cell.Direction.NORTH, false);
+					currentCell.setDirection(Cell.Direction.WEST, false);
+					currentCell.setDirection(Cell.Direction.EAST, false);
 				}
 			}
 		}
 	}
-	/* Code from template association_GetMany */
-	public Cell getCell(int index)
-	{
-		return cells.get(index);
-	}
-
-	public List<Cell> getCells()
-	{
-		return Collections.unmodifiableList(cells);
-	}
-
-	public int numberOfCells()
-	{
-		return cells.size();
-	}
-
-	/* Code from template association_GetMany */
-	public Position getPlayerLocation(Player p)
-	{
-		return playerPositionMap.get(p);
-	}
-
-	public List<Player> getPlayers()
-	{
-		return Collections.unmodifiableList(players);
-	}
-
-	public int numberOfPlayers()
-	{
-		return players.size();
-	}
-
-	/* Code from template association_AddManyToOne */
-	public Cell addCell(Position aPosition, Room room)
-	{
-		return new Cell(aPosition, room);
-	}
-
-	public boolean addCell(Cell aCell)
-	{
-		if (cells.contains(aCell)) { return false; }
-		cells.add(aCell);
-		return true;
-	}
-	/* Code from template association_RequiredNumberOfMethod */
-	public static int requiredNumberOfPlayers()
-	{
-		return 6;
-	}
-
-
-	// line 34 "model.ump"
-	public Position checkValidMove(Player p, String code, int steps){
-
-		return null;
-	}
+//	/* Code from template association_GetMany */
+//	public Cell getCell(int index)
+//	{
+//		return cells.get(index);
+//	}
+//
+//	public List<Cell> getCells()
+//	{
+//		return Collections.unmodifiableList(cells);
+//	}
+//
+//	public int numberOfCells()
+//	{
+//		return cells.size();
+//	}
+//
+//	/* Code from template association_GetMany */
+//	public Position getPlayerLocation(Player p)
+//	{
+//		return playerPositionMap.get(p);
+//	}
+//
+//	public List<Player> getPlayers()
+//	{
+//		return Collections.unmodifiableList(players);
+//	}
+//
+//	public int numberOfPlayers()
+//	{
+//		return players.size();
+//	}
+//
+//	/* Code from template association_AddManyToOne */
+//	public Cell addCell(Position aPosition, Room room)
+//	{
+//		return new Cell(aPosition, room);
+//	}
+//
+//	public boolean addCell(Cell aCell)
+//	{
+//		if (cells.contains(aCell)) { return false; }
+//		cells.add(aCell);
+//		return true;
+//	}
+//	/* Code from template association_RequiredNumberOfMethod */
+//	public static int requiredNumberOfPlayers()
+//	{
+//		return 6;
+//	}
+//
+//
+//	// line 34 "model.ump"
+//	public Position checkValidMove(Player p, String code, int steps){
+//
+//		return null;
+//	}
 
 	// line 36 "model.ump"
 
@@ -218,7 +219,7 @@ public class Board
 	 * @param dir - relative direction for player to be moved
 	 * @return - the cell the player was moved into
 	 */
-	public Cell move(Player p, Cell.Directions dir) {
+	public Cell move(Player p, Cell.Direction dir) {
 		Position playerPos = playerPositionMap.get(p);
 		switch(dir){
 			case NORTH:

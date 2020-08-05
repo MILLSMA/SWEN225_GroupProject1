@@ -21,6 +21,15 @@ public class CardTriplet {
 		room = r;
 	}
 
+	/**
+	 * Construct card triplet using user input
+	 */
+	public CardTriplet(){
+		character = CharacterCard.input();
+		weapon = WeaponCard.input();
+		room = RoomCard.input();
+	}
+
 	//------------------------
 	// INTERFACE
 	//------------------------
@@ -33,23 +42,23 @@ public class CardTriplet {
 		));
 	}
 
-	public boolean setCharacter(CharacterCard aCharacter)
-	{
-		character = aCharacter;
-		return true;
-	}
-
-	public boolean setWeapon(WeaponCard aWeapon)
-	{
-		weapon = aWeapon;
-		return true;
-	}
-
-	public boolean setRoom(RoomCard aRoom)
-	{
-		room = aRoom;
-		return true;
-	}
+//	public boolean setCharacter(CharacterCard aCharacter)
+//	{
+//		character = aCharacter;
+//		return true;
+//	}
+//
+//	public boolean setWeapon(WeaponCard aWeapon)
+//	{
+//		weapon = aWeapon;
+//		return true;
+//	}
+//
+//	public boolean setRoom(RoomCard aRoom)
+//	{
+//		room = aRoom;
+//		return true;
+//	}
 
 	public CharacterCard getCharacter()
 	{
@@ -65,8 +74,6 @@ public class CardTriplet {
 	{
 		return room;
 	}
-
-	public void delete() {}
 
 	public String toString() {
 		return "<" + character.getName() + ", " + weapon.getName() + ", " + room.getName() + ">";
