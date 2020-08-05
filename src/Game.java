@@ -244,47 +244,70 @@ public class Game
 	 * @param p : the player moving
 	 */
 	public void move(Player p){
+		if(p.getLocation().getRoom().isProperRoom()){
+			System.out.println("You may move anywhere in your current room, " +
+					"your turn will start once you exit.");
+			while(true){
+				//prints the board to the screen
+				System.out.println(board);
+				Cell.Directions chosenDirection = askForDirection(p);
+				Cell oldPlayerCell = p.getLocation();
+				Cell newPlayerCell = board.move(p, chosenDirection);
+				updatePlayerPosition(p, newPlayerCell);
+				if(newPlayerCell.getRoom().getCard() != oldPlayerCell.getRoom().getCard()) break;
+			}
+		}
 		int numberOfMoves = rollDice();
 		System.out.println("You rolled: " + numberOfMoves);
 		System.out.println("You may move " + numberOfMoves + " spaces");
-		Scanner input = new Scanner(System.in);
 		for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
 			//prints the board to the screen
 			System.out.println(board);
 			//displays whose turn it is and how many moves they have left
 			System.out.println(p.getToken().getName()+ " you have " + (numberOfMoves - moveNumber) + " moves left");
 			System.out.println("You may move in these directions: ");
-			//Stores the directions that the player can legally move
-			ArrayList<Cell.Directions> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
-			int answer = 0;
-			boolean correctAnswer = false;
-			//repeats asking the question until player enters a correct answer
-			while(!correctAnswer){
-				//prints the available directions and which number key to press to choose
-				for (Cell.Directions direction : p.getLocation().directionsAvailable) {
-					System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")" );
-				}
-				//if the user puts in an answer that isn't an integer it will set there answer to 5
-				//which will always be outside of the index range
-				try {
-					answer = input.nextInt();
-				}catch(InputMismatchException e){
-					answer = 5;
-				}
-				//if the answer is correct break, else tell them to pick a correct direction
-				if(answer >= 0 && answer <= correctAnswers.size()){
-					correctAnswer = true;
-				}else System.out.println("Please enter a correct direction");
-			}
+			Cell.Directions chosenDirection = askForDirection(p);
 			//moves the player on the board based on their answer
-			Cell newPlayerCell = board.move(p, correctAnswers.get(answer));
-			//removes the player from the cell
-			p.getLocation().setObject(null);
-			//tell the player which cell they are in
-			p.setLocation(newPlayerCell);
-			//place the player in the cell
-			p.getLocation().setObject(p.getToken());
+			Cell newPlayerCell = board.move(p, chosenDirection);
+			updatePlayerPosition(p, newPlayerCell);
+			if(p.getLocation().getRoom().isProperRoom()) return;
 		}
+	}
+
+	public void updatePlayerPosition(Player p, Cell cell){
+		//removes the player from the cell
+		p.getLocation().setObject(null);
+		//tell the player which cell they are in
+		p.setLocation(cell);
+		//place the player in the cell
+		p.getLocation().setObject(p.getToken());
+	}
+
+	public Cell.Directions askForDirection(Player p){
+		Scanner input = new Scanner(System.in);
+		//Stores the directions that the player can legally move
+		ArrayList<Cell.Directions> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
+		int answer = 0;
+		boolean correctAnswer = false;
+		//repeats asking the question until player enters a correct answer
+		while(!correctAnswer){
+			//prints the available directions and which number key to press to choose
+			for (Cell.Directions direction : p.getLocation().directionsAvailable) {
+				System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")" );
+			}
+			//if the user puts in an answer that isn't an integer it will set there answer to 5
+			//which will always be outside of the index range
+			try {
+				answer = input.nextInt();
+			}catch(InputMismatchException e){
+				answer = 5;
+			}
+			//if the answer is correct break, else tell them to pick a correct direction
+			if(answer >= 0 && answer < correctAnswers.size()){
+				correctAnswer = true;
+			}else System.out.println("Please enter a correct direction");
+		}
+		return correctAnswers.get(answer);
 	}
 
 	// line 21 "model.ump"
