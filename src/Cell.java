@@ -78,7 +78,6 @@ public class Cell
 	public String toString()
 	{
 		if(object != null) return object.toString();
-		return room.toString(); //TODO
-
+		return room.toString();
 	}
 }

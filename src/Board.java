@@ -70,7 +70,7 @@ public class Board
 		for(RoomCard card : RoomCard.getRooms()) {
 			if (card.toString().charAt(0) == c) return getRoomFromCard(card);
 		}
-		if(c == ')')return rooms.get("Door");
+		if(c == ')')return new Room("Door", true);
 		if(c == '/')return rooms.get("Wall");
 		if(c == '_')return rooms.get("Hallway");
 		return null;
@@ -131,7 +131,13 @@ public class Board
 					currentCell.setDirection(Cell.Directions.SOUTH, true);
 					belowCell.setDirection(Cell.Directions.NORTH, true);
 				}
-				if(currentCell.getRoom() == rooms.get("Door")){
+				if(currentCell.getRoom().getType().equals("Door")){
+					Cell leftCell = board[xIndex][yIndex - 1];
+					Cell rightCell = board[xIndex][yIndex + 1];
+					RoomCard doorCard;
+					//set the door to the room that it is closest too
+					doorCard = (leftCell.getRoom().isProperRoom()) ? leftCell.getRoom().getCard() : rightCell.getRoom().getCard();
+					currentCell.getRoom().setCard(doorCard);
 					//sets the cell above able to move down into the doorway
 					board[xIndex - 1][yIndex].setDirection(Cell.Directions.SOUTH, true);
 					currentCell.setDirection(Cell.Directions.SOUTH, true);

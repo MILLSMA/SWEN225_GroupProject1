@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Room {
 	private RoomCard card;
-	private String type;
+	private String type = "";
 	Boolean walkable = false;
 	Room(RoomCard roomCard) {
 		card = roomCard;
@@ -16,7 +16,13 @@ public class Room {
 	public RoomCard getCard(){
 		return card;
 	}
-
+	public Boolean setCard(RoomCard card) {
+		if(this.card == null){
+			this.card = card;
+			return true;
+		}
+		return false;
+	}
 
 	//Room Associations
 	private List<Cell> cells = new ArrayList<>();
@@ -26,6 +32,9 @@ public class Room {
 		return card != null;
 	}
 
+	public String getType(){
+		return type;
+	}
 	public List<Cell> getCells()
 	{
 		return Collections.unmodifiableList(cells);
@@ -71,9 +80,9 @@ public class Room {
 
 	@Override
 	public String toString() {
-		if(card != null) return card.toString();
+		if(type.equals("Door")) return ")";
+		else if(card != null) return card.toString();
 		else if(type.equals("Hallway")) return "_";
-		else if(type.equals("Door")) return ")";
 		else return "/";
 	}
 }
