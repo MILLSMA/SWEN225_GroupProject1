@@ -41,12 +41,12 @@ public class Cell
 
 
 	public void setDirection(Directions dir, boolean possible){
-		if(!getRoom().walkable) {
-			directionsAvailable = Collections.unmodifiableList(new ArrayList<>());
-		}else {
+//		if(!getRoom().walkable) {
+//			directionsAvailable = Collections.unmodifiableList(new ArrayList<>());
+//		}else {
 			if (possible && !directionsAvailable.contains(dir)) directionsAvailable.add(dir);
 			else directionsAvailable.remove(dir);
-		}
+//		}
 	}
 	/* Code from template association_GetOne */
 	public Position getPosition()

@@ -144,6 +144,12 @@ public class Board
 					currentCell.setDirection(Cell.Directions.NORTH, true);
 					belowCell.setDirection(Cell.Directions.NORTH, true);
 				}
+				if(currentCell.getRoom() == rooms.get("Wall")){
+					currentCell.setDirection(Cell.Directions.SOUTH, false);
+					currentCell.setDirection(Cell.Directions.NORTH, false);
+					currentCell.setDirection(Cell.Directions.WEST, false);
+					currentCell.setDirection(Cell.Directions.EAST, false);
+				}
 			}
 		}
 	}
