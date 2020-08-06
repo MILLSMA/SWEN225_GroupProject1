@@ -63,10 +63,10 @@ public class Room {
 	public void addCard(Card aCard)
 	{
 		cards.add(aCard);
-		Cell c = this.findEmpty();
-		c.setObject(aCard);
+		Cell c = findEmpty();
 		if(aCard instanceof WeaponCard){
-			((WeaponCard)aCard).moveToCell(c);
+			((WeaponCard)aCard).moveToRoom(this);
+			((WeaponCard)aCard).moveToCell(c);//TODO: current throws exception until room cells populated
 		}
 	}
 
@@ -75,7 +75,10 @@ public class Room {
 	 * @return c: a cell within a room containing no items
 	 */
 	public Cell findEmpty(){
-		for(Cell c : this.cells){
+		//TODO: Delete printlns here
+		System.out.println("size: " + cells.size());
+		for(Cell c : this.cells){//TODO: populate room with cells - door should be in same room as cells
+			System.out.println(c.getObject());
 			if(c.getObject() == null) {
 
 				return c;

@@ -197,15 +197,25 @@ public class Game
 
 	// line 16 "model.ump"
 	public void runGame(){
-		while(!won){
+		while(!won || !allPlayersOut()){
 			for (Player player : players) {
-				if(!won) doTurn(player);
+				if(!won && !player.isIsExcluded()) doTurn(player);
 			}
 		}
-
+		if(allPlayersOut()){
+			System.out.println("All Players are out!");
+		}
 	}
 
-	// line 18 "model.ump"
+
+	public boolean allPlayersOut(){
+		for(Player p : players){
+			if(!p.isIsExcluded()){
+				return false;
+			}
+		}
+		return true;
+	}
 
 	/**
 	 * main method for a single turn
@@ -223,6 +233,10 @@ public class Game
 
 	}
 
+	/**
+	 * retrieves and validates turn entry by player
+	 * @param p : player whose turn it is
+	 */
 	public void turnEntry(Player p){
 		Scanner sc = new Scanner(System.in);
 		String turnEntry;
@@ -242,8 +256,6 @@ public class Game
 			turnEntry(p);
 
 		}
-
-
 	}
 
 	/**
@@ -282,31 +294,34 @@ public class Game
 		}
 	}
 
+	/**
+	 *  retrieves and validates direction input from user
+	 * @param p: player making move
+	 * @return direction enum to move the player
+	 */
 	public Cell.Direction askForDirection(Player p){
 		Scanner input = new Scanner(System.in);
 		//Stores the directions that the player can legally move
 		ArrayList<Cell.Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
 		int answer = 0;
 		boolean correctAnswer = false;
-		//repeats asking the question until player enters a correct answer
+		for (Cell.Direction direction : p.getLocation().directionsAvailable) {
+			System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")");
+		}
 		while(!correctAnswer){
-			//prints the available directions and which number key to press to choose
-			for (Cell.Direction direction : p.getLocation().directionsAvailable) {
-				System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")" );
-			}
-			//if the user puts in an answer that isn't an integer it will set there answer to 5
-			//which will always be outside of the index range
 			try {
 				answer = input.nextInt();
-			}catch(InputMismatchException e){
-				answer = 5;
+				if(answer >= 0 && answer < correctAnswers.size()){
+					return correctAnswers.get(answer);
+				}
+				System.out.println("Value must be between 0 and " + (int)(correctAnswers.size()-1));
+			} catch (InputMismatchException e) {
+				System.out.println("Please enter a valid direction");
+				input.nextLine();
 			}
-			//if the answer is correct break, else tell them to pick a correct direction
-			if(answer >= 0 && answer < correctAnswers.size()){
-				correctAnswer = true;
-			}else System.out.println("Please enter a correct direction");
 		}
-		return correctAnswers.get(answer);
+		throw new RuntimeException("Error with direction entry");
+
 	}
 
 	// line 21 "model.ump"
@@ -314,7 +329,8 @@ public class Game
 		System.out.println("Making a suggestion here");
 		CardTriplet guess = new CardTriplet(p.getLocation().getRoom().getCard());//TODO: change when movement implemented - room is always that which token is in
 		System.out.println("Suggestion is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
-		//TODO: character and weapon tokens move to room
+
+		//character and weapon tokens move to room
 		p.getLocation().getRoom().addCard(guess.getCharacter());
 		p.getLocation().getRoom().addCard(guess.getWeapon());
 		//TODO: player location stored in character location instead
@@ -371,8 +387,20 @@ public class Game
 				System.out.println("The revealed card is: " + possibleCards.get(itemToShow-1).getName());
 			}
 		}
-		if(!found)System.out.println("\nNo cards were reveled this round");
+		if(!found){
+			System.out.println("\nNo cards were reveled this round");
+			Scanner sc = new Scanner(System.in);
+			String accusationChoice;
+			do {
+				System.out.print(" Make Accusation (Y/N): ");
+				accusationChoice = sc.next();
+			}while(!(accusationChoice.matches("(?i)y|n|yes|no")));
+				if(accusationChoice.matches("(?i)y|yes")){
+					makeAccusation(p);
+				}
+			}
 	}
+
 
 	/**
 	 * precedes sensitive information intended for a single player to view

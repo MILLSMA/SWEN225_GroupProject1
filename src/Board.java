@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Board
 {
-     int ROWS = 26, COLS = 26;
+     private final int ROWS = 26, COLS = 26;//TODO: different to document specifications (24x25)
 	//------------------------
 	// MEMBER VARIABLES
 	//------------------------
@@ -13,7 +13,7 @@ public class Board
 	private final List<Cell> cells;
 	private final List<Player> players;
 	private final HashMap<String, Room> rooms;
-	private HashMap<Player, Position> playerPositionMap;
+	private HashMap<Player, Position> playerPositionMap; //TODO: is this needed?
 	private Cell[][] board;
 	//------------------------
 	// CONSTRUCTOR
@@ -95,6 +95,8 @@ public class Board
 				Position cellPosition = new Position(xPosition, yPosition);
 				Room cellRoom = getRoomFromChar(cell.charAt(0));
 				Cell newCell = new Cell(cellPosition, cellRoom);
+				//add cell to room
+				if(cellRoom != null){cellRoom.addCell(newCell);}
 				board[yPosition][xPosition] = newCell;
 				if(left.charAt(0) != '/') newCell.setDirection(Cell.Direction.WEST, true);
 				if(right.charAt(0) != '/') newCell.setDirection(Cell.Direction.EAST, true);
