@@ -238,6 +238,23 @@ public class Board
 		return board[playerPos.getRow()][playerPos.getCol()];
 	}
 
+	public Room checkSurroundingCells(Player p){
+		Position playerPos = playerPositionMap.get(p);
+		if(!board[playerPos.getRow()+1][playerPos.getCol()].getRoom().toString().equals("_")){
+			return board[playerPos.getRow()+1][playerPos.getCol()].getRoom();
+		}
+		if(!board[playerPos.getRow()-1][playerPos.getCol()].getRoom().toString().equals("_")){
+			return board[playerPos.getRow()-1][playerPos.getCol()].getRoom();
+		}
+		if(!board[playerPos.getRow()][playerPos.getCol()+1].getRoom().toString().equals("_")){
+			return board[playerPos.getRow()][playerPos.getCol()+1].getRoom();
+		}
+		if(!board[playerPos.getRow()][playerPos.getCol()-1].getRoom().toString().equals("_")){
+			return board[playerPos.getRow()][playerPos.getCol()-1].getRoom();
+		}
+		return null;
+	}
+
 	/**
 	 * prints the board to the terminal for benefit of the player
 	 * @return graphical ascii representation of the board

@@ -127,7 +127,8 @@ public class Game
 		Random rand = new Random();
 		int firstDice = rand.nextInt(6)+1;
 		int secondDice = rand.nextInt(6)+1;
-		return firstDice + secondDice;
+		//return firstDice + secondDice;
+		return 40;//TODO: CHANGE THIS BACK
 	}
 
 	public void runGame(){
@@ -254,14 +255,31 @@ public class Game
 	}
 
 	// line 21 "model.ump"
+
+	/**
+	 * checks for adjacent rooms cells if player is in doorway;
+	 * @param p
+	 */
+	public Room checkForRoom(Player p){
+		System.out.println(p.getLocation().getRoom().getRoomSize());
+		if(p.getLocation().getRoom().getRoomSize() <=1){//in doorway
+			return board.checkSurroundingCells(p);
+		}else if(p.getLocation().getRoom().getRoomSize() > 1){//inside room
+			return p.getLocation().getRoom();
+		}
+		throw new RuntimeException("There should be a room near here!");
+	}
+
 	public void makeSuggestion(Player p){
 		System.out.println("Making a suggestion here");
-		CardTriplet guess = new CardTriplet(p.getLocation().getRoom().getCard());//TODO: change when movement implemented - room is always that which token is in
+		CardTriplet guess = new CardTriplet(p.getLocation().getRoom().getCard());
 		System.out.println("Suggestion is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
 
+		checkForRoom(p);
 		//character and weapon tokens move to room
-		p.getLocation().getRoom().addCard(guess.getCharacter());
-		p.getLocation().getRoom().addCard(guess.getWeapon());
+		Room currentRoom = checkForRoom(p);
+		currentRoom.addCard(guess.getCharacter());
+		currentRoom.addCard(guess.getWeapon());
 		//TODO: player location stored in character location instead
 
 		boolean found = false;

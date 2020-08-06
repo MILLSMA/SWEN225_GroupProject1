@@ -59,7 +59,7 @@ public class Room {
 		Cell c = findEmptyCell();
 		if(aCard instanceof WeaponCard){
 			((WeaponCard)aCard).moveToRoom(this);
-			((WeaponCard)aCard).moveToCell(c);//TODO: current throws exception until room cells populated
+			((WeaponCard)aCard).moveToCell(c);
 		}
 	}
 
@@ -68,18 +68,17 @@ public class Room {
 	 * @return c: a cell within a room containing no items
 	 */
 	public Cell findEmptyCell(){
-		//TODO: Delete printlns here
-		System.out.println("size: " + cells.size());
 		for(Cell c : this.cells){//TODO: populate room with cells - door should be in same room as cells
-			System.out.println(c.getObject());
 			if(c.getObject() == null) {
-
 				return c;
 			}
 		}
 		throw new RuntimeException("The room should always have at least one empty cell");
 	}
 
+	public int getRoomSize(){
+		return this.cells.size();
+	}
 	@Override
 	public String toString() {
 		if(type.equals("Door")) return ")";
