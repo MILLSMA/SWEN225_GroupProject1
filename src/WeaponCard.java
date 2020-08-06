@@ -10,6 +10,8 @@ public enum WeaponCard implements Card{
 	ROPE,
 	SPANNER;
 
+	private Cell location;
+
 	public static Collection<WeaponCard> getWeapons(){
 		return Arrays.asList(values());
 	}
@@ -33,6 +35,11 @@ public enum WeaponCard implements Card{
 				}
 			}
 		}
+	}
+
+
+	public void moveToCell(Cell c){
+		this.location = c;
 	}
 
 	@Override

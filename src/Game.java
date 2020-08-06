@@ -217,19 +217,32 @@ public class Game
 		move(p);
 
 		if(p.getLocation().getRoom().isProperRoom()){
-			Scanner sc = new Scanner(System.in);
-			String turnEntry;
-			do {
-				System.out.print("Accusation (A) | Suggestion (S): ");
-				turnEntry = sc.next();
-			}while(!(turnEntry.matches("(?i)a|s|accusation|suggestion")));
-			System.out.printf("valid entry"); //TODO: cont. here
-			if(turnEntry.matches("(?i)a|accusation")){
-				makeAccusation(p);
-			} else {
-				makeSuggestion(p);
-			}
+			System.out.println("You've entered the " + p.getLocation().getRoom().getCard().getName());
+			turnEntry(p);
 		}
+
+	}
+
+	public void turnEntry(Player p){
+		Scanner sc = new Scanner(System.in);
+		String turnEntry;
+		do {
+			System.out.print("Accusation (A) | Suggestion (S) | View Cards (C): ");
+			turnEntry = sc.next();
+		}while(!(turnEntry.matches("(?i)a|s|c|accusation|suggestion|view cards|")));
+
+
+
+		if(turnEntry.matches("(?i)a|accusation")){
+			makeAccusation(p);
+		} else if(turnEntry.matches("(?i)s|suggestion")){
+			makeSuggestion(p);
+		}else {
+			p.displayHand();
+			turnEntry(p);
+
+		}
+
 
 	}
 
@@ -239,6 +252,7 @@ public class Game
 	 */
 	public void move(Player p){
 		if(p.getLocation().getRoom().isProperRoom()){
+			System.out.println("You are currently in the " + p.getLocation().getRoom());
 			System.out.println("You may move anywhere in your current room, " +
 					"your turn will start once you exit.");
 			while(true){
@@ -298,9 +312,13 @@ public class Game
 	// line 21 "model.ump"
 	public void makeSuggestion(Player p){
 		System.out.println("Making a suggestion here");
-		CardTriplet guess = new CardTriplet();//TODO: change when movement implemented - room is always that which token is in
+		CardTriplet guess = new CardTriplet(p.getLocation().getRoom().getCard());//TODO: change when movement implemented - room is always that which token is in
 		System.out.println("Suggestion is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
 		//TODO: character and weapon tokens move to room
+		p.getLocation().getRoom().addCard(guess.getCharacter());
+		p.getLocation().getRoom().addCard(guess.getWeapon());
+		//TODO: player location stored in character location instead
+
 		boolean found = false;
 		int asked = 0;
 		while(!found && asked < players.size()-1){

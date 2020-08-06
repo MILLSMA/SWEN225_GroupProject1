@@ -60,11 +60,28 @@ public class Room {
 		return !cells.contains(aCell);
 	}
 
-	public boolean addCard(Card aCard)
+	public void addCard(Card aCard)
 	{
-		if (cards.contains(aCard)) { return false; }
 		cards.add(aCard);
-		return true;
+		Cell c = this.findEmpty();
+		c.setObject(aCard);
+		if(aCard instanceof WeaponCard){
+			((WeaponCard)aCard).moveToCell(c);
+		}
+	}
+
+	/**
+	 * returns the first empty cell in the room
+	 * @return c: a cell within a room containing no items
+	 */
+	public Cell findEmpty(){
+		for(Cell c : this.cells){
+			if(c.getObject() == null) {
+
+				return c;
+			}
+		}
+		throw new RuntimeException("The room should always have at least one empty cell");
 	}
 
 	public boolean removeCard(Card aCard) {

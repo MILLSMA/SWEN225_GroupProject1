@@ -22,6 +22,17 @@ public class CardTriplet {
 	}
 
 	/**
+	 * Construct card triplet during suggestion
+	 * room must be room player is in
+	 * @param r : room card player is in
+	 */
+	public CardTriplet(RoomCard r){
+		character = CharacterCard.input();
+		weapon = WeaponCard.input();
+		room = r;
+	}
+
+	/**
 	 * Construct card triplet using user input
 	 */
 	public CardTriplet(){
@@ -29,6 +40,7 @@ public class CardTriplet {
 		weapon = WeaponCard.input();
 		room = RoomCard.input();
 	}
+
 
 	//------------------------
 	// INTERFACE
