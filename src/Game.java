@@ -282,6 +282,59 @@ public class Game
 		currentRoom.addCard(guess.getWeapon());
 		//TODO: player location stored in character location instead
 
+		boolean found = doRefutations(guess, p);
+		if(!found){
+			System.out.println("\nNo cards were reveled this round");
+			Scanner sc = new Scanner(System.in);
+			String accusationChoice;
+			do {
+				System.out.print(" Make Accusation (Y/N): ");
+				accusationChoice = sc.next();
+			}while(!(accusationChoice.matches("(?i)y|n|yes|no")));
+				if(accusationChoice.matches("(?i)y|yes")){
+					makeAccusation(p);
+				}
+			}
+	}
+
+
+	/**
+	 * precedes sensitive information intended for a single player to view
+	 * waits to display output after input from player
+	 * @param p: player who is performing action
+	 */
+	public void waitForPlayer(Player p){
+		System.out.println("ACTION REQUIRED: Player " + (players.indexOf(p)+1) + " : " + p.getToken().getName());
+		Scanner sc = new Scanner(System.in);
+		System.out.print("Push a character and enter key to continue");
+		sc.next();
+	}
+
+	/**
+	 * Gets a player's accusation and checks if it is correct
+	 * the player wins if correct, else is out
+	 * @param p: player making accusation
+	 */
+	public void makeAccusation(Player p){
+		System.out.println("Making an accusation here");
+		CardTriplet guess = new CardTriplet();
+		System.out.println("Accusation is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
+		if(guess.getCharacter().equals(envelope.getCharacter()) && guess.getWeapon().equals(envelope.getWeapon()) && guess.getRoom().equals(envelope.getRoom())){
+			//correct, game won
+			won = true;
+			System.out.println("This is the correct solution");
+			System.out.println("Player " + (players.indexOf(p)+1) + " : " + p.getToken().getName() + " has won the game!");
+		}else{
+			//the player was incorrect and so is  now out
+			System.out.println("Incorrect solution");
+			System.out.println(p.getToken().getName() + " is out!");
+			System.out.println("You still need to make refutations");
+			p.setIsExcluded(true);
+		}
+	}
+
+	// line 27 "model.ump"
+	public Boolean doRefutations(CardTriplet guess, Player p){
 		boolean found = false;
 		int asked = 0;
 		while(!found && asked < players.size()-1){
@@ -334,58 +387,7 @@ public class Game
 				System.out.println("The revealed card is: " + possibleCards.get(itemToShow-1).getName());
 			}
 		}
-		if(!found){
-			System.out.println("\nNo cards were reveled this round");
-			Scanner sc = new Scanner(System.in);
-			String accusationChoice;
-			do {
-				System.out.print(" Make Accusation (Y/N): ");
-				accusationChoice = sc.next();
-			}while(!(accusationChoice.matches("(?i)y|n|yes|no")));
-				if(accusationChoice.matches("(?i)y|yes")){
-					makeAccusation(p);
-				}
-			}
-	}
 
-
-	/**
-	 * precedes sensitive information intended for a single player to view
-	 * waits to display output after input from player
-	 * @param p: player who is performing action
-	 */
-	public void waitForPlayer(Player p){
-		System.out.println("ACTION REQUIRED: Player " + (players.indexOf(p)+1) + " : " + p.getToken().getName());
-		Scanner sc = new Scanner(System.in);
-		System.out.print("Push a character and enter key to continue");
-		sc.next();
-	}
-
-	/**
-	 * Gets a player's accusation and checks if it is correct
-	 * the player wins if correct, else is out
-	 * @param p: player making accusation
-	 */
-	public void makeAccusation(Player p){
-		System.out.println("Making an accusation here");
-		CardTriplet guess = new CardTriplet();
-		System.out.println("Accusation is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
-		if(guess.getCharacter().equals(envelope.getCharacter()) && guess.getWeapon().equals(envelope.getWeapon()) && guess.getRoom().equals(envelope.getRoom())){
-			//correct, game won
-			won = true;
-			System.out.println("This is the correct solution");
-			System.out.println("Player " + (players.indexOf(p)+1) + " : " + p.getToken().getName() + " has won the game!");
-		}else{
-			//the player was incorrect and so is  now out
-			System.out.println("Incorrect solution");
-			System.out.println(p.getToken().getName() + " is out!");
-			System.out.println("You still need to make refutations");
-			p.setIsExcluded(true);
-		}
-	}
-
-	// line 27 "model.ump"
-	public void doRefutations(){
-
+		return found;
 	}
 }
