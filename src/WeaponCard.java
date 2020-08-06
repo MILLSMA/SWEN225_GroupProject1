@@ -11,6 +11,7 @@ public enum WeaponCard implements Card{
 	SPANNER;
 
 	private Cell location;
+	private Room room;
 
 	public static Collection<WeaponCard> getWeapons(){
 		return Arrays.asList(values());
@@ -40,6 +41,11 @@ public enum WeaponCard implements Card{
 
 	public void moveToCell(Cell c){
 		this.location = c;
+	}
+
+	//TODO: potentially remove this and use cell only
+	public void moveToRoom(Room r){
+		this.room = r;
 	}
 
 	@Override
