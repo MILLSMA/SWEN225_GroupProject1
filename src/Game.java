@@ -42,13 +42,13 @@ public class Game
 			}
 		} while (amountOfPlayers < 3 || amountOfPlayers > 6);
 
-		List<Player> gamePlayers = createGamePlayers(amountOfPlayers);
+		List<Player> gamePlayers = createPlayers(amountOfPlayers);
 		Board newBoard = new Board(gamePlayers);
 		//create new instance of game (Singleton Pattern)
 		instance = new Game(newBoard, gamePlayers);
 	}
 
-	private static List<Player> createGamePlayers(int numPlayers){
+	private static List<Player> createPlayers(int numPlayers){
 		//creates an arraylist for the new characters to be stored
 		ArrayList<Player> tempPlayerList = new ArrayList<>(6);
 		//creates an arrayList with all of the characters in the Character enum

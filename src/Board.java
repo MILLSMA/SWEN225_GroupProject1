@@ -53,7 +53,7 @@ public class Board
 	// INTERFACE
 	//------------------------
 
-	public Room getRoomFromCard(RoomCard card){
+	public Room getRoom(RoomCard card){
 		return rooms.get(card.getName());
 	}
 
@@ -67,9 +67,9 @@ public class Board
 	 * @param c - character to check against
 	 * @return - the Room which the character corresponds too (or null if not found)
 	 */
-	private Room getRoomFromChar(char c) {
+	private Room getRoom(char c) {
 		for(RoomCard card : RoomCard.getRooms()) {
-			if (card.toString().charAt(0) == c) return getRoomFromCard(card);
+			if (card.toString().charAt(0) == c) return getRoom(card);
 		}
 		if(c == ')')return new Room("Door");
 		if(c == '/')return rooms.get("Wall");
@@ -93,7 +93,7 @@ public class Board
 			//while the board file still has characters to read
 			while(sc.hasNext()){
 				Position cellPosition = new Position(xPosition, yPosition);
-				Room cellRoom = getRoomFromChar(cell.charAt(0));
+				Room cellRoom = getRoom(cell.charAt(0));
 				Cell newCell = new Cell(cellPosition, cellRoom);
 				//add cell to room
 				if(cellRoom != null){cellRoom.addCell(newCell);}

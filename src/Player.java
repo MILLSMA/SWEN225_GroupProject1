@@ -37,10 +37,10 @@ public class Player
 	// INTERFACE
 	//------------------------
 
-	public void setToken(CharacterCard aToken)
-	{
-		token = aToken;
-	}
+//	public void setToken(CharacterCard aToken)
+//	{
+//		token = aToken;
+//	}
 
 	public void setLocation(Cell aLocation)
 	{
@@ -63,21 +63,21 @@ public class Player
 		return location;
 	}
 
-	public boolean getIsExcluded()
-	{
-		return isExcluded;
-	}
-	/* Code from template attribute_IsBoolean */
-	public boolean isIsExcluded()
-	{
-		return isExcluded;
-	}
-	/* Code from template association_GetMany */
-	public Card getCard(int index)
-	{
-		Card aCard = cards.get(index);
-		return aCard;
-	}
+//	public boolean getIsExcluded()
+//	{
+//		return isExcluded;
+//	}
+//	/* Code from template attribute_IsBoolean */
+//	public boolean isIsExcluded()
+//	{
+//		return isExcluded;
+//	}
+//	/* Code from template association_GetMany */
+//	public Card getCard(int index)
+//	{
+//		Card aCard = cards.get(index);
+//		return aCard;
+//	}
 
 	public List<Card> getCards()
 	{
@@ -85,11 +85,11 @@ public class Player
 		return newCards;
 	}
 
-	public int numberOfCards()
-	{
-		int number = cards.size();
-		return number;
-	}
+//	public int numberOfCards()
+//	{
+//		int number = cards.size();
+//		return number;
+//	}
 
 	public void updatePosition(Cell cell){
 		// removes the player from the cell
@@ -100,22 +100,22 @@ public class Player
 		location.setObject(getToken());
 	}
 
-	public boolean hasCards()
-	{
-		boolean has = cards.size() > 0;
-		return has;
-	}
-
-	public int indexOfCard(Card aCard)
-	{
-		int index = cards.indexOf(aCard);
-		return index;
-	}
+//	public boolean hasCards()
+//	{
+//		boolean has = cards.size() > 0;
+//		return has;
+//	}
+//
+//	public int indexOfCard(Card aCard)
+//	{
+//		int index = cards.indexOf(aCard);
+//		return index;
+//	}
 	/* Code from template association_MinimumNumberOfMethod */
-	public static int minimumNumberOfCards()
-	{
-		return 0;
-	}
+//	public static int minimumNumberOfCards()
+//	{
+//		return 0;
+//	}
 	/* Code from template association_AddManyToManyMethod */
 	public boolean addCard(Card aCard)
 	{
@@ -124,60 +124,46 @@ public class Player
 		return true;
 	}
 	/* Code from template association_RemoveMany */
-	public boolean removeCard(Card aCard)
-	{
-		if(cards.contains(aCard)) {
-			cards.remove(aCard);
-			return true;
-		}
-		return false;
-	}
-	/* Code from template association_AddIndexControlFunctions */
-	public boolean addCardAt(Card aCard, int index)
-	{
-		boolean wasAdded = false;
-		if(addCard(aCard))
-		{
-			if(index < 0 ) { index = 0; }
-			if(index > numberOfCards()) { index = numberOfCards() - 1; }
-			cards.remove(aCard);
-			cards.add(index, aCard);
-			wasAdded = true;
-		}
-		return wasAdded;
-	}
+//	public boolean removeCard(Card aCard)
+//	{
+//		if(cards.contains(aCard)) {
+//			cards.remove(aCard);
+//			return true;
+//		}
+//		return false;
+//	}
+//	/* Code from template association_AddIndexControlFunctions */
+//	public boolean addCardAt(Card aCard, int index)
+//	{
+//		boolean wasAdded = false;
+//		if(addCard(aCard))
+//		{
+//			if(index < 0 ) { index = 0; }
+//			if(index > numberOfCards()) { index = numberOfCards() - 1; }
+//			cards.remove(aCard);
+//			cards.add(index, aCard);
+//			wasAdded = true;
+//		}
+//		return wasAdded;
+//	}
 
-	public boolean addOrMoveCardAt(Card aCard, int index)
-	{
-		boolean wasAdded = false;
-		if(cards.contains(aCard))
-		{
-			if(index < 0 ) { index = 0; }
-			if(index > numberOfCards()) { index = numberOfCards() - 1; }
-			cards.remove(aCard);
-			cards.add(index, aCard);
-			wasAdded = true;
-		}
-		else
-		{
-			wasAdded = addCardAt(aCard, index);
-		}
-		return wasAdded;
-	}
-
-
-	public void delete()
-	{
-
-		cards.clear();
-
-	}
-
-	// line 64 "model.ump"
-	public Boolean checkHand(Card c){
-
-		return true;
-	}
+//	public boolean addOrMoveCardAt(Card aCard, int index)
+//	{
+//		boolean wasAdded = false;
+//		if(cards.contains(aCard))
+//		{
+//			if(index < 0 ) { index = 0; }
+//			if(index > numberOfCards()) { index = numberOfCards() - 1; }
+//			cards.remove(aCard);
+//			cards.add(index, aCard);
+//			wasAdded = true;
+//		}
+//		else
+//		{
+//			wasAdded = addCardAt(aCard, index);
+//		}
+//		return wasAdded;
+//	}
 
 	// line 67 "model.ump"
 	public void displayHand(){
