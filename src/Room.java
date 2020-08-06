@@ -22,8 +22,8 @@ public class Room {
 	}
 
 	//Room Associations
-	private List<Cell> cells = new ArrayList<>();
-	private List<Card> cards = new ArrayList<>();
+	private final List<Cell> cells = new ArrayList<>();
+	private final List<Card> cards = new ArrayList<>();
 
 	public boolean isProperRoom(){
 		return card != null;
@@ -32,19 +32,19 @@ public class Room {
 	public String getType(){
 		return type;
 	}
-	public List<Cell> getCells()
-	{
-		return Collections.unmodifiableList(cells);
-	}
-	public int numberOfCells()
-	{
-		return cells.size();
-	}
-
-	public List<Card> getCards()
-	{
-		return Collections.unmodifiableList(cards);
-	}
+//	public List<Cell> getCells()
+//	{
+//		return Collections.unmodifiableList(cells);
+//	}
+//	public int numberOfCells()
+//	{
+//		return cells.size();
+//	}
+//
+//	public List<Card> getCards()
+//	{
+//		return Collections.unmodifiableList(cards);
+//	}
 
 	public boolean addCell(Cell aCell)
 	{
@@ -53,17 +53,10 @@ public class Room {
 		return true;
 	}
 
-	/* Code from template association_RemoveMany */
-	public boolean removeCell(Cell aCell)
-	{
-		cells.remove(aCell);
-		return !cells.contains(aCell);
-	}
-
 	public void addCard(Card aCard)
 	{
 		cards.add(aCard);
-		Cell c = findEmpty();
+		Cell c = findEmptyCell();
 		if(aCard instanceof WeaponCard){
 			((WeaponCard)aCard).moveToRoom(this);
 			((WeaponCard)aCard).moveToCell(c);//TODO: current throws exception until room cells populated
@@ -74,7 +67,7 @@ public class Room {
 	 * returns the first empty cell in the room
 	 * @return c: a cell within a room containing no items
 	 */
-	public Cell findEmpty(){
+	public Cell findEmptyCell(){
 		//TODO: Delete printlns here
 		System.out.println("size: " + cells.size());
 		for(Cell c : this.cells){//TODO: populate room with cells - door should be in same room as cells
@@ -85,14 +78,6 @@ public class Room {
 			}
 		}
 		throw new RuntimeException("The room should always have at least one empty cell");
-	}
-
-	public boolean removeCard(Card aCard) {
-		if (cards.contains(aCard)) {
-			cards.remove(aCard);
-			return true;
-		}
-		return false;
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public enum CharacterCard implements Card {
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
 
-	private Cell location;//TODO: change from player location to account for unplayed characters and access location without knowing player
+	private Cell location; //TODO: change from player location to account for unplayed characters and access location without knowing player
 
 	public static Collection<CharacterCard> getCharacters(){
 		return Arrays.asList(values());
@@ -59,6 +59,7 @@ public enum CharacterCard implements Card {
 	public static CharacterCard input(){
 		while(true) {
 			Scanner sc = new Scanner(System.in);
+			// TODO: give key for characters
 			System.out.print("Enter Character: ");
 			String characterGuess = sc.next();
 			for (CharacterCard c : CharacterCard.values()) {

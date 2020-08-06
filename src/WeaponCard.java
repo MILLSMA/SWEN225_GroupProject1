@@ -28,6 +28,7 @@ public enum WeaponCard implements Card{
 	public static WeaponCard input(){
 		while(true) {
 			Scanner sc = new Scanner(System.in);
+			// TODO: give key for weapons
 			System.out.print("Enter weapon: ");
 			String weaponGuess = sc.next();
 			for (WeaponCard w : WeaponCard.values()) {

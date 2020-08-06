@@ -10,18 +10,16 @@ public class Board
 	//------------------------
 
 	//Board Associations
-	private final List<Cell> cells;
-	private final List<Player> players;
+	private final List<Player> players; // TODO: do we need to store players? it's only used to place them on board
 	private final HashMap<String, Room> rooms;
-	private HashMap<Player, Position> playerPositionMap; //TODO: is this needed?
-	private Cell[][] board;
+	private final HashMap<Player, Position> playerPositionMap; //TODO: is this needed?
+	private final Cell[][] board;
 	//------------------------
 	// CONSTRUCTOR
 	//------------------------
 
 	public Board(Collection<Player> allPlayers)
 	{
-		cells = new ArrayList<>();
 		players = new ArrayList<>(allPlayers);
 		playerPositionMap = new HashMap<>();
 		rooms = new HashMap<>();

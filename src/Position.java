@@ -1,8 +1,3 @@
-/*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.30.0.515.d9da8f6c modeling language!*/
-
-
-
 // line 50 "model.ump"
 // line 119 "model.ump"
 public class Position
@@ -32,18 +27,14 @@ public class Position
 
 	public boolean setRow(int aRow)
 	{
-		boolean wasSet = false;
 		row = aRow;
-		wasSet = true;
-		return wasSet;
+		return true;
 	}
 
 	public boolean setCol(int aCol)
 	{
-		boolean wasSet = false;
 		col = aCol;
-		wasSet = true;
-		return wasSet;
+		return true;
 	}
 
 	public int getRow()
@@ -55,9 +46,6 @@ public class Position
 	{
 		return col;
 	}
-
-	public void delete()
-	{}
 
 
 	public String toString()

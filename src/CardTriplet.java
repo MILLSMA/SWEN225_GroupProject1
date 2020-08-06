@@ -7,9 +7,9 @@ public class CardTriplet {
 	// MEMBER VARIABLES
 	//------------------------
 
-	private CharacterCard character;
-	private WeaponCard weapon;
-	private RoomCard room;
+	private final CharacterCard character;
+	private final WeaponCard weapon;
+	private final RoomCard room;
 
 	//------------------------
 	// CONSTRUCTOR

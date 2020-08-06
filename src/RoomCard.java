@@ -30,6 +30,7 @@ public enum RoomCard implements Card {
 	public static RoomCard input(){
 		while(true) {
 			Scanner sc = new Scanner(System.in);
+			// TODO: give key for rooms
 			System.out.print("Enter Room: ");
 			String roomGuess = sc.next();
 			for (RoomCard r : RoomCard.values()) {

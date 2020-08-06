@@ -1,14 +1,7 @@
-/*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.30.0.515.d9da8f6c modeling language!*/
-
-
 import java.util.*;
 
-// line 2 "model.ump"
-// line 98 "model.ump"
 public class Game
 {
-	private static Game instance;
 
 	//------------------------
 	// MEMBER VARIABLES
@@ -16,10 +9,9 @@ public class Game
 
 	//Game Attributes
 	private boolean won;
-
 	//Game Associations
 	private final List<Player> players;
-	private Board board;
+	private final Board board;
 	private CardTriplet envelope;
 	private final Scanner input = new Scanner(System.in);
 
@@ -29,23 +21,7 @@ public class Game
 	//------------------------
 
 	public static void main(String...args){
-		Scanner input = new Scanner(System.in);
-		int amountOfPlayers = 0;
-		// Ask users for an integer between 3 and 6, repeat until valid integer received
-		do {
-			System.out.print("How many players will be participating? (3 - 6): ");
-			try {
-				amountOfPlayers = input.nextInt();
-			}catch(InputMismatchException e){
-				System.out.println("Choose between 3, 4, 5 and 6 players.");
-				input.nextLine();
-			}
-		} while (amountOfPlayers < 3 || amountOfPlayers > 6);
-
-		List<Player> gamePlayers = createPlayers(amountOfPlayers);
-		Board newBoard = new Board(gamePlayers);
-		//create new instance of game (Singleton Pattern)
-		instance = new Game(newBoard, gamePlayers);
+		new Game();
 	}
 
 	private static List<Player> createPlayers(int numPlayers){
@@ -68,17 +44,26 @@ public class Game
 	// CONSTRUCTOR
 	//------------------------
 
-	private Game(Board aBoard, Collection<Player> allPlayers) {
+	private Game() {
+		Scanner input = new Scanner(System.in);
+		int amountOfPlayers = 0;
+		// Ask users for an integer between 3 and 6, repeat until valid integer received
+		do {
+			System.out.print("How many players will be participating? (3 - 6): ");
+			try {
+				amountOfPlayers = input.nextInt();
+			}catch(InputMismatchException e){
+				System.out.println("Choose between 3, 4, 5 and 6 players.");
+				input.nextLine();
+			}
+		} while (amountOfPlayers < 3 || amountOfPlayers > 6);
+
+		players = createPlayers(amountOfPlayers);
+		board = new Board(players);
 		won = false;
-		players = new ArrayList<Player>();
-		setPlayers(allPlayers);
-		if (aBoard == null) {
-			throw new RuntimeException("Unable to create Game due to no Board found or no Players being added");
-		}
-		board = aBoard;
 		System.out.println("Players in this Game: ");
 		for (int i = 0; i < players.size(); i++) {
-			System.out.println("Player " + (int)(i+1) + ": " + players.get(i).getToken().getName());
+			System.out.println("Player " + (i+1) + ": " + players.get(i).getToken().getName());
 		}
 		//collect all the cards for dealing
 		List<Card> allCards = new ArrayList<>();
@@ -90,55 +75,9 @@ public class Game
 		runGame();
 	}
 
-
-	//------------------------
-	// INTERFACE
-	//------------------------
-
-//	public boolean getWon()
-//	{
-//		return won;
-//	}
-
-//	/* Code from template association_GetMany */
-//	public Player getPlayer(int index)
-//	{
-//		return players.get(index);
-//	}
-//
-//	public List<Player> getPlayers()
-//	{
-//		return Collections.unmodifiableList(players);
-//	}
-//
-//	/* Code from template association_GetOne */
-//	public Board getBoard()
-//	{
-//		return board;
-//	}
-
-	/* Code from template association_SetUnidirectionalN */
-	public void setPlayers(Collection<Player> newPlayers)
-	{
-		//boolean wasSet = false;
-		ArrayList<Player> verifiedPlayers = new ArrayList<Player>();
-		for (Player aPlayer : newPlayers)
-		{
-			if (verifiedPlayers.contains(aPlayer))
-			{
-				continue;
-			}
-			verifiedPlayers.add(aPlayer);
-		}
-
-		players.clear();
-		players.addAll(verifiedPlayers);
-
-	}
-
 	/**
-	 * deals cards to players
-	 * @param cards
+	 * Deals deck of cards to players
+	 * @param cards collection of all cards that aren't the solution
 	 */
 	public void dealCards(Collection<Card> cards){
 		Random rand = new Random();
@@ -157,8 +96,6 @@ public class Game
 			}
 		}
 	}
-
-	// line 8 "model.ump"
 
 	/**
 	 * Selects a random room, weapon and character card from deck to set as solution
@@ -182,10 +119,8 @@ public class Game
 		envelope = new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
 	}
 
-	// line 14 "model.ump"
-
 	/**
-	 * roll two six sided die
+	 * Roll two six-sided die
 	 * @return int : sum of die
 	 */
 	public int rollDice() {
@@ -195,11 +130,10 @@ public class Game
 		return firstDice + secondDice;
 	}
 
-	// line 16 "model.ump"
 	public void runGame(){
 		while(!won || !allPlayersOut()){
 			for (Player player : players) {
-				if(!won && !player.isIsExcluded()) doTurn(player);
+				if(!won && !player.isExcluded()) doTurn(player);
 			}
 		}
 		if(allPlayersOut()){
@@ -207,10 +141,9 @@ public class Game
 		}
 	}
 
-
 	public boolean allPlayersOut(){
 		for(Player p : players){
-			if(!p.isIsExcluded()){
+			if(!p.isExcluded()){
 				return false;
 			}
 		}
@@ -223,7 +156,7 @@ public class Game
 	 */
 	public void doTurn(Player p){
 		//place holder code
-		System.out.println("\n"+p.getToken().getName() +"\'s turn:");
+		System.out.println("\n"+p.getToken().getName() + "'s turn:");
 		move(p);
 
 		if(p.getLocation().getRoom().isProperRoom()){
@@ -303,25 +236,21 @@ public class Game
 		Scanner input = new Scanner(System.in);
 		//Stores the directions that the player can legally move
 		ArrayList<Cell.Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
-		int answer = 0;
-		boolean correctAnswer = false;
 		for (Cell.Direction direction : p.getLocation().directionsAvailable) {
 			System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")");
 		}
-		while(!correctAnswer){
+		while(true){
 			try {
-				answer = input.nextInt();
+				int answer = input.nextInt();
 				if(answer >= 0 && answer < correctAnswers.size()){
 					return correctAnswers.get(answer);
 				}
-				System.out.println("Value must be between 0 and " + (int)(correctAnswers.size()-1));
+				System.out.println("Value must be between 0 and " + (correctAnswers.size()-1));
 			} catch (InputMismatchException e) {
 				System.out.println("Please enter a valid direction");
 				input.nextLine();
 			}
 		}
-		throw new RuntimeException("Error with direction entry");
-
 	}
 
 	// line 21 "model.ump"
@@ -351,6 +280,7 @@ public class Game
 			asked ++;
 			System.out.println("\nChecking cards...");
 			waitForPlayer(asking);
+			//TODO: put this in doRefutations
 			//Does the next player have any possible cards to show
 			ArrayList<Card> possibleCards = new ArrayList<>();
 			if(asking.getCards().contains(guess.getCharacter())){
@@ -367,11 +297,10 @@ public class Game
 			}else{
 				System.out.println("You must reveal one of these cards");
 				for(Card c : possibleCards){
-					System.out.println((int)(possibleCards.indexOf(c)+1 )+ " : " + c.getName());
+					System.out.println((possibleCards.indexOf(c)+1 ) + " : " + c.getName());
 					found = true;
 				}
 				int itemToShow = 0;
-				Scanner sc = new Scanner(System.in);
 				do {
 					System.out.print("Enter a number to reveal a card: ");
 					try {
@@ -405,10 +334,10 @@ public class Game
 	/**
 	 * precedes sensitive information intended for a single player to view
 	 * waits to display output after input from player
-	 * @param p: player who is performin action
+	 * @param p: player who is performing action
 	 */
 	public void waitForPlayer(Player p){
-		System.out.println("ACTION REQUIRED: Player " + (int)(players.indexOf(p)+1) + " : " + p.getToken().getName());
+		System.out.println("ACTION REQUIRED: Player " + (players.indexOf(p)+1) + " : " + p.getToken().getName());
 		Scanner sc = new Scanner(System.in);
 		System.out.print("Push a character and enter key to continue");
 		sc.next();
@@ -427,7 +356,7 @@ public class Game
 			//correct, game won
 			won = true;
 			System.out.println("This is the correct solution");
-			System.out.println("Player " + (int)(players.indexOf(p)+1) + " : " + p.getToken().getName() + " has won the game!");
+			System.out.println("Player " + (players.indexOf(p)+1) + " : " + p.getToken().getName() + " has won the game!");
 		}else{
 			//the player was incorrect and so is  now out
 			System.out.println("Incorrect solution");

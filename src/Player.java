@@ -1,7 +1,3 @@
-/*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.30.0.515.d9da8f6c modeling language!*/
-
-
 import java.util.*;
 
 // line 56 "model.ump"
@@ -14,7 +10,7 @@ public class Player
 	//------------------------
 
 	//Player Attributes
-	private CharacterCard token;
+	private final CharacterCard token;
 	private Cell location;
 	private boolean isExcluded;
 
@@ -30,7 +26,7 @@ public class Player
 		token = aToken;
 		location = aLocation;
 		isExcluded = aIsExcluded;
-		cards = new ArrayList<Card>();
+		cards = new ArrayList<>();
 	}
 
 	//------------------------
@@ -68,10 +64,10 @@ public class Player
 //		return isExcluded;
 //	}
 //	/* Code from template attribute_IsBoolean */
-//	public boolean isIsExcluded()
-//	{
-//		return isExcluded;
-//	}
+	public boolean isExcluded()
+	{
+		return isExcluded;
+	}
 //	/* Code from template association_GetMany */
 //	public Card getCard(int index)
 //	{
@@ -81,8 +77,7 @@ public class Player
 
 	public List<Card> getCards()
 	{
-		List<Card> newCards = Collections.unmodifiableList(cards);
-		return newCards;
+		return Collections.unmodifiableList(cards);
 	}
 
 //	public int numberOfCards()

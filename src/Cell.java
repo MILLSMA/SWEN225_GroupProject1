@@ -48,11 +48,12 @@ public class Cell
 			if (possible && !directionsAvailable.contains(dir)) directionsAvailable.add(dir);
 			else directionsAvailable.remove(dir);
 	}
-	/* Code from template association_GetOne */
-	public Position getPosition()
-	{
-		return position;
-	}
+//	/* Code from template association_GetOne */
+//	public Position getPosition()
+//	{
+//		return position;
+//	}
+
 	/* Code from template association_GetMany */
 	public Room getRoom()
 	{
