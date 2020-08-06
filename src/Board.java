@@ -240,16 +240,16 @@ public class Board
 
 	public Room checkSurroundingCells(Player p){
 		Position playerPos = playerPositionMap.get(p);
-		if(!board[playerPos.getRow()+1][playerPos.getCol()].getRoom().toString().equals("_")){
+		if(!board[playerPos.getRow()+1][playerPos.getCol()].getRoom().toString().equals("_") && board[playerPos.getRow()+1][playerPos.getCol()].getRoom().getRoomSize() > 1){
 			return board[playerPos.getRow()+1][playerPos.getCol()].getRoom();
 		}
-		if(!board[playerPos.getRow()-1][playerPos.getCol()].getRoom().toString().equals("_")){
+		if(!board[playerPos.getRow()-1][playerPos.getCol()].getRoom().toString().equals("_") && board[playerPos.getRow()-1][playerPos.getCol()].getRoom().getRoomSize()> 1){
 			return board[playerPos.getRow()-1][playerPos.getCol()].getRoom();
 		}
-		if(!board[playerPos.getRow()][playerPos.getCol()+1].getRoom().toString().equals("_")){
+		if(!board[playerPos.getRow()][playerPos.getCol()+1].getRoom().toString().equals("_") && board[playerPos.getRow()][playerPos.getCol()+1].getRoom().getRoomSize() > 1 ){
 			return board[playerPos.getRow()][playerPos.getCol()+1].getRoom();
 		}
-		if(!board[playerPos.getRow()][playerPos.getCol()-1].getRoom().toString().equals("_")){
+		if(!board[playerPos.getRow()][playerPos.getCol()-1].getRoom().toString().equals("_") && board[playerPos.getRow()][playerPos.getCol()-1].getRoom().getRoomSize()> 1){
 			return board[playerPos.getRow()][playerPos.getCol()-1].getRoom();
 		}
 		return null;
