@@ -29,6 +29,7 @@ public class Cell
 			throw new RuntimeException("Unable to create Cell due to aPosition. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
 		}
 		this.room = room;
+		putCellInRoom();
 	}
 
 	//------------------------
@@ -39,6 +40,9 @@ public class Cell
 		this.object = card;
 	}
 
+	private void putCellInRoom(){
+		room.addCell(this);
+	}
 
 	public void setDirection(Direction dir, boolean possible){
 			if (possible && !directionsAvailable.contains(dir)) directionsAvailable.add(dir);
