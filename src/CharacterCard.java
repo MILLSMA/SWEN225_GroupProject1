@@ -64,7 +64,7 @@ public enum CharacterCard implements Card {
 		while(true) {
 			Scanner sc = new Scanner(System.in);
 			// TODO: give key for characters
-			System.out.print("Enter Character: ");
+			System.out.print("Enter character: ");
 			String characterGuess = sc.next();
 			for (CharacterCard c : CharacterCard.values()) {
 				if(c.name().equalsIgnoreCase(characterGuess)){
@@ -79,15 +79,15 @@ public enum CharacterCard implements Card {
 			case MRS_WHITE:
 				return new Position(0,9);
 			case MR_GREEN:
-				return new Position(17, 0);
+				return new Position(0, 14);
 			case MRS_PEACOCK:
-				return new Position(24, 7);
+				return new Position(6, 23);
 			case MISS_SCARLETT:
-				return new Position(19, 23);
+				return new Position(24, 7);
 			case PROFESSOR_PLUM:
-				return new Position(7, 23);
+				return new Position(19, 23);
 			case COLONEL_MUSTARD:
-				return new Position(7, 0);
+				return new Position(17, 0);
 			 default:
 			 	return new Position(1, 1);
 		}

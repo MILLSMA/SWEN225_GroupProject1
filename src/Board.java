@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Board
 {
-     private final int ROWS = 26, COLS = 26;//TODO: different to document specifications (24x25)
+     private final int ROWS = 25, COLS = 24;//TODO: different to document specifications (24x25)
 	//------------------------
 	// MEMBER VARIABLES
 	//------------------------
@@ -183,7 +183,7 @@ public class Board
 	 * the player is going to be moving into an illegal space
 	 * @param p - Player
 	 * @param dir - direction they chose to move
-	 * @return
+	 * @return TODO
 	 */
 	public Cell checkMove(Player p, Cell.Direction dir) {
 		Position playerPos = playerPositionMap.get(p);

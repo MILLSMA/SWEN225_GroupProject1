@@ -53,7 +53,16 @@ public enum WeaponCard implements Card{
 
 	@Override
 	public String getName() {
-		return name().toLowerCase();
+		StringBuilder sb = new StringBuilder();
+		boolean capital = true;
+		// Change enum names to lower case, underscores as spaces
+		for (char c : name().toLowerCase().replace("_", " ").toCharArray()) {
+			if (capital) c = Character.toUpperCase(c);
+			sb.append(c);
+			// Capitalise next character if the current character is a space
+			capital = c == ' ';
+		}
+		return sb.toString();
 	}
 
 	@Override
