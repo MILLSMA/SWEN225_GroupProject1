@@ -1,3 +1,5 @@
+import javax.sound.midi.Soundbank;
+import java.sql.SQLOutput;
 import java.util.*;
 
 public class Game
@@ -82,8 +84,6 @@ public class Game
 	public void dealCards(Collection<Card> cards){
 		Random rand = new Random();
 		ArrayList<Card> tempCardBag = new ArrayList<>(cards);
-		//decideSolution(tempCardBag);
-		System.out.println("The solution is: "+envelope);
 		tempCardBag.removeAll(envelope.getSet());
 
 		//deal rest of the cards to the players
@@ -172,6 +172,10 @@ public class Game
 	 * @param p : player whose turn it is
 	 */
 	public void turnEntry(Player p){
+		if (!p.getLocation().getRoom().isProperRoom()){
+			System.out.println("You didnt make it to a room!");
+			return;
+		}
 		Scanner sc = new Scanner(System.in);
 		String turnEntry;
 		do {
@@ -191,6 +195,7 @@ public class Game
 		}
 	}
 
+
 	/**
 	 * Rolls the dice, controls a player's moves
 	 * @param p : the player moving
@@ -204,10 +209,13 @@ public class Game
 				//prints the board to the screen
 				System.out.println(board);
 				Cell.Direction chosenDirection = Cell.Direction.askForDirection(p);
+				if(chosenDirection == null){
+					return;
+				}
 				Cell oldPlayerCell = p.getLocation();
 				Cell newPlayerCell = board.move(p, chosenDirection);
 				p.updatePosition(newPlayerCell);
-				if(newPlayerCell.getRoom().getCard() != oldPlayerCell.getRoom().getCard()) break;
+				if (newPlayerCell.getRoom().getCard() != oldPlayerCell.getRoom().getCard()) break;
 			}
 		}
 		int numberOfMoves = rollDice();
@@ -217,12 +225,19 @@ public class Game
 			System.out.println(board);
 			//displays whose turn it is and how many moves they have left
 			System.out.println(p.getToken().getName()+ " you have " + (numberOfMoves - moveNumber) + " moves left");
+			//System.out.println("Enter \'x\' to end your turn");
+			//String endTurn = input.next();
+			//if(!endTurn.equalsIgnoreCase("x")){}
 			System.out.println("You may move in these directions: ");
 			Cell.Direction chosenDirection = Cell.Direction.askForDirection(p);
-			//moves the player on the board based on their answer
-			Cell newPlayerCell = board.move(p, chosenDirection);
-			p.updatePosition(newPlayerCell);
-			if(p.getLocation().getRoom().isProperRoom()) return;
+			if(chosenDirection == null){
+				return;
+			}else {
+				//moves the player on the board based on their answer
+				Cell newPlayerCell = board.move(p, chosenDirection);
+				p.updatePosition(newPlayerCell);
+				if (p.getLocation().getRoom().isProperRoom()) return;
+			}
 		}
 	}
 	/**
@@ -242,7 +257,7 @@ public class Game
 	public void makeSuggestion(Player p){
 		System.out.println("Making a suggestion here");
 		CardTriplet guess = new CardTriplet(p.getLocation().getRoom().getCard());
-		System.out.println("Suggestion is: " + guess);
+		System.out.println("Suggestion is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() +" in the " + guess.getRoom().getName());
 
 		checkForRoom(p);
 		//character and weapon tokens move to room
@@ -338,7 +353,7 @@ public class Game
 	public void makeAccusation(Player p){
 		System.out.println("Making an accusation here");
 		CardTriplet guess = new CardTriplet();
-		System.out.println("Accusation is: " + guess);
+		System.out.println("Accusation is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() +" in the " + guess.getRoom().getName());
 		if(guess.equals(envelope)){
 			//correct, game won
 			won = true;

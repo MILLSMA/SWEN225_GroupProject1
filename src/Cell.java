@@ -21,10 +21,12 @@ public class Cell
 			for (Cell.Direction direction : p.getLocation().directionsAvailable) {
 				System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")");
 			}
+			System.out.println("End Turn (" + p.getLocation().directionsAvailable.size() +")");
 			while(true){
 				try {
 					int answer = input.nextInt();
-					if(answer >= 0 && answer < correctAnswers.size()){
+					if(answer >= 0 && answer <= correctAnswers.size()){
+						if(answer == correctAnswers.size())return null;
 						return correctAnswers.get(answer);
 					}
 					System.out.println("Value must be between 0 and " + (correctAnswers.size()-1));
