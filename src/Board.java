@@ -67,8 +67,8 @@ public class Board
 		for(RoomCard card : RoomCard.getRooms()) {
 			if (card.toString().charAt(0) == c) return getRoom(card);
 		}
-		if(c == '|')return new Room("Door");
-		if(c == '|')return rooms.get("Wall");
+		if(c == ')')return new Room("Door");
+		if(c == '/')return rooms.get("Wall");
 		if(c == '_')return rooms.get("Hallway");
 		return null;
 	}
