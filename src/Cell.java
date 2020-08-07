@@ -2,7 +2,6 @@ import java.util.*;
 
 public class Cell
 {
-
 	public enum Direction{
 		NORTH,
 		SOUTH,

@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Board
 {
-     private final int ROWS = 25, COLS = 24;//TODO: different to document specifications (24x25)
+     private final int ROWS = 25, COLS = 24;
 	//------------------------
 	// MEMBER VARIABLES
 	//------------------------
