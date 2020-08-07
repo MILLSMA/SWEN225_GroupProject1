@@ -197,7 +197,7 @@ public class Game
 	 */
 	public void move(Player p){
 		if(p.getLocation().getRoom().isProperRoom()){
-			System.out.println("You are currently in the " + p.getLocation().getRoom());
+			System.out.println("You are currently in the " + p.getLocation().getRoom().getCard().getName());
 			System.out.println("You may move anywhere in your current room, " +
 					"your turn will start once you exit.");
 			while(true){

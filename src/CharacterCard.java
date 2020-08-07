@@ -93,6 +93,12 @@ public enum CharacterCard implements Card {
 		}
 	}
 
+	public void moveToCell(Cell c){
+		if(this.location != null) this.location.setObject(null);
+		this.location = c;
+		c.setObject(this);
+	}
+
 	@Override
 	public String toString() {
 		String[] codes = {ANSI_RED+"s", ANSI_YELLOW+"c", ANSI_WHITE+"w", ANSI_GREEN+"g", ANSI_CYAN+"k", ANSI_PURPLE + "p"};
