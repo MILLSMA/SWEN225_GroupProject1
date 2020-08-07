@@ -221,7 +221,7 @@ public class Game
 			System.out.println(p.getToken().getName()+ " you have " + (numberOfMoves - moveNumber) + " moves left");
 			System.out.println("You may move in these directions: ");
 			Cell.Direction chosenDirection = Cell.Direction.askForDirection(p, board);
-			if(chosenDirection == null) return;
+			if(chosenDirection == null) break;
 			//moves the player on the board based on their answer
 			Cell newPlayerCell = board.move(p, chosenDirection);
 			p.updatePosition(newPlayerCell);
