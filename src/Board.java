@@ -178,6 +178,35 @@ public class Board
 		return board[playerPos.getRow()][playerPos.getCol()];
 	}
 
+	/**
+	 * Dummy version of the move method, to check to see if
+	 * the player is going to be moving into an illegal space
+	 * @param p - Player
+	 * @param dir - direction they chose to move
+	 * @return
+	 */
+	public Cell checkMove(Player p, Cell.Direction dir) {
+		Position playerPos = playerPositionMap.get(p);
+		Position dummyPos = new Position(playerPos.getRow(), playerPos.getCol());
+		switch(dir){
+			case NORTH:
+				dummyPos.setRow(dummyPos.getRow() - 1);
+				break;
+			case SOUTH:
+				dummyPos.setRow(dummyPos.getRow() + 1);
+				break;
+			case EAST:
+				dummyPos.setCol(dummyPos.getCol() + 1);
+				break;
+			case WEST:
+				dummyPos.setCol(dummyPos.getCol() - 1);
+				break;
+		}
+		return board[dummyPos.getRow()][dummyPos.getCol()];
+	}
+
+
+
 	public Room checkSurroundingCells(Player p){
 		Position playerPos = playerPositionMap.get(p);
 		if(!board[playerPos.getRow()+1][playerPos.getCol()].getRoom().toString().equals("_") && board[playerPos.getRow()+1][playerPos.getCol()].getRoom().getRoomSize() > 1){

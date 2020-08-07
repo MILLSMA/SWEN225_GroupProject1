@@ -14,17 +14,21 @@ public class Cell
 		 * @param p: player making move
 		 * @return direction enum to move the player
 		 */
-		public static Cell.Direction askForDirection(Player p){
+		public static Cell.Direction askForDirection(Player p, Board board){
 			Scanner input = new Scanner(System.in);
 			//Stores the directions that the player can legally move
 			ArrayList<Cell.Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
 			for (Cell.Direction direction : p.getLocation().directionsAvailable) {
-				System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")");
+				if(!board.checkMove(p, direction).hasBeenMovedToo()){
+					System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")");
+				}else correctAnswers.remove(direction);
+				System.out.println("End Turn (" + p.getLocation().directionsAvailable.size() + ")");
 			}
 			while(true){
 				try {
 					int answer = input.nextInt();
-					if(answer >= 0 && answer < correctAnswers.size()){
+					if(answer >= 0 && answer <= correctAnswers.size()){
+						if(answer == correctAnswers.size()) return null;
 						return correctAnswers.get(answer);
 					}
 					System.out.println("Value must be between 0 and " + (correctAnswers.size()-1));
@@ -44,6 +48,7 @@ public class Cell
 	public List<Direction> directionsAvailable = new ArrayList<>();
 	private final Room room;
 	private Card object;
+	private boolean hasBeenMovedToo;
 	//------------------------
 	// CONSTRUCTOR
 	//------------------------
@@ -61,6 +66,13 @@ public class Cell
 	//------------------------
 	// INTERFACE
 	//------------------------
+
+	public boolean hasBeenMovedToo(){
+		return hasBeenMovedToo;
+	}
+	public void setHasBeenMovedToo(boolean b){
+		hasBeenMovedToo = b;
+	}
 
 	public void setObject(Card card){
 		this.object = card;

@@ -203,13 +203,15 @@ public class Game
 			while(true){
 				//prints the board to the screen
 				System.out.println(board);
-				Cell.Direction chosenDirection = Cell.Direction.askForDirection(p);
+				Cell.Direction chosenDirection = Cell.Direction.askForDirection(p, board);
+				if(chosenDirection == null)return;
 				Cell oldPlayerCell = p.getLocation();
 				Cell newPlayerCell = board.move(p, chosenDirection);
 				p.updatePosition(newPlayerCell);
 				if(newPlayerCell.getRoom().getCard() != oldPlayerCell.getRoom().getCard()) break;
 			}
 		}
+		ArrayList<Cell> cellsMovedToo = new ArrayList<>();
 		int numberOfMoves = rollDice();
 		System.out.println("You rolled " + numberOfMoves + ". You may move " + numberOfMoves + " spaces");
 		for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
@@ -218,11 +220,17 @@ public class Game
 			//displays whose turn it is and how many moves they have left
 			System.out.println(p.getToken().getName()+ " you have " + (numberOfMoves - moveNumber) + " moves left");
 			System.out.println("You may move in these directions: ");
-			Cell.Direction chosenDirection = Cell.Direction.askForDirection(p);
+			Cell.Direction chosenDirection = Cell.Direction.askForDirection(p, board);
+			if(chosenDirection == null) return;
 			//moves the player on the board based on their answer
 			Cell newPlayerCell = board.move(p, chosenDirection);
 			p.updatePosition(newPlayerCell);
-			if(p.getLocation().getRoom().isProperRoom()) return;
+			cellsMovedToo.add(newPlayerCell);
+			newPlayerCell.setHasBeenMovedToo(true);
+			if(p.getLocation().getRoom().isProperRoom()) break;
+		}
+		for (Cell cell : cellsMovedToo) {
+			cell.setHasBeenMovedToo(false);
 		}
 	}
 	/**
