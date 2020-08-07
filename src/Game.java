@@ -225,9 +225,6 @@ public class Game
 			if(p.getLocation().getRoom().isProperRoom()) return;
 		}
 	}
-
-	// line 21 "model.ump"
-
 	/**
 	 * checks for adjacent rooms cells if player is in doorway.
 	 * @param p player to check

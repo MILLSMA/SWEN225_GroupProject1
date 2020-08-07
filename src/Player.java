@@ -9,7 +9,7 @@ public class Player
 
 	//Player Attributes
 	private final CharacterCard token;
-	private Cell location;
+	//private Cell location;
 	private boolean isExcluded;
 
 	//Player Associations
@@ -22,7 +22,8 @@ public class Player
 	public Player(CharacterCard aToken, Cell aLocation, boolean aIsExcluded)
 	{
 		token = aToken;
-		location = aLocation;
+		//location = aLocation;
+		this.getToken().changeLocation(aLocation);
 		isExcluded = aIsExcluded;
 		cards = new ArrayList<>();
 	}
@@ -38,7 +39,8 @@ public class Player
 
 	public void setLocation(Cell aLocation)
 	{
-		location = aLocation;
+		this.getToken().changeLocation(aLocation);
+		//location = aLocation;
 
 	}
 
@@ -54,7 +56,8 @@ public class Player
 
 	public Cell getLocation()
 	{
-		return location;
+		return this.getToken().getLocation();
+		//return location;
 	}
 
 
@@ -70,11 +73,15 @@ public class Player
 
 	public void updatePosition(Cell cell){
 		// removes the player from the cell
-		location.setObject(null);
+		//location.setObject(null);
+		this.getToken().getLocation().setObject(null);
 		//tell the player which cell they are in
-		location = cell;
+		//location = cell;
+		this.getToken().changeLocation(cell);
 		//place the player in the cell
-		location.setObject(getToken());
+		//location.setObject(getToken());
+		this.getToken().getLocation().setObject(getToken());
+
 	}
 
 	public boolean addCard(Card aCard)
