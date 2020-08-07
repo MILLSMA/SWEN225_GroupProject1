@@ -41,7 +41,9 @@ public enum WeaponCard implements Card{
 
 
 	public void moveToCell(Cell c){
+		if(this.location != null) this.location.setObject(null);
 		this.location = c;
+		c.setObject(this);
 	}
 
 	//TODO: potentially remove this and use cell only

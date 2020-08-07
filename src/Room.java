@@ -61,6 +61,9 @@ public class Room {
 			((WeaponCard)aCard).moveToRoom(this);
 			((WeaponCard)aCard).moveToCell(c);
 		}
+		if(aCard instanceof CharacterCard){
+			((CharacterCard)aCard).moveToCell(c);
+		}
 	}
 
 	/**
