@@ -22,8 +22,9 @@ public class Cell
 				if(!board.checkMove(p, direction).hasBeenMovedToo()){
 					System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")");
 				}else correctAnswers.remove(direction);
-				System.out.println("End Turn (" + p.getLocation().directionsAvailable.size() + ")");
+
 			}
+			System.out.println("End Turn (" + correctAnswers.size() + ")");
 			while(true){
 				try {
 					int answer = input.nextInt();
@@ -31,7 +32,7 @@ public class Cell
 						if(answer == correctAnswers.size()) return null;
 						return correctAnswers.get(answer);
 					}
-					System.out.println("Value must be between 0 and " + (correctAnswers.size()-1));
+					System.out.println("Value must be between 0 and " + (correctAnswers.size()));
 				} catch (InputMismatchException e) {
 					System.out.println("Please enter a valid direction");
 					input.nextLine();
