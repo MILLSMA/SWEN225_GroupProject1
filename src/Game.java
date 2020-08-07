@@ -230,8 +230,8 @@ public class Game
 	// line 21 "model.ump"
 
 	/**
-	 * checks for adjacent rooms cells if player is in doorway;
-	 * @param p
+	 * checks for adjacent rooms cells if player is in doorway.
+	 * @param p player to check
 	 */
 	public Room checkForRoom(Player p){
 		System.out.println(p.getLocation().getRoom().getRoomSize());
@@ -246,7 +246,7 @@ public class Game
 	public void makeSuggestion(Player p){
 		System.out.println("Making a suggestion here");
 		CardTriplet guess = new CardTriplet(p.getLocation().getRoom().getCard());
-		System.out.println("Suggestion is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
+		System.out.println("Suggestion is: " + guess);
 
 		checkForRoom(p);
 		//character and weapon tokens move to room
@@ -342,8 +342,8 @@ public class Game
 	public void makeAccusation(Player p){
 		System.out.println("Making an accusation here");
 		CardTriplet guess = new CardTriplet();
-		System.out.println("Accusation is: " + guess.getCharacter().getName() + " with the " + guess.getWeapon().getName() + " in the " + guess.getRoom().getName());
-		if(guess.getCharacter().equals(envelope.getCharacter()) && guess.getWeapon().equals(envelope.getWeapon()) && guess.getRoom().equals(envelope.getRoom())){
+		System.out.println("Accusation is: " + guess);
+		if(guess.equals(envelope)){
 			//correct, game won
 			won = true;
 			System.out.println("This is the correct solution");

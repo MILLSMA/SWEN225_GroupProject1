@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class CardTriplet {
 	//------------------------
@@ -65,6 +66,21 @@ public class CardTriplet {
 	public RoomCard getRoom()
 	{
 		return room;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		CardTriplet that = (CardTriplet) o;
+		return character == that.character &&
+				weapon == that.weapon &&
+				room == that.room;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(character, weapon, room);
 	}
 
 	public String toString() {
