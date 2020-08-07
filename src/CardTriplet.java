@@ -54,34 +54,14 @@ public class CardTriplet {
 		));
 	}
 
-//	public boolean setCharacter(CharacterCard aCharacter)
-//	{
-//		character = aCharacter;
-//		return true;
-//	}
-//
-//	public boolean setWeapon(WeaponCard aWeapon)
-//	{
-//		weapon = aWeapon;
-//		return true;
-//	}
-//
-//	public boolean setRoom(RoomCard aRoom)
-//	{
-//		room = aRoom;
-//		return true;
-//	}
-
 	public CharacterCard getCharacter()
 	{
 		return character;
 	}
-
 	public WeaponCard getWeapon()
 	{
 		return weapon;
 	}
-
 	public RoomCard getRoom()
 	{
 		return room;

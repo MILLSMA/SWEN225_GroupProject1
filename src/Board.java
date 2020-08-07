@@ -10,7 +10,6 @@ public class Board
 	//------------------------
 
 	//Board Associations
-	private final List<Player> players; // TODO: do we need to store players? it's only used to place them on board
 	private final HashMap<String, Room> rooms;
 	private final HashMap<Player, Position> playerPositionMap; //TODO: is this needed?
 	private final Cell[][] board;
@@ -20,7 +19,6 @@ public class Board
 
 	public Board(Collection<Player> allPlayers)
 	{
-		players = new ArrayList<>(allPlayers);
 		playerPositionMap = new HashMap<>();
 		rooms = new HashMap<>();
 		//creates the dummy rooms which are only needed for mechanics (not gameplay)
@@ -32,7 +30,7 @@ public class Board
 		}
 		board = new Cell[ROWS][COLS];
 		createCells();
-		for (Player player : players) {
+		for (Player player : allPlayers) {
 			//gets the characters start position
 			Position playerPos = CharacterCard.characterStartPosition(player.getToken());
 			//gets the cell the player is on (based on players position)
@@ -113,7 +111,7 @@ public class Board
 				if (sc.hasNext()) right = sc.next();
 			}
 		}catch(FileNotFoundException e){
-			System.out.println("Cluedo board file not found.");
+			System.out.println("Please put a CluedoBoard.txt file in the root directory.");
 		}
 		updateCellDirections();
 	}
@@ -154,64 +152,6 @@ public class Board
 			}
 		}
 	}
-//	/* Code from template association_GetMany */
-//	public Cell getCell(int index)
-//	{
-//		return cells.get(index);
-//	}
-//
-//	public List<Cell> getCells()
-//	{
-//		return Collections.unmodifiableList(cells);
-//	}
-//
-//	public int numberOfCells()
-//	{
-//		return cells.size();
-//	}
-//
-//	/* Code from template association_GetMany */
-//	public Position getPlayerLocation(Player p)
-//	{
-//		return playerPositionMap.get(p);
-//	}
-//
-//	public List<Player> getPlayers()
-//	{
-//		return Collections.unmodifiableList(players);
-//	}
-//
-//	public int numberOfPlayers()
-//	{
-//		return players.size();
-//	}
-//
-//	/* Code from template association_AddManyToOne */
-//	public Cell addCell(Position aPosition, Room room)
-//	{
-//		return new Cell(aPosition, room);
-//	}
-//
-//	public boolean addCell(Cell aCell)
-//	{
-//		if (cells.contains(aCell)) { return false; }
-//		cells.add(aCell);
-//		return true;
-//	}
-//	/* Code from template association_RequiredNumberOfMethod */
-//	public static int requiredNumberOfPlayers()
-//	{
-//		return 6;
-//	}
-//
-//
-//	// line 34 "model.ump"
-//	public Position checkValidMove(Player p, String code, int steps){
-//
-//		return null;
-//	}
-
-	// line 36 "model.ump"
 
 	/**
 	 * moves the player on the board in which every direction is chosen

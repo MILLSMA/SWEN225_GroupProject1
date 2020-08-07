@@ -13,7 +13,7 @@ public class Game
 	private final List<Player> players;
 	private final Board board;
 	private CardTriplet envelope;
-	private final Scanner input = new Scanner(System.in);
+	private final Scanner input;
 
 
 	//------------------------
@@ -24,28 +24,12 @@ public class Game
 		new Game();
 	}
 
-	private static List<Player> createPlayers(int numPlayers){
-		//creates an arraylist for the new characters to be stored
-		ArrayList<Player> tempPlayerList = new ArrayList<>(6);
-		//creates an arrayList with all of the characters in the Character enum
-		ArrayList<CharacterCard> characters = new ArrayList<>(CharacterCard.getCharacters());
-		//creates a defined number of players with random Character card assigned
-		for (int index = 0; index < numPlayers; index++) {
-			int randomCardIndex = new Random().nextInt(characters.size());
-			CharacterCard randomCharacter = characters.get(randomCardIndex);
-			Player tempPlayer = new Player(randomCharacter, null, false);
-			tempPlayerList.add(tempPlayer);
-			characters.remove(randomCardIndex);
-		}
-		return tempPlayerList;
-	}
-
 	//------------------------
 	// CONSTRUCTOR
 	//------------------------
 
 	private Game() {
-		Scanner input = new Scanner(System.in);
+		input = new Scanner(System.in);
 		int amountOfPlayers = 0;
 		// Ask users for an integer between 3 and 6, repeat until valid integer received
 		do {
@@ -70,9 +54,25 @@ public class Game
 		allCards.addAll(CharacterCard.getCharacters());
 		allCards.addAll(WeaponCard.getWeapons());
 		allCards.addAll(RoomCard.getRooms());
-		decideSolution(allCards);
+		envelope = decideSolution(allCards);
 		dealCards(allCards);
 		runGame();
+	}
+
+	private List<Player> createPlayers(int numPlayers){
+		//creates an arraylist for the new characters to be stored
+		ArrayList<Player> tempPlayerList = new ArrayList<>(6);
+		//creates an arrayList with all of the characters in the Character enum
+		ArrayList<CharacterCard> characters = new ArrayList<>(CharacterCard.getCharacters());
+		//creates a defined number of players with random Character card assigned
+		for (int index = 0; index < numPlayers; index++) {
+			int randomCardIndex = new Random().nextInt(characters.size());
+			CharacterCard randomCharacter = characters.get(randomCardIndex);
+			Player tempPlayer = new Player(randomCharacter, null, false);
+			tempPlayerList.add(tempPlayer);
+			characters.remove(randomCardIndex);
+		}
+		return tempPlayerList;
 	}
 
 	/**
@@ -101,8 +101,8 @@ public class Game
 	 * Selects a random room, weapon and character card from deck to set as solution
 	 * @param cards : all the possible cards
 	 */
-	public void decideSolution(Collection<Card> cards) {
-		//create envelope with card triplet
+	public CardTriplet decideSolution(Collection<Card> cards) {
+		if (envelope != null) throw new RuntimeException("Solution already decided.");
 		Random rand = new Random();
 		CharacterCard envelopeCharacter = (CharacterCard) cards.stream()
 				.filter(card -> card instanceof CharacterCard)
@@ -116,7 +116,7 @@ public class Game
 				.filter(card -> card instanceof RoomCard)
 				.skip(rand.nextInt(RoomCard.size()))
 				.findAny().get();
-		envelope = new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
+		return new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
 	}
 
 	/**
@@ -177,18 +177,17 @@ public class Game
 		do {
 			System.out.print("Accusation (A) | Suggestion (S) | View Cards (C): ");
 			turnEntry = sc.next();
-		}while(!(turnEntry.matches("(?i)a|s|c|accusation|suggestion|view cards|")));
+		} while (!(turnEntry.matches("(?i)a|s|c|accusation|suggestion|view cards|")));
 
 
 
-		if(turnEntry.matches("(?i)a|accusation")){
+		if (turnEntry.matches("(?i)a|accusation")){
 			makeAccusation(p);
-		} else if(turnEntry.matches("(?i)s|suggestion")){
+		} else if (turnEntry.matches("(?i)s|suggestion")){
 			makeSuggestion(p);
-		}else {
+		} else {
 			p.displayHand();
 			turnEntry(p);
-
 		}
 	}
 
@@ -204,7 +203,7 @@ public class Game
 			while(true){
 				//prints the board to the screen
 				System.out.println(board);
-				Cell.Direction chosenDirection = askForDirection(p);
+				Cell.Direction chosenDirection = Cell.Direction.askForDirection(p);
 				Cell oldPlayerCell = p.getLocation();
 				Cell newPlayerCell = board.move(p, chosenDirection);
 				p.updatePosition(newPlayerCell);
@@ -220,37 +219,11 @@ public class Game
 			//displays whose turn it is and how many moves they have left
 			System.out.println(p.getToken().getName()+ " you have " + (numberOfMoves - moveNumber) + " moves left");
 			System.out.println("You may move in these directions: ");
-			Cell.Direction chosenDirection = askForDirection(p);
+			Cell.Direction chosenDirection = Cell.Direction.askForDirection(p);
 			//moves the player on the board based on their answer
 			Cell newPlayerCell = board.move(p, chosenDirection);
 			p.updatePosition(newPlayerCell);
 			if(p.getLocation().getRoom().isProperRoom()) return;
-		}
-	}
-
-	/**
-	 *  retrieves and validates direction input from user
-	 * @param p: player making move
-	 * @return direction enum to move the player
-	 */
-	public Cell.Direction askForDirection(Player p){
-		Scanner input = new Scanner(System.in);
-		//Stores the directions that the player can legally move
-		ArrayList<Cell.Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
-		for (Cell.Direction direction : p.getLocation().directionsAvailable) {
-			System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")");
-		}
-		while(true){
-			try {
-				int answer = input.nextInt();
-				if(answer >= 0 && answer < correctAnswers.size()){
-					return correctAnswers.get(answer);
-				}
-				System.out.println("Value must be between 0 and " + (correctAnswers.size()-1));
-			} catch (InputMismatchException e) {
-				System.out.println("Please enter a valid direction");
-				input.nextLine();
-			}
 		}
 	}
 
@@ -282,19 +255,70 @@ public class Game
 		currentRoom.addCard(guess.getWeapon());
 		//TODO: player location stored in character location instead
 
-		boolean found = doRefutations(guess, p);
-		if(!found){
-			System.out.println("\nNo cards were reveled this round");
+		boolean refuted = doRefutations(p, guess);
+		if(!refuted){
+			System.out.println("\nNo cards were revealed this round");
 			Scanner sc = new Scanner(System.in);
 			String accusationChoice;
 			do {
 				System.out.print(" Make Accusation (Y/N): ");
 				accusationChoice = sc.next();
-			}while(!(accusationChoice.matches("(?i)y|n|yes|no")));
-				if(accusationChoice.matches("(?i)y|yes")){
-					makeAccusation(p);
-				}
+			} while(!(accusationChoice.matches("(?i)y|n|yes|no")));
+
+			if (accusationChoice.matches("(?i)y|yes")) {
+				makeAccusation(p);
 			}
+		}
+	}
+
+	private boolean doRefutations(Player p, CardTriplet guess) {
+		boolean found = false;
+		int asked = 0;
+		while(!found && asked < players.size()-1){
+			Player asking;
+			if(players.indexOf(p) + asked + 1 >= players.size() ){
+				//loop back through char collection from index zero
+				//System.out.println("Asking: " + players.get(asked - (players.size() - players.indexOf(p)) + 1).getToken().getName());
+				asking = players.get(asked - (players.size() - players.indexOf(p)) + 1);
+			}else{
+				//ask from player position
+				//System.out.println("Asking: " + players.get(players.indexOf(p) + asked + 1).getToken().getName());
+				asking = players.get(players.indexOf(p) + asked + 1);
+			}
+			asked ++;
+			System.out.println("\nChecking cards...");
+			waitForPlayer(asking);
+			//Does the next player have any possible cards to show
+			ArrayList<Card> possibleCards = new ArrayList<>();
+			for (Card c : guess.getSet()) {
+				if (asking.getCards().contains(c))
+					possibleCards.add(c);
+			}
+			if(possibleCards.isEmpty()){
+				System.out.println("You have no cards that match this guess");
+			}else{
+				System.out.println("You must reveal one of these cards");
+				for(Card c : possibleCards){
+					System.out.println((possibleCards.indexOf(c)+1 ) + " : " + c.getName());
+					found = true;
+				}
+				int itemToShow = 0;
+				do {
+					System.out.print("Enter a number to reveal a card: ");
+					try {
+						itemToShow = input.nextInt();
+					}catch(InputMismatchException e){
+						System.out.println("Must be between 1 and " + possibleCards.size());
+						input.nextLine();
+					}
+				} while (itemToShow < 1 || itemToShow > possibleCards.size());
+
+				System.out.println("\nRevealing card...");
+				waitForPlayer(p);
+				System.out.println("The revealed card is: " + possibleCards.get(itemToShow-1).getName());
+			}
+		}
+		return found;
 	}
 
 
@@ -331,63 +355,5 @@ public class Game
 			System.out.println("You still need to make refutations");
 			p.setIsExcluded(true);
 		}
-	}
-
-	// line 27 "model.ump"
-	public Boolean doRefutations(CardTriplet guess, Player p){
-		boolean found = false;
-		int asked = 0;
-		while(!found && asked < players.size()-1){
-			Player asking;
-			if(players.indexOf(p) + asked + 1 >= players.size() ){
-				//loop back through char collection from index zero
-				//System.out.println("Asking: " + players.get(asked - (players.size() - players.indexOf(p)) + 1).getToken().getName());
-				asking = players.get(asked - (players.size() - players.indexOf(p)) + 1);
-			}else{
-				//ask from player position
-				//System.out.println("Asking: " + players.get(players.indexOf(p) + asked + 1).getToken().getName());
-				asking = players.get(players.indexOf(p) + asked + 1);
-			}
-			asked ++;
-			System.out.println("\nChecking cards...");
-			waitForPlayer(asking);
-			//TODO: put this in doRefutations
-			//Does the next player have any possible cards to show
-			ArrayList<Card> possibleCards = new ArrayList<>();
-			if(asking.getCards().contains(guess.getCharacter())){
-				possibleCards.add(guess.getCharacter());
-			}
-			if(asking.getCards().contains(guess.getWeapon())){
-				possibleCards.add(guess.getWeapon());
-			}
-			if(asking.getCards().contains(guess.getRoom())){
-				possibleCards.add(guess.getRoom());
-			}
-			if(possibleCards.isEmpty()){
-				System.out.println("You have no cards that match this guess");
-			}else{
-				System.out.println("You must reveal one of these cards");
-				for(Card c : possibleCards){
-					System.out.println((possibleCards.indexOf(c)+1 ) + " : " + c.getName());
-					found = true;
-				}
-				int itemToShow = 0;
-				do {
-					System.out.print("Enter a number to reveal a card: ");
-					try {
-						itemToShow = input.nextInt();
-					}catch(InputMismatchException e){
-						System.out.println("Must be between 1 and " + possibleCards.size());
-						input.nextLine();
-					}
-				} while (itemToShow < 1 || itemToShow > possibleCards.size());
-
-				System.out.println("\nRevealing card...");
-				waitForPlayer(p);
-				System.out.println("The revealed card is: " + possibleCards.get(itemToShow-1).getName());
-			}
-		}
-
-		return found;
 	}
 }

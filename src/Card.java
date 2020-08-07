@@ -1,5 +1,6 @@
 public interface Card
 {
+
 	/**
 	 * Get full name of card
 	 * @return lower case name of card
@@ -11,6 +12,4 @@ public interface Card
 	 * @return board code of card
 	 */
 	String toString();
-
-
 }

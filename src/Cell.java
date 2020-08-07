@@ -7,7 +7,33 @@ public class Cell
 		NORTH,
 		SOUTH,
 		EAST,
-		WEST
+		WEST;
+
+		/**
+		 *  retrieves and validates direction input from user
+		 * @param p: player making move
+		 * @return direction enum to move the player
+		 */
+		public static Cell.Direction askForDirection(Player p){
+			Scanner input = new Scanner(System.in);
+			//Stores the directions that the player can legally move
+			ArrayList<Cell.Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
+			for (Cell.Direction direction : p.getLocation().directionsAvailable) {
+				System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")");
+			}
+			while(true){
+				try {
+					int answer = input.nextInt();
+					if(answer >= 0 && answer < correctAnswers.size()){
+						return correctAnswers.get(answer);
+					}
+					System.out.println("Value must be between 0 and " + (correctAnswers.size()-1));
+				} catch (InputMismatchException e) {
+					System.out.println("Please enter a valid direction");
+					input.nextLine();
+				}
+			}
+		}
 	}
 	//------------------------
 	// MEMBER VARIABLES
@@ -48,19 +74,12 @@ public class Cell
 			if (possible && !directionsAvailable.contains(dir)) directionsAvailable.add(dir);
 			else directionsAvailable.remove(dir);
 	}
-//	/* Code from template association_GetOne */
-//	public Position getPosition()
-//	{
-//		return position;
-//	}
 
-	/* Code from template association_GetMany */
 	public Room getRoom()
 	{
 		return room;
 	}
 
-	/* Code from template association_SetUnidirectionalOne */
 	public boolean setPosition(Position aNewPosition)
 	{
 		boolean wasSet = false;

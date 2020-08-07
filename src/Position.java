@@ -1,5 +1,3 @@
-// line 50 "model.ump"
-// line 119 "model.ump"
 public class Position
 {
 
@@ -50,8 +48,6 @@ public class Position
 
 	public String toString()
 	{
-		return super.toString() + "["+
-				"row" + ":" + getRow()+ "," +
-				"col" + ":" + getCol()+ "]";
+		return "(" + getRow()+ ", " + getCol()+ ")";
 	}
 }
