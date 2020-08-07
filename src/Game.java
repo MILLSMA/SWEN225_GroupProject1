@@ -45,7 +45,7 @@ public class Game
 		players = createPlayers(amountOfPlayers);
 		board = new Board(players);
 		won = false;
-		System.out.println("Players in this Game: ");
+		System.out.println("== Players in this Game == ");
 		for (int i = 0; i < players.size(); i++) {
 			System.out.println("Player " + (i+1) + ": " + players.get(i).getToken().getName());
 		}
@@ -83,7 +83,7 @@ public class Game
 		Random rand = new Random();
 		ArrayList<Card> tempCardBag = new ArrayList<>(cards);
 		//decideSolution(tempCardBag);
-		System.out.println(envelope);
+		System.out.println("The solution is: "+envelope);
 		tempCardBag.removeAll(envelope.getSet());
 
 		//deal rest of the cards to the players
@@ -107,15 +107,15 @@ public class Game
 		CharacterCard envelopeCharacter = (CharacterCard) cards.stream()
 				.filter(card -> card instanceof CharacterCard)
 				.skip(rand.nextInt(CharacterCard.size()))
-				.findAny().get();
+				.findAny().orElse(null);
 		WeaponCard envelopeWeapon = (WeaponCard) cards.stream()
 				.filter(card -> card instanceof WeaponCard)
 				.skip(rand.nextInt(WeaponCard.size()))
-				.findAny().get();
+				.findAny().orElse(null);
 		RoomCard envelopeRoom = (RoomCard) cards.stream()
 				.filter(card -> card instanceof RoomCard)
 				.skip(rand.nextInt(RoomCard.size()))
-				.findAny().get();
+				.findAny().orElse(null);
 		return new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
 	}
 
@@ -157,7 +157,7 @@ public class Game
 	 */
 	public void doTurn(Player p){
 		//place holder code
-		System.out.println("\n"+p.getToken().getName() + "'s turn:");
+		System.out.println("\n== "+p.getToken().getName() + "'s turn ==");
 		move(p);
 
 		if(p.getLocation().getRoom().isProperRoom()){
@@ -211,8 +211,7 @@ public class Game
 			}
 		}
 		int numberOfMoves = rollDice();
-		System.out.println("You rolled: " + numberOfMoves);
-		System.out.println("You may move " + numberOfMoves + " spaces");
+		System.out.println("You rolled " + numberOfMoves + ". You may move " + numberOfMoves + " spaces");
 		for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
 			//prints the board to the screen
 			System.out.println(board);
