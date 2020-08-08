@@ -100,8 +100,8 @@ public enum CharacterCard implements Card {
 	}
 
 	public void moveToCell(Cell c){
-		if(this.location != null) this.location.setObject(null);
-		this.location = c;
+		if(location != null) location.setObject(null);
+		location = c;
 		c.setObject(this);
 	}
 

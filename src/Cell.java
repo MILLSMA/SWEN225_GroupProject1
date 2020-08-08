@@ -18,7 +18,7 @@ public class Cell
 			//Stores the directions that the player can legally move
 			ArrayList<Cell.Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
 			for (Cell.Direction direction : p.getLocation().directionsAvailable) {
-				if(!board.checkMove(p, direction).hasBeenMovedToo()){
+				if(!board.isCellUsed(p, direction)){
 					System.out.println(direction.display());
 				}else correctAnswers.remove(direction);
 
@@ -54,7 +54,7 @@ public class Cell
 	public List<Direction> directionsAvailable = new ArrayList<>();
 	private final Room room;
 	private Card object;
-	private boolean hasBeenMovedToo;
+	private boolean isUsedInRound;
 	//------------------------
 	// CONSTRUCTOR
 	//------------------------
@@ -73,11 +73,11 @@ public class Cell
 	// INTERFACE
 	//------------------------
 
-	public boolean hasBeenMovedToo(){
-		return hasBeenMovedToo;
+	public boolean isUsedInRound(){
+		return isUsedInRound;
 	}
-	public void setHasBeenMovedToo(boolean b){
-		hasBeenMovedToo = b;
+	public void setUsedInRound(boolean b){
+		isUsedInRound = b;
 	}
 
 	public void setObject(Card card){
@@ -96,6 +96,11 @@ public class Cell
 	public Room getRoom()
 	{
 		return room;
+	}
+
+
+	public Position getPosition() {
+		return position;
 	}
 
 	public boolean setPosition(Position aNewPosition)

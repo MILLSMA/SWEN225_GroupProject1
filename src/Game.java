@@ -12,7 +12,7 @@ public class Game
 	//Game Associations
 	private final List<Player> players;
 	private final Board board;
-	private CardTriplet envelope;
+	private final CardTriplet envelope;
 	private final Scanner input;
 
 
@@ -179,8 +179,6 @@ public class Game
 			turnEntry = sc.next();
 		} while (!(turnEntry.matches("(?i)a|s|c|accusation|suggestion|view cards|")));
 
-
-
 		if (turnEntry.matches("(?i)a|accusation")){
 			makeAccusation(p);
 		} else if (turnEntry.matches("(?i)s|suggestion")){
@@ -207,11 +205,11 @@ public class Game
 				if(chosenDirection == null)return;
 				Cell oldPlayerCell = p.getLocation();
 				Cell newPlayerCell = board.move(p, chosenDirection);
-				p.updatePosition(newPlayerCell);
+				p.moveToCell(newPlayerCell);
 				if(newPlayerCell.getRoom().getCard() != oldPlayerCell.getRoom().getCard()) break;
 			}
 		}
-		ArrayList<Cell> cellsMovedToo = new ArrayList<>();
+		ArrayList<Cell> cellsMovedTo = new ArrayList<>();
 		int numberOfMoves = rollDice();
 		System.out.println("You rolled " + numberOfMoves + ". You may move " + numberOfMoves + " spaces");
 		for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
@@ -224,13 +222,13 @@ public class Game
 			if(chosenDirection == null) break;
 			//moves the player on the board based on their answer
 			Cell newPlayerCell = board.move(p, chosenDirection);
-			p.updatePosition(newPlayerCell);
-			cellsMovedToo.add(newPlayerCell);
-			newPlayerCell.setHasBeenMovedToo(true);
+			p.moveToCell(newPlayerCell);
+			cellsMovedTo.add(newPlayerCell);
+			newPlayerCell.setUsedInRound(true);
 			if(p.getLocation().getRoom().isProperRoom()) break;
 		}
-		for (Cell cell : cellsMovedToo) {
-			cell.setHasBeenMovedToo(false);
+		for (Cell cell : cellsMovedTo) {
+			cell.setUsedInRound(false);
 		}
 	}
 	/**
@@ -256,7 +254,7 @@ public class Game
 		//character and weapon tokens move to room
 		Room currentRoom = checkForRoom(p);
 		currentRoom.addCard(guess.getCharacter());
-		currentRoom.addCard(guess.getWeapon());
+		p.setLocation(currentRoom.addCard(guess.getWeapon()));
 		//TODO: player location stored in character location instead
 
 		boolean refuted = doRefutations(p, guess);

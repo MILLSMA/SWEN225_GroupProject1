@@ -11,15 +11,13 @@ public class Board
 
 	//Board Associations
 	private final HashMap<String, Room> rooms;
-	private final HashMap<Player, Position> playerPositionMap; //TODO: is this needed?
-	private final Cell[][] board;
+ 	private final Cell[][] board;
 	//------------------------
 	// CONSTRUCTOR
 	//------------------------
 
 	public Board(Collection<Player> allPlayers)
 	{
-		playerPositionMap = new HashMap<>();
 		rooms = new HashMap<>();
 		//creates the dummy rooms which are only needed for mechanics (not gameplay)
 		rooms.put("Door", new Room("Door"));
@@ -38,7 +36,7 @@ public class Board
 			//tells the cell which player is on them
 			playerCell.setObject(player.getToken());
 			//puts the player and the position in the map (never has to be updated)
-			playerPositionMap.put(player, playerPos);
+			player.setPosition(playerPos);
 			//tell the player which cell they are in
 			player.setLocation(playerCell);
 		}
@@ -52,10 +50,6 @@ public class Board
 	public Room getRoom(RoomCard card){
 		return rooms.get(card.getName());
 	}
-
-//	public Room getRoom(String name){
-//		return rooms.get(name);
-//	}
 
 	/**
 	 * for reading the text file, when a character is given return
@@ -88,7 +82,7 @@ public class Board
 			right = sc.next();
 			//while the board file still has characters to read
 			while(sc.hasNext()){
-				Position cellPosition = new Position(xPosition, yPosition);
+				Position cellPosition = new Position(yPosition, xPosition);
 				Room cellRoom = getRoom(cell.charAt(0));
 				Cell newCell = new Cell(cellPosition, cellRoom);
 				//add cell to room
@@ -144,10 +138,10 @@ public class Board
 					belowCell.setDirection(Cell.Direction.NORTH, true);
 				}
 				if(currentCell.getRoom() == rooms.get("Wall")){
-					currentCell.setDirection(Cell.Direction.SOUTH, false);
-					currentCell.setDirection(Cell.Direction.NORTH, false);
-					currentCell.setDirection(Cell.Direction.WEST, false);
-					currentCell.setDirection(Cell.Direction.EAST, false);
+					// All directions false
+					for (Cell.Direction d : Cell.Direction.values()) {
+						currentCell.setDirection(d, false);
+					}
 				}
 			}
 		}
@@ -160,7 +154,7 @@ public class Board
 	 * @return - the cell the player was moved into
 	 */
 	public Cell move(Player p, Cell.Direction dir) {
-		Position playerPos = playerPositionMap.get(p);
+		Position playerPos = p.getPosition();
 		switch(dir){
 			case NORTH:
 				playerPos.setRow(playerPos.getRow() - 1);
@@ -175,51 +169,57 @@ public class Board
 				playerPos.setCol(playerPos.getCol() - 1);
 				break;
 		}
+		p.setPosition(playerPos);
 		return board[playerPos.getRow()][playerPos.getCol()];
 	}
 
 	/**
-	 * Dummy version of the move method, to check to see if
-	 * the player is going to be moving into an illegal space
+	 * Checks if the player has already used the Cell in the current round
 	 * @param p - Player
 	 * @param dir - direction they chose to move
-	 * @return TODO
+	 * @return if move is illegal
 	 */
-	public Cell checkMove(Player p, Cell.Direction dir) {
-		Position playerPos = playerPositionMap.get(p);
-		Position dummyPos = new Position(playerPos.getRow(), playerPos.getCol());
+	public boolean isCellUsed(Player p, Cell.Direction dir) {
+		Position playerPos = p.getPosition();
+		int row = playerPos.getRow();
+		int col = playerPos.getCol();
 		switch(dir){
 			case NORTH:
-				dummyPos.setRow(dummyPos.getRow() - 1);
+				row--;
 				break;
 			case SOUTH:
-				dummyPos.setRow(dummyPos.getRow() + 1);
+				row++;
 				break;
 			case EAST:
-				dummyPos.setCol(dummyPos.getCol() + 1);
+				col++;
 				break;
 			case WEST:
-				dummyPos.setCol(dummyPos.getCol() - 1);
+				col--;
 				break;
 		}
-		return board[dummyPos.getRow()][dummyPos.getCol()];
+		if (row < 0 || col < 0 || row >= ROWS || col >= COLS) return false;
+		return board[row][col].isUsedInRound();
 	}
 
-
-
 	public Room checkSurroundingCells(Player p){
-		Position playerPos = playerPositionMap.get(p);
-		if(!board[playerPos.getRow()+1][playerPos.getCol()].getRoom().toString().equals("_") && board[playerPos.getRow()+1][playerPos.getCol()].getRoom().getRoomSize() > 1){
-			return board[playerPos.getRow()+1][playerPos.getCol()].getRoom();
+		Position playerPos = p.getPosition();
+		int row = playerPos.getRow();
+		int col = playerPos.getCol();
+		Cell south = board[row + 1][col];
+		if(!south.getRoom().toString().equals("_") && south.getRoom().getRoomSize() > 1){
+			return south.getRoom();
 		}
-		if(!board[playerPos.getRow()-1][playerPos.getCol()].getRoom().toString().equals("_") && board[playerPos.getRow()-1][playerPos.getCol()].getRoom().getRoomSize()> 1){
-			return board[playerPos.getRow()-1][playerPos.getCol()].getRoom();
+		Cell north = board[row - 1][col];
+		if(!north.getRoom().toString().equals("_") && north.getRoom().getRoomSize()> 1){
+			return north.getRoom();
 		}
-		if(!board[playerPos.getRow()][playerPos.getCol()+1].getRoom().toString().equals("_") && board[playerPos.getRow()][playerPos.getCol()+1].getRoom().getRoomSize() > 1 ){
-			return board[playerPos.getRow()][playerPos.getCol()+1].getRoom();
+		Cell east = board[row][col + 1];
+		if(!east.getRoom().toString().equals("_") && east.getRoom().getRoomSize() > 1 ){
+			return east.getRoom();
 		}
-		if(!board[playerPos.getRow()][playerPos.getCol()-1].getRoom().toString().equals("_") && board[playerPos.getRow()][playerPos.getCol()-1].getRoom().getRoomSize()> 1){
-			return board[playerPos.getRow()][playerPos.getCol()-1].getRoom();
+		Cell west = board[row][col - 1];
+		if(!west.getRoom().toString().equals("_") && west.getRoom().getRoomSize() > 1){
+			return west.getRoom();
 		}
 		return null;
 	}

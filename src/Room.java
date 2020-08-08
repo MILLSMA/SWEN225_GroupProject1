@@ -40,22 +40,23 @@ public class Room {
 		return true;
 	}
 
-	public void addCard(Card aCard)
+	public Cell addCard(Card aCard)
 	{
 		cards.add(aCard);
 		Cell c = findEmptyCell();
 		if(aCard instanceof WeaponCard){
-			((WeaponCard)aCard).moveToRoom(this);
-			((WeaponCard)aCard).moveToCell(c);
+			WeaponCard weapon = (WeaponCard) aCard;
+			weapon.moveToCell(c);
 		}
 		if(aCard instanceof CharacterCard){
 			((CharacterCard)aCard).moveToCell(c);
 		}
+		return c;
 	}
 
 	/**
-	 * returns the first empty cell in the room
-	 * @return c: a cell within a room containing no items
+	 * Finds the first empty cell in the room
+	 * @return a cell within a room containing no items
 	 */
 	public Cell findEmptyCell(){
 		for(Cell c : this.cells){//TODO: populate room with cells - door should be in same room as cells

@@ -11,7 +11,6 @@ public enum WeaponCard implements Card{
 	SPANNER;
 
 	private Cell location;
-	private Room room;
 	private static final String[] codes = {"+", "#", "|", "%", "@", "?"};
 
 	public static Collection<WeaponCard> getWeapons(){
@@ -45,14 +44,9 @@ public enum WeaponCard implements Card{
 	}
 
 	public void moveToCell(Cell c){
-		if(this.location != null) this.location.setObject(null);
-		this.location = c;
+		if(location != null) location.setObject(null);
+		location = c;
 		c.setObject(this);
-	}
-
-	//TODO: potentially remove this and use cell only
-	public void moveToRoom(Room r){
-		this.room = r;
 	}
 
 	@Override

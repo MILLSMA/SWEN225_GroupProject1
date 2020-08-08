@@ -9,7 +9,7 @@ public class Player
 
 	//Player Attributes
 	private final CharacterCard token;
-	private Cell location;
+	private Position position;
 	private boolean isExcluded;
 
 	//Player Associations
@@ -22,8 +22,8 @@ public class Player
 	public Player(CharacterCard aToken, Cell aLocation, boolean aIsExcluded)
 	{
 		token = aToken;
-		location = aLocation;
-		this.getToken().changeLocation(aLocation);
+		token.changeLocation(aLocation);
+		if (aLocation != null) position = aLocation.getPosition();
 		isExcluded = aIsExcluded;
 		cards = new ArrayList<>();
 	}
@@ -32,16 +32,9 @@ public class Player
 	// INTERFACE
 	//------------------------
 
-//	public void setToken(CharacterCard aToken)
-//	{
-//		token = aToken;
-//	}
-
 	public void setLocation(Cell aLocation)
 	{
-		this.getToken().changeLocation(aLocation);
-		location = aLocation;
-
+		token.changeLocation(aLocation);
 	}
 
 	public void setIsExcluded(boolean aIsExcluded)
@@ -56,10 +49,8 @@ public class Player
 
 	public Cell getLocation()
 	{
-		return this.getToken().getLocation();
-		//return location;
+		return token.getLocation();
 	}
-
 
 	public boolean isExcluded()
 	{
@@ -71,17 +62,22 @@ public class Player
 		return Collections.unmodifiableList(cards);
 	}
 
-	public void updatePosition(Cell cell){
+	public void moveToCell(Cell cell){
 		// removes the player from the cell
-		//location.setObject(null);
-		this.getToken().getLocation().setObject(null);
+		token.getLocation().setObject(null);
 		//tell the player which cell they are in
-		location = cell;
-		this.getToken().changeLocation(cell);
+		token.changeLocation(cell);
 		//place the player in the cell
-		//location.setObject(getToken());
-		this.getToken().getLocation().setObject(getToken());
+		token.getLocation().setObject(getToken());
+		position = cell.getPosition();
+	}
 
+	public Position getPosition() {
+		return position;
+	}
+
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 
 	public boolean addCard(Card aCard)
