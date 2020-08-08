@@ -161,7 +161,7 @@ public class Game
 		move(p);
 
 		if(p.getLocation().getRoom().isProperRoom()){
-			System.out.println("You've entered the " + p.getLocation().getRoom().getCard().getName());
+			System.out.println("You've entered the " + p.getLocation().getRoom().getName());
 			turnEntry(p);
 		}
 
@@ -197,7 +197,7 @@ public class Game
 	 */
 	public void move(Player p){
 		if(p.getLocation().getRoom().isProperRoom()){
-			System.out.println("You are currently in the " + p.getLocation().getRoom());
+			System.out.println("You are currently in the " + p.getLocation().getRoom().getName());
 			System.out.println("You may move anywhere in your current room, " +
 					"your turn will start once you exit.");
 			while(true){
@@ -332,7 +332,7 @@ public class Game
 	 * @param p: player who is performing action
 	 */
 	public void waitForPlayer(Player p){
-		System.out.println("ACTION REQUIRED: Player " + (players.indexOf(p)+1) + " : " + p.getToken().getName());
+		System.out.println("=== SENSITIVE INFORMATION FOR PLAYER " + (players.indexOf(p)+1) + " (" + p.getToken().getName() + ") ===");
 		Scanner sc = new Scanner(System.in);
 		System.out.print("Push a character and enter key to continue");
 		sc.next();

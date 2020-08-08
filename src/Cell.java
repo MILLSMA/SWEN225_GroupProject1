@@ -19,24 +19,30 @@ public class Cell
 			ArrayList<Cell.Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
 			for (Cell.Direction direction : p.getLocation().directionsAvailable) {
 				if(!board.checkMove(p, direction).hasBeenMovedToo()){
-					System.out.println(direction.toString().toLowerCase() + "(" + correctAnswers.indexOf(direction) + ")");
+					System.out.println(direction.display());
 				}else correctAnswers.remove(direction);
 
 			}
-			System.out.println("End Turn (" + correctAnswers.size() + ")");
+			System.out.println("End Turn [X]");
 			while(true){
-				try {
-					int answer = input.nextInt();
-					if(answer >= 0 && answer <= correctAnswers.size()){
-						if(answer == correctAnswers.size()) return null;
-						return correctAnswers.get(answer);
-					}
-					System.out.println("Value must be between 0 and " + (correctAnswers.size()));
-				} catch (InputMismatchException e) {
-					System.out.println("Please enter a valid direction");
-					input.nextLine();
+				System.out.print("Move: ");
+				char answer = input.next().toUpperCase().charAt(0);
+				if (answer == 'X') return null;
+
+				for (Direction d : correctAnswers) {
+					if (answer == d.code()) return d;
 				}
+				System.out.println("Please use the given code in [ ].");
+				input.nextLine();
 			}
+		}
+
+		public String display() {
+			return "[" + name().substring(0, 1) + "]" + name().substring(1).toLowerCase();
+		}
+
+		public char code() {
+			return name().charAt(0);
 		}
 	}
 	//------------------------

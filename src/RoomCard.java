@@ -13,6 +13,8 @@ public enum RoomCard implements Card {
 	LIBRARY,
 	STUDY;
 
+	private static final String[] codes = {"K", "O", "C", "B", "D", "L", "H", "I", "S"};
+
 	public static Collection<RoomCard> getRooms(){
 		return Arrays.asList(values());
 	}
@@ -30,14 +32,18 @@ public enum RoomCard implements Card {
 	public static RoomCard input(){
 		while(true) {
 			Scanner sc = new Scanner(System.in);
-			// TODO: give key for rooms
-			System.out.print("Enter Room: ");
-			String roomGuess = sc.next();
-			for (RoomCard r : RoomCard.values()) {
-				if(r.name().equalsIgnoreCase(roomGuess)){
-					return r;
+			System.out.println("== Rooms, enter code in [ ] ==");
+			for (int i=0; i<size(); i++) {
+				System.out.println(values()[i].getName() + "[" + codes[i] + "]");
+			}
+			System.out.print("Enter room: ");
+			String guess = sc.next();
+			for (int i=0; i<size(); i++) {
+				if(codes[i].equalsIgnoreCase(guess)){
+					return values()[i];
 				}
 			}
+			System.out.println("Please use the given code in [ ].\n");
 		}
 	}
 
@@ -57,7 +63,6 @@ public enum RoomCard implements Card {
 
 	@Override
 	public String toString() {
-		String[] codes = {"K", "O", "C", "B", "D", "L", "H", "I", "S"};
 		return codes[ordinal()];
 	}
 }

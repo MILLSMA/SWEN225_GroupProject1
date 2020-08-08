@@ -12,6 +12,7 @@ public enum WeaponCard implements Card{
 
 	private Cell location;
 	private Room room;
+	private static final String[] codes = {"+", "#", "|", "%", "@", "?"};
 
 	public static Collection<WeaponCard> getWeapons(){
 		return Arrays.asList(values());
@@ -28,17 +29,20 @@ public enum WeaponCard implements Card{
 	public static WeaponCard input(){
 		while(true) {
 			Scanner sc = new Scanner(System.in);
-			// TODO: give key for weapons
+			System.out.println("== Weapons, enter code in [ ] ==");
+			for (int i=0; i<size(); i++) {
+				System.out.println(values()[i].getName() + " [" + codes[i] + "]");
+			}
 			System.out.print("Enter weapon: ");
-			String weaponGuess = sc.next();
-			for (WeaponCard w : WeaponCard.values()) {
-				if(w.name().equalsIgnoreCase(weaponGuess)){
-					return w;
+			String guess = sc.next();
+			for (int i=0; i<size(); i++) {
+				if(codes[i].equalsIgnoreCase(guess)){
+					return values()[i];
 				}
 			}
+			System.out.println("Please use the given code in [ ].\n");
 		}
 	}
-
 
 	public void moveToCell(Cell c){
 		if(this.location != null) this.location.setObject(null);
@@ -67,7 +71,6 @@ public enum WeaponCard implements Card{
 
 	@Override
 	public String toString() {
-		String[] codes = {"+", "#", "|", "%", "@", "?"};
 		return codes[ordinal()];
 	}
 }

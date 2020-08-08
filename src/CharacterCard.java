@@ -21,6 +21,8 @@ public enum CharacterCard implements Card {
 	public static final String ANSI_WHITE = "\u001B[37m";
 
 	private Cell location; //TODO: change from player location to account for unplayed characters and access location without knowing player
+	private static final String[] colours = {ANSI_RED, ANSI_YELLOW, ANSI_WHITE, ANSI_GREEN, ANSI_CYAN, ANSI_PURPLE};
+	private static final String[] codes = {"s", "c", "w", "g", "k", "p"};
 
 	public static Collection<CharacterCard> getCharacters(){
 		return Arrays.asList(values());
@@ -61,16 +63,20 @@ public enum CharacterCard implements Card {
 	 * @return enum CharacterCard value
 	 */
 	public static CharacterCard input(){
+		Scanner sc = new Scanner(System.in);
+		System.out.println("== Characters, enter code in [ ] ==");
+		for (int i=0; i<size(); i++) {
+			System.out.println(values()[i].getName() + " [" + colours[i] + codes[i] + ANSI_RESET +"]");
+		}
 		while(true) {
-			Scanner sc = new Scanner(System.in);
-			// TODO: give key for characters
 			System.out.print("Enter character: ");
-			String characterGuess = sc.next();
-			for (CharacterCard c : CharacterCard.values()) {
-				if(c.name().equalsIgnoreCase(characterGuess)){
-					return c;
+			String guess = sc.next();
+			for (int i=0; i<size(); i++) {
+				if(codes[i].equalsIgnoreCase(guess)){
+					return values()[i];
 				}
 			}
+			System.out.println("Please use a given code in [ ].");
 		}
 	}
 
@@ -101,7 +107,6 @@ public enum CharacterCard implements Card {
 
 	@Override
 	public String toString() {
-		String[] codes = {ANSI_RED+"s", ANSI_YELLOW+"c", ANSI_WHITE+"w", ANSI_GREEN+"g", ANSI_CYAN+"k", ANSI_PURPLE + "p"};
-		return codes[ordinal()] + ANSI_RESET;
+		return colours[ordinal()] + codes[ordinal()] + ANSI_RESET;
 	}
 }

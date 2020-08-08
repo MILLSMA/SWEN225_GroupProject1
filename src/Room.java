@@ -77,4 +77,8 @@ public class Room {
 		else if(card != null) return card.toString();
 		else return "/";
 	}
+
+	public String getName() {
+		return card.getName();
+	}
 }
