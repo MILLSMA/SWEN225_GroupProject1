@@ -32,19 +32,6 @@ public class Room {
 	public String getType(){
 		return type;
 	}
-//	public List<Cell> getCells()
-//	{
-//		return Collections.unmodifiableList(cells);
-//	}
-//	public int numberOfCells()
-//	{
-//		return cells.size();
-//	}
-//
-//	public List<Card> getCards()
-//	{
-//		return Collections.unmodifiableList(cards);
-//	}
 
 	public boolean addCell(Cell aCell)
 	{
@@ -82,11 +69,12 @@ public class Room {
 	public int getRoomSize(){
 		return this.cells.size();
 	}
+
 	@Override
 	public String toString() {
 		if(type.equals("Door")) return ")";
-		else if(card != null) return card.toString();
 		else if(type.equals("Hallway")) return "_";
+		else if(card != null) return card.toString();
 		else return "/";
 	}
 }
