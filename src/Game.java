@@ -291,7 +291,7 @@ public class Game
 	 */
 	private void playerSuggestionMove(CharacterCard ch){
 		for(Player p : players){
-			if(p.getToken().getName() == ch.name()){//this is the player to move
+			if(p.getToken().getName().equals(ch.getName())){//this is the player to move
 				p.setPosition(ch.getLocation().getPosition());
 				return;
 			}
