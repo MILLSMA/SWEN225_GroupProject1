@@ -69,6 +69,6 @@ public enum WeaponCard implements Card{
 
 	@Override
 	public String toString(){
-		return codes[ordinal()];
+		return "\u001b[34m" + codes[ordinal()] + CharacterCard.ANSI_RESET;
 	}
 }

@@ -132,7 +132,7 @@ public class Game
 		Random rand = new Random();
 		int firstDice = rand.nextInt(6)+1;
 		int secondDice = rand.nextInt(6)+1;
-		return firstDice + secondDice;
+		return firstDice + secondDice; // 20;
 	}
 
 	public void runGame(){
@@ -239,13 +239,14 @@ public class Game
 			cell.setUsedInRound(false);
 		}
 	}
+
 	/**
 	 * checks for adjacent rooms cells if player is in doorway.
 	 * @param p player to check
 	 */
 	public Room checkForRoom(Player p){
 		System.out.println(p.getLocation().getRoom().getRoomSize());
-		if(p.getLocation().getRoom().getRoomSize() <=1){//in doorway
+		if(p.getLocation().getRoom().getType().equals("Door")){//in doorway
 			return board.checkSurroundingCells(p);
 		}else if(p.getLocation().getRoom().getRoomSize() > 1){//inside room
 			return p.getLocation().getRoom();
@@ -265,9 +266,9 @@ public class Game
 		checkForRoom(p);
 		//character and weapon tokens move to room
 		Room currentRoom = checkForRoom(p);
-		currentRoom.addCard(guess.getCharacter());
-		p.setLocation(currentRoom.addCard(guess.getWeapon()));
-		playerSuggestionMove(guess.getCharacter());
+		Cell newCell = currentRoom.addCard(guess.getCharacter());
+		currentRoom.addCard(guess.getWeapon());
+		playerSuggestionMove(guess.getCharacter(), newCell);
 
 		boolean refuted = doRefutations(p, guess);
 		if(!refuted){
@@ -289,10 +290,10 @@ public class Game
 	 * change a players position if they're character is used in a suggesting
 	 * @param ch: characterCard used
 	 */
-	private void playerSuggestionMove(CharacterCard ch){
+	private void playerSuggestionMove(CharacterCard ch, Cell newCell){
 		for(Player p : players){
-			if(p.getToken().getName().equals(ch.getName())){//this is the player to move
-				p.setPosition(ch.getLocation().getPosition());
+			if(p.getToken().equals(ch)){//this is the player to move
+				p.moveToCell(newCell);
 				return;
 			}
 		}

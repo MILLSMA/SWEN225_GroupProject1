@@ -70,14 +70,6 @@ public class Player
 		position = cell.getPosition();
 	}
 
-	public Position getPosition(){
-		return position;
-	}
-
-	public void setPosition(Position position){
-		this.position = position;
-	}
-
 	/**
 	 * add a card to the players held cards
 	 * @param aCard: card to add

@@ -21,10 +21,6 @@ public class Room {
 	public void setCard(RoomCard card) {
 		if(this.card == null){
 			this.card = card;
-
-			if(this.isProperRoom()){
-				card.setRoom(this);
-			}
 		}
 
 	}
