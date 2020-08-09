@@ -35,8 +35,6 @@ public class Board
 			Cell playerCell = board[playerPos.getRow()][playerPos.getCol()];
 			//tells the cell which player is on them
 			playerCell.setObject(player.getToken());
-			//puts the player and the position in the map (never has to be updated)
-			player.setPosition(playerPos);
 			//tell the player which cell they are in
 			player.setLocation(playerCell);
 		}
@@ -68,13 +66,13 @@ public class Board
 	}
 
 	private void weaponStartPoints(){
-		List<RoomCard> roomValues = new ArrayList<>(EnumSet.allOf(RoomCard.class));
-		List<WeaponCard> weapons = new ArrayList<>(EnumSet.allOf(WeaponCard.class));
+		List<RoomCard> roomValues = new ArrayList<>(RoomCard.getRooms());
+		List<WeaponCard> weapons = new ArrayList<>(WeaponCard.getWeapons());
 		Random rand = new Random();
 		RoomCard currentRoom;
 		for(WeaponCard w: weapons){
 			currentRoom = roomValues.remove(rand.nextInt(roomValues.size()));
-			currentRoom.getRoom().addCard(w);
+			rooms.get(currentRoom.getName()).addCard(w);
 		}
 	}
 
@@ -166,7 +164,7 @@ public class Board
 	 * @return - the cell the player was moved into
 	 */
 	public Cell move(Player p, Cell.Direction dir) {
-		Position playerPos = p.getPosition();
+		Position playerPos = p.getLocation().getPosition();
 		switch(dir){
 			case NORTH:
 				playerPos.setRow(playerPos.getRow() - 1);
@@ -181,7 +179,6 @@ public class Board
 				playerPos.setCol(playerPos.getCol() - 1);
 				break;
 		}
-		p.setPosition(playerPos);
 		return board[playerPos.getRow()][playerPos.getCol()];
 	}
 
@@ -192,7 +189,7 @@ public class Board
 	 * @return if move is illegal
 	 */
 	public boolean isCellUsed(Player p, Cell.Direction dir) {
-		Position playerPos = p.getPosition();
+		Position playerPos = p.getLocation().getPosition();
 		int row = playerPos.getRow();
 		int col = playerPos.getCol();
 		switch(dir){
@@ -219,7 +216,7 @@ public class Board
 	 * @return a room that has been found, null if none exists
 	 */
 	public Room checkSurroundingCells(Player p){
-		Position playerPos = p.getPosition();
+		Position playerPos = p.getLocation().getPosition();
 		int row = playerPos.getRow();
 		int col = playerPos.getCol();
 		Cell south = board[row + 1][col];

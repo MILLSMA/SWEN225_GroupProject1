@@ -40,6 +40,10 @@ public enum CharacterCard implements Card {
 		return location;
 	}
 
+	public void setLocation(Cell location) {
+		this.location = location;
+	}
+
 	/**
 	 * prints the name of a character with correct spacing can in title case
 	 * @return String of character name
