@@ -14,6 +14,7 @@ public enum RoomCard implements Card {
 	STUDY;
 
 	private static final String[] codes = {"K", "O", "C", "B", "D", "L", "H", "I", "S"};
+	private Room room;
 
 	public static Collection<RoomCard> getRooms(){
 		return Arrays.asList(values());
@@ -21,6 +22,14 @@ public enum RoomCard implements Card {
 
 	public static int size(){
 		return values().length;
+	}
+
+	public void setRoom(Room r){
+		this.room = r;
+	}
+
+	public Room getRoom(){
+		return room;
 	}
 
 	/**

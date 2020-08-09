@@ -67,6 +67,17 @@ public class Board
 		return null;
 	}
 
+	private void weaponStartPoints(){
+		List<RoomCard> roomValues = new ArrayList<>(EnumSet.allOf(RoomCard.class));
+		List<WeaponCard> weapons = new ArrayList<>(EnumSet.allOf(WeaponCard.class));
+		Random rand = new Random();
+		RoomCard currentRoom;
+		for(WeaponCard w: weapons){
+			currentRoom = roomValues.remove(rand.nextInt(roomValues.size()));
+			currentRoom.getRoom().addCard(w);
+		}
+	}
+
 	/**
 	 * reads the input file and creates the board accordingly
 	 */
@@ -108,6 +119,7 @@ public class Board
 			System.out.println("Please put a CluedoBoard.txt file in the root directory.");
 		}
 		updateCellDirections();
+		weaponStartPoints();
 	}
 
 	/**
