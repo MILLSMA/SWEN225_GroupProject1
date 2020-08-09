@@ -19,7 +19,7 @@ public enum RoomCard implements Card {
 		return Arrays.asList(values());
 	}
 
-	public static int size() {
+	public static int size(){
 		return values().length;
 	}
 
@@ -48,7 +48,7 @@ public enum RoomCard implements Card {
 	}
 
 	@Override
-	public String getName() {
+	public String getName(){
 		StringBuilder sb = new StringBuilder();
 		boolean capital = true;
 		// Change enum names to lower case, underscores as spaces
@@ -62,7 +62,7 @@ public enum RoomCard implements Card {
 	}
 
 	@Override
-	public String toString() {
+	public String toString(){
 		return codes[ordinal()];
 	}
 }

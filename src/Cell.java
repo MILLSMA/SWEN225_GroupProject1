@@ -93,8 +93,7 @@ public class Cell
 			else directionsAvailable.remove(dir);
 	}
 
-	public Room getRoom()
-	{
+	public Room getRoom() {
 		return room;
 	}
 
@@ -103,8 +102,7 @@ public class Cell
 		return position;
 	}
 
-	public boolean setPosition(Position aNewPosition)
-	{
+	public boolean setPosition(Position aNewPosition) {
 		boolean wasSet = false;
 		if (aNewPosition != null)
 		{
@@ -114,12 +112,11 @@ public class Cell
 		return wasSet;
 	}
 
-   public Card getObject(){
+   	public Card getObject(){
 		return object;
    }
 
-	public String toString()
-	{
+	public String toString() {
 		if(object != null) return object.toString();
 		return room.toString();
 	}

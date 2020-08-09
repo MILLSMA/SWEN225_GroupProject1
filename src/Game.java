@@ -59,6 +59,11 @@ public class Game
 		runGame();
 	}
 
+	/**
+	 * Creates a new player object for each player in the game
+	 * @param numPlayers: number of players in the came
+	 * @return : List of player objects
+	 */
 	private List<Player> createPlayers(int numPlayers){
 		//creates an arraylist for the new characters to be stored
 		ArrayList<Player> tempPlayerList = new ArrayList<>(6);
@@ -127,14 +132,13 @@ public class Game
 		Random rand = new Random();
 		int firstDice = rand.nextInt(6)+1;
 		int secondDice = rand.nextInt(6)+1;
-		//return firstDice + secondDice;
-		return 40;//TODO: CHANGE THIS BACK
+		return firstDice + secondDice;
 	}
 
 	public void runGame(){
 		while(!won || !allPlayersOut()){
 			for (Player player : players) {
-				if(!won && !player.isExcluded()) doTurn(player);
+				if(!won && !player.getExcluded()) doTurn(player);
 			}
 		}
 		if(allPlayersOut()){
@@ -142,9 +146,13 @@ public class Game
 		}
 	}
 
+	/**
+	 * check if all players are out of the game
+	 * @return boolean: true if all out
+	 */
 	public boolean allPlayersOut(){
 		for(Player p : players){
-			if(!p.isExcluded()){
+			if(!p.getExcluded()){
 				return false;
 			}
 		}
@@ -245,6 +253,10 @@ public class Game
 		throw new RuntimeException("There should be a room near here!");
 	}
 
+	/**
+	 *controls suggestion input
+	 * @param p: player whose turn it is
+	 */
 	public void makeSuggestion(Player p){
 		System.out.println("Making a suggestion here");
 		CardTriplet guess = new CardTriplet(p.getLocation().getRoom().getCard());
@@ -255,7 +267,6 @@ public class Game
 		Room currentRoom = checkForRoom(p);
 		currentRoom.addCard(guess.getCharacter());
 		p.setLocation(currentRoom.addCard(guess.getWeapon()));
-		//TODO: player location stored in character location instead
 
 		boolean refuted = doRefutations(p, guess);
 		if(!refuted){
@@ -273,6 +284,12 @@ public class Game
 		}
 	}
 
+	/**
+	 * Iterate players in search of cards matching suggestion
+	 * @param p: player who made suggestion
+	 * @param guess: guess to refute
+	 * @return boolean: true if a card is shown
+	 */
 	private boolean doRefutations(Player p, CardTriplet guess) {
 		boolean found = false;
 		int asked = 0;
@@ -280,11 +297,9 @@ public class Game
 			Player asking;
 			if(players.indexOf(p) + asked + 1 >= players.size() ){
 				//loop back through char collection from index zero
-				//System.out.println("Asking: " + players.get(asked - (players.size() - players.indexOf(p)) + 1).getToken().getName());
 				asking = players.get(asked - (players.size() - players.indexOf(p)) + 1);
 			}else{
 				//ask from player position
-				//System.out.println("Asking: " + players.get(players.indexOf(p) + asked + 1).getToken().getName());
 				asking = players.get(players.indexOf(p) + asked + 1);
 			}
 			asked ++;

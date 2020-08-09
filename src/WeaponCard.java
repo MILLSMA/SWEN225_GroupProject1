@@ -17,7 +17,7 @@ public enum WeaponCard implements Card{
 		return Arrays.asList(values());
 	}
 
-	public static int size() {
+	public static int size(){
 		return values().length;
 	}
 
@@ -43,6 +43,10 @@ public enum WeaponCard implements Card{
 		}
 	}
 
+	/**
+	 * move the weapon token to a new cell
+	 * @param c: cell to move to
+	 */
 	public void moveToCell(Cell c){
 		if(location != null) location.setObject(null);
 		location = c;
@@ -50,7 +54,7 @@ public enum WeaponCard implements Card{
 	}
 
 	@Override
-	public String getName() {
+	public String getName(){
 		StringBuilder sb = new StringBuilder();
 		boolean capital = true;
 		// Change enum names to lower case, underscores as spaces
@@ -64,7 +68,7 @@ public enum WeaponCard implements Card{
 	}
 
 	@Override
-	public String toString() {
+	public String toString(){
 		return codes[ordinal()];
 	}
 }

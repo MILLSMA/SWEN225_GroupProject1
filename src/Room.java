@@ -13,12 +13,15 @@ public class Room {
 	public RoomCard getCard(){
 		return card;
 	}
-	public Boolean setCard(RoomCard card) {
+
+	/**
+	 * Assign a room card to the current room object
+	 * @param card: to assign
+	 */
+	public void setCard(RoomCard card) {
 		if(this.card == null){
 			this.card = card;
-			return true;
 		}
-		return false;
 	}
 
 	//Room Associations
@@ -33,15 +36,24 @@ public class Room {
 		return type;
 	}
 
-	public boolean addCell(Cell aCell)
-	{
-		if (cells.contains(aCell)) { return false; }
-		cells.add(aCell);
-		return true;
+	public List<Card> getCards(){
+		return cards;
 	}
 
-	public Cell addCard(Card aCard)
-	{
+	/**
+	 * add a cell to the room
+	 * @param aCell: cell to add
+	 */
+	public void addCell(Cell aCell){
+		cells.add(aCell);
+	}
+
+	/**
+	 * add a card into a empty cell inside a room
+	 * @param aCard: card to add
+	 * @return the cell teh card is added to
+	 */
+	public Cell addCard(Card aCard){
 		cards.add(aCard);
 		Cell c = findEmptyCell();
 		if(aCard instanceof WeaponCard){
@@ -57,6 +69,7 @@ public class Room {
 	/**
 	 * Finds the first empty cell in the room
 	 * @return a cell within a room containing no items
+	 * @throws RuntimeException if no empty cells are found
 	 */
 	public Cell findEmptyCell(){
 		for(Cell c : this.cells){//TODO: populate room with cells - door should be in same room as cells
@@ -79,7 +92,7 @@ public class Room {
 		else return "/";
 	}
 
-	public String getName() {
+	public String getName(){
 		return card.getName();
 	}
 }

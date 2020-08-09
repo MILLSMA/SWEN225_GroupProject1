@@ -20,7 +20,7 @@ public enum CharacterCard implements Card {
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
 
-	private Cell location; //TODO: change from player location to account for unplayed characters and access location without knowing player
+	private Cell location;
 	private static final String[] colours = {ANSI_RED, ANSI_YELLOW, ANSI_WHITE, ANSI_GREEN, ANSI_CYAN, ANSI_PURPLE};
 	private static final String[] codes = {"s", "c", "w", "g", "k", "p"};
 
@@ -80,6 +80,11 @@ public enum CharacterCard implements Card {
 		}
 	}
 
+	/**
+	 * Set a characters position give a preset value
+	 * @param character: character to be set
+	 * @return position of character
+	 */
 	public static Position characterStartPosition(CharacterCard character){
 		switch(character){
 			case MRS_WHITE:
@@ -99,9 +104,13 @@ public enum CharacterCard implements Card {
 		}
 	}
 
+	/**
+	 * change the call a character is in
+	 * @param c: c to move to
+	 */
 	public void moveToCell(Cell c){
 		if(location != null) location.setObject(null);
-		location = c;
+		changeLocation(c);
 		c.setObject(this);
 	}
 

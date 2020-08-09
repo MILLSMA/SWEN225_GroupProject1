@@ -76,7 +76,7 @@ public class Board
 			Scanner sc = new Scanner(new File("CluedoBoard.txt")).useDelimiter("(\\b|\\B)");
 			int xPosition = 0, yPosition = 0;
 			String left, cell, right;
-			//read whats on the left and right of the cell aswell as the cell
+			//read whats on the left and right of the cell as well as the cell
 			left = sc.next();
 			cell = sc.next();
 			right = sc.next();
@@ -201,6 +201,11 @@ public class Board
 		return board[row][col].isUsedInRound();
 	}
 
+	/**
+	 * checks for a room in the four cells surround a players cell
+	 * @param p: player
+	 * @return a room that has been found, null if none exists
+	 */
 	public Room checkSurroundingCells(Player p){
 		Position playerPos = p.getPosition();
 		int row = playerPos.getRow();

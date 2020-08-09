@@ -32,36 +32,34 @@ public class Player
 	// INTERFACE
 	//------------------------
 
-	public void setLocation(Cell aLocation)
-	{
+	public void setLocation(Cell aLocation) {
 		token.changeLocation(aLocation);
 	}
 
-	public void setIsExcluded(boolean aIsExcluded)
-	{
+	public void setIsExcluded(boolean aIsExcluded){
 		isExcluded = aIsExcluded;
 	}
 
-	public CharacterCard getToken()
-	{
+	public CharacterCard getToken(){
 		return token;
 	}
 
-	public Cell getLocation()
-	{
+	public Cell getLocation(){
 		return token.getLocation();
 	}
 
-	public boolean isExcluded()
-	{
-		return isExcluded;
+	public boolean getExcluded(){
+		return this.isExcluded;
 	}
 
-	public List<Card> getCards()
-	{
+	public List<Card> getCards(){
 		return Collections.unmodifiableList(cards);
 	}
 
+	/**
+	 * move the player and associated character token to a new cell
+	 * @param cell: cell to move to
+	 */
 	public void moveToCell(Cell cell){
 		// removes the player from the cell
 		token.getLocation().setObject(null);
@@ -72,21 +70,25 @@ public class Player
 		position = cell.getPosition();
 	}
 
-	public Position getPosition() {
+	public Position getPosition(){
 		return position;
 	}
 
-	public void setPosition(Position position) {
+	public void setPosition(Position position){
 		this.position = position;
 	}
 
-	public boolean addCard(Card aCard)
-	{
-		if (cards.contains(aCard)) { return false; }
+	/**
+	 * add a card to the players held cards
+	 * @param aCard: card to add
+	 */
+	public void addCard(Card aCard) {
 		cards.add(aCard);
-		return true;
 	}
 
+	/**
+	 * print out the player's hand in a readable way
+	 */
 	public void displayHand(){
 		System.out.println("Cards held by player: " + this.token.getName());
 		for(Card c : cards){

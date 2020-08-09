@@ -13,8 +13,7 @@ public class Position
 	// CONSTRUCTOR
 	//------------------------
 
-	public Position(int aRow, int aCol)
-	{
+	public Position(int aRow, int aCol){
 		row = aRow;
 		col = aCol;
 	}
@@ -23,31 +22,24 @@ public class Position
 	// INTERFACE
 	//------------------------
 
-	public boolean setRow(int aRow)
-	{
+	public void setRow(int aRow){
 		row = aRow;
-		return true;
 	}
 
-	public boolean setCol(int aCol)
-	{
+	public void setCol(int aCol){
 		col = aCol;
-		return true;
 	}
 
-	public int getRow()
-	{
+	public int getRow(){
 		return row;
 	}
 
-	public int getCol()
-	{
+	public int getCol(){
 		return col;
 	}
 
 
-	public String toString()
-	{
+	public String toString(){
 		return "(" + getRow()+ ", " + getCol()+ ")";
 	}
 }

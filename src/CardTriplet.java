@@ -63,10 +63,6 @@ public class CardTriplet {
 	{
 		return weapon;
 	}
-	public RoomCard getRoom()
-	{
-		return room;
-	}
 
 	@Override
 	public boolean equals(Object o) {
