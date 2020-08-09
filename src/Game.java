@@ -257,7 +257,7 @@ public class Game
 	 *controls suggestion input
 	 * @param p: player whose turn it is
 	 */
-	public void makeSuggestion(Player p){
+	private void makeSuggestion(Player p){
 		System.out.println("Making a suggestion here");
 		CardTriplet guess = new CardTriplet(p.getLocation().getRoom().getCard());
 		System.out.println("Suggestion is: " + guess);
@@ -267,6 +267,7 @@ public class Game
 		Room currentRoom = checkForRoom(p);
 		currentRoom.addCard(guess.getCharacter());
 		p.setLocation(currentRoom.addCard(guess.getWeapon()));
+		playerSuggestionMove(guess.getCharacter());
 
 		boolean refuted = doRefutations(p, guess);
 		if(!refuted){
@@ -280,6 +281,19 @@ public class Game
 
 			if (accusationChoice.matches("(?i)y|yes")) {
 				makeAccusation(p);
+			}
+		}
+	}
+
+	/**
+	 * change a players position if they're character is used in a suggesting
+	 * @param ch: characterCard used
+	 */
+	private void playerSuggestionMove(CharacterCard ch){
+		for(Player p : players){
+			if(p.getToken().getName() == ch.name()){//this is the player to move
+				p.setPosition(ch.getLocation().getPosition());
+				return;
 			}
 		}
 	}
