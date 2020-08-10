@@ -19,7 +19,7 @@ public class Cell
 			ArrayList<Cell.Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
 			for (Cell.Direction direction : p.getLocation().directionsAvailable) {
 				if(!board.isCellUsed(p, direction)){
-					System.out.println(direction.display());
+					System.out.println(direction);
 				}else correctAnswers.remove(direction);
 
 			}
@@ -37,7 +37,7 @@ public class Cell
 			}
 		}
 
-		public String display() {
+		public String toString() {
 			return "[" + name().substring(0, 1) + "]" + name().substring(1).toLowerCase();
 		}
 

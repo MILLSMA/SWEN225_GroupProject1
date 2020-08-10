@@ -9,7 +9,6 @@ public class Player
 
 	//Player Attributes
 	private final CharacterCard token;
-	private Position position;
 	private boolean isExcluded;
 
 	//Player Associations
@@ -23,7 +22,6 @@ public class Player
 	{
 		token = aToken;
 		token.changeLocation(aLocation);
-		if (aLocation != null) position = aLocation.getPosition();
 		isExcluded = aIsExcluded;
 		cards = new ArrayList<>();
 	}
@@ -49,7 +47,7 @@ public class Player
 	}
 
 	public boolean getExcluded(){
-		return this.isExcluded;
+		return isExcluded;
 	}
 
 	public List<Card> getCards(){
@@ -67,7 +65,6 @@ public class Player
 		token.changeLocation(cell);
 		//place the player in the cell
 		token.getLocation().setObject(getToken());
-		position = cell.getPosition();
 	}
 
 	/**
