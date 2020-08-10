@@ -1,2 +1,3 @@
 # Don't upload compiled code
 /out/
+/src/META-INF/MANIFEST.MF
