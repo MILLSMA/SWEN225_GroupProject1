@@ -73,7 +73,7 @@ public class Room {
 	 * @throws RuntimeException if no empty cells are found
 	 */
 	public Cell findEmptyCell(){
-		for(Cell c : this.cells){//TODO: populate room with cells - door should be in same room as cells
+		for(Cell c : this.cells){
 			if(c.getObject() == null) {
 				return c;
 			}
