@@ -12,6 +12,32 @@ public class Board
 	//Board Associations
 	private final HashMap<String, Room> rooms;
  	private final Cell[][] board;
+
+ 	private static final String boardFile = "///////////////////_/O O O O/_///////////////////\n" +
+			"/K K K K K K///_ _ _/O O O O/_ _ _///C C C C C C/\n" +
+			"/K K K K K K/_ _/O O O O O O O O/_ _/C C C C C C/\n" +
+			"/K K K K K K/_ _/O O O O O O O O/_ _/C C C C C C/\n" +
+			"/K K K K K K/_ _/O O O O O O O O/_ _/) C C C C C/\n" +
+			"/K K K K K K/_ _)O O O O O O O O)_ _ _/C C C C C/\n" +
+			"///K K K ) K/_ _/O O O O O O O O/_ _ _ _ _ _ _ _/\n" +
+			"/_ _ _ _ _ _ _ _/O ) O O O O ) O)_ _ _ _ _ _ _ _/\n" +
+			"///_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _/B B B B B B/\n" +
+			"/D D D D D/_ _ _ _ _ _ _ _ _ _ _ _ _ ) B B B B B/\n" +
+			"/D D D D D D D D/_ _///////////_ _ _/B B B B B B/\n" +
+			"/D D D D D D D D/_ _///////////_ _ _/B B B B B B/\n" +
+			"/D D D D D D D ) _ _///////////_ _ _/B B B B ) B/\n" +
+			"/D D D D D D D D/_ _///////////_ _ _ _ _ _ _ _///\n" +
+			"/D D D D D D D D/_ _///////////_ _ _/I I ) I I///\n" +
+			"/D D D D D D D D/_ _///////////_ _/I I I I I I I/\n" +
+			"///_ _ _ _ _ _ _ _ _///////////_ _ ) I I I I I I/\n" +
+			"/_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _/I I I I I I I/\n" +
+			"///_ _ _ _ _ _ _ _/H H ) ) H H/_ _ _/I I I I I///\n" +
+			"/L L L L L L )/_ _/H H H H H H/_ _ _ _ _ _ _ _ _/\n" +
+			"/L L L L L L L/_ _/H H H H H H/_ _ _ _ _ _ _ _///\n" +
+			"/L L L L L L L/_ _/H H H H H H/_ _/) S S S S S///\n" +
+			"/L L L L L L L/_ _/H H H H H H/_ _/S S S S S S S/\n" +
+			"/L L L L L L L/_ _/H H H H H H/_ _/S S S S S S S/\n" +
+			"/L L L L L L///_/////H H H H/////_///S S S S S S/\n";
 	//------------------------
 	// CONSTRUCTOR
 	//------------------------
@@ -80,41 +106,37 @@ public class Board
 	 * reads the input file and creates the board accordingly
 	 */
 	private void createCells(){
-		try {
-			//scanner to read the CluedoBoard.txt file with a delimiter that reads all characters including whitespace
-			Scanner sc = new Scanner(new File("CluedoBoard.txt")).useDelimiter("(\\b|\\B)");
-			int xPosition = 0, yPosition = 0;
-			String left, cell, right;
-			//read whats on the left and right of the cell as well as the cell
-			left = sc.next();
-			cell = sc.next();
-			right = sc.next();
-			//while the board file still has characters to read
-			while(sc.hasNext()){
-				Position cellPosition = new Position(yPosition, xPosition);
-				Room cellRoom = getRoom(cell.charAt(0));
-				Cell newCell = new Cell(cellPosition, cellRoom);
-				//add cell to room
-				if(cellRoom != null){cellRoom.addCell(newCell);}
-				board[yPosition][xPosition] = newCell;
-				if(left.charAt(0) != '/') newCell.setDirection(Cell.Direction.WEST, true);
-				if(right.charAt(0) != '/') newCell.setDirection(Cell.Direction.EAST, true);
+		//scanner to read the hardcoded CluedoBoard.txt file with a delimiter that reads all characters including whitespace
+		Scanner sc = new Scanner(boardFile).useDelimiter("(\\b|\\B)");
+		int xPosition = 0, yPosition = 0;
+		String left, cell, right;
+		//read whats on the left and right of the cell as well as the cell
+		left = sc.next();
+		cell = sc.next();
+		right = sc.next();
+		//while the board file still has characters to read
+		while(sc.hasNext()){
+			Position cellPosition = new Position(yPosition, xPosition);
+			Room cellRoom = getRoom(cell.charAt(0));
+			Cell newCell = new Cell(cellPosition, cellRoom);
+			//add cell to room
+			if(cellRoom != null){cellRoom.addCell(newCell);}
+			board[yPosition][xPosition] = newCell;
+			if(left.charAt(0) != '/') newCell.setDirection(Cell.Direction.WEST, true);
+			if(right.charAt(0) != '/') newCell.setDirection(Cell.Direction.EAST, true);
 
-				if(sc.hasNext("\n")){
-					sc.next();
-					xPosition = 0;
-					yPosition++;
-					if(sc.hasNext()) left = sc.next();
-				}else {
-					xPosition++;
-					left = right;
-				}
-
-				if (sc.hasNext()) cell = sc.next();
-				if (sc.hasNext()) right = sc.next();
+			if(sc.hasNext("\n")){
+				sc.next();
+				xPosition = 0;
+				yPosition++;
+				if(sc.hasNext()) left = sc.next();
+			}else {
+				xPosition++;
+				left = right;
 			}
-		}catch(FileNotFoundException e){
-			System.out.println("Please put a CluedoBoard.txt file in the root directory.");
+
+			if (sc.hasNext()) cell = sc.next();
+			if (sc.hasNext()) right = sc.next();
 		}
 		updateCellDirections();
 		weaponStartPoints();
