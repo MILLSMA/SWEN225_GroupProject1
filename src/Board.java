@@ -207,7 +207,7 @@ public class Board
 				break;
 		}
 		if (row < 0 || col < 0 || row >= ROWS || col >= COLS) return false;
-		return board[row][col].isUsedInRound() || board[row][col].getObject() == null;
+		return board[row][col].isUsedInRound() || board[row][col].getObject() != null;
 	}
 
 	/**
