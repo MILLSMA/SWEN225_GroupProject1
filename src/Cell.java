@@ -13,7 +13,7 @@ public class Cell
 		 * @param p: player making move
 		 * @return direction enum to move the player
 		 */
-		public static Cell.Direction askForDirection(Player p, Board board){
+		public static Cell.Direction input(Player p, Board board){
 			Scanner input = new Scanner(System.in);
 			//Stores the directions that the player can legally move
 			ArrayList<Cell.Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
@@ -66,7 +66,7 @@ public class Cell
 			throw new RuntimeException("Unable to create Cell due to aPosition. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
 		}
 		this.room = room;
-		putCellInRoom();
+		room.addCell(this);
 	}
 
 	//------------------------
@@ -82,10 +82,6 @@ public class Cell
 
 	public void setObject(Card card){
 		this.object = card;
-	}
-
-	private void putCellInRoom(){
-		room.addCell(this);
 	}
 
 	public void setDirection(Direction dir, boolean possible){

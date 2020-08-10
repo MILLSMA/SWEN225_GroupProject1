@@ -20,7 +20,7 @@ public enum CharacterCard implements Card {
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
 
-	private Cell location;
+	private Cell cell;
 	private static final String[] colours = {ANSI_RED, ANSI_YELLOW, ANSI_WHITE, ANSI_GREEN, ANSI_CYAN, ANSI_PURPLE};
 	private static final String[] codes = {"s", "c", "w", "g", "k", "p"};
 
@@ -28,20 +28,12 @@ public enum CharacterCard implements Card {
 		return Arrays.asList(values());
 	}
 
-	public void changeLocation(Cell c){
-		this.location = c;
-	}
-
 	public static int size() {
 		return values().length;
 	}
 
-	public Cell getLocation(){
-		return location;
-	}
-
-	public void setLocation(Cell location) {
-		this.location = location;
+	public Cell getCell(){
+		return cell;
 	}
 
 	/**
@@ -112,10 +104,10 @@ public enum CharacterCard implements Card {
 	 * change the call a character is in
 	 * @param c: c to move to
 	 */
-	public void moveToCell(Cell c){
-		if(location != null) location.setObject(null);
-		changeLocation(c);
-		c.setObject(this);
+	public void setCell(Cell c){
+		if(cell != null) cell.setObject(null);
+		cell = c;
+		if (cell != null) c.setObject(this);
 	}
 
 	@Override

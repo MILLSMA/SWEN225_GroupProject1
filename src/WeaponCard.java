@@ -47,7 +47,7 @@ public enum WeaponCard implements Card{
 	 * move the weapon token to a new cell
 	 * @param c: cell to move to
 	 */
-	public void moveToCell(Cell c){
+	public void setCell(Cell c){
 		if(location != null) location.setObject(null);
 		location = c;
 		c.setObject(this);

@@ -84,7 +84,7 @@ public class Game
 	 * Deals deck of cards to players
 	 * @param cards collection of all cards that aren't the solution
 	 */
-	public void dealCards(Collection<Card> cards){
+	private void dealCards(Collection<Card> cards){
 		Random rand = new Random();
 		ArrayList<Card> tempCardBag = new ArrayList<>(cards);
 		//decideSolution(tempCardBag);
@@ -106,7 +106,7 @@ public class Game
 	 * Selects a random room, weapon and character card from deck to set as solution
 	 * @param cards : all the possible cards
 	 */
-	public CardTriplet decideSolution(Collection<Card> cards) {
+	private CardTriplet decideSolution(Collection<Card> cards) {
 		if (envelope != null) throw new RuntimeException("Solution already decided.");
 		Random rand = new Random();
 		CharacterCard envelopeCharacter = (CharacterCard) cards.stream()
@@ -128,15 +128,14 @@ public class Game
 	 * Roll two six-sided die
 	 * @return int : sum of die
 	 */
-	public int rollDice() {
+	private int rollDice() {
 		Random rand = new Random();
 		int firstDice = rand.nextInt(6)+1;
 		int secondDice = rand.nextInt(6)+1;
-//		return 20;
 		return firstDice + secondDice;
 	}
 
-	public void runGame(){
+	private void runGame(){
 		while(!won || !allPlayersOut()){
 			for (Player player : players) {
 				if(!won && !player.getExcluded()) doTurn(player);
@@ -151,7 +150,7 @@ public class Game
 	 * check if all players are out of the game
 	 * @return boolean: true if all out
 	 */
-	public boolean allPlayersOut(){
+	private boolean allPlayersOut(){
 		for(Player p : players){
 			if(!p.getExcluded()){
 				return false;
@@ -164,15 +163,15 @@ public class Game
 	 * main method for a single turn
 	 * @param p : the player making the turn
 	 */
-	public void doTurn(Player p){
+	private void doTurn(Player p){
 		//place holder code
 		System.out.println("\n== "+p.getToken().getName() + "'s turn ==");
 		move(p);
 
 		if(p.getLocation().getRoom().isProperRoom()){
 			System.out.println("You've entered the " + p.getLocation().getRoom().getName());
-			Room currentRoom = checkForRoom(p);
-			p.moveToCell(currentRoom.findEmptyCell());
+			Room currentRoom = findRoom(p);
+			p.setCell(currentRoom.findEmptyCell());
 			turnEntry(p);
 		}
 
@@ -182,7 +181,7 @@ public class Game
 	 * retrieves and validates turn entry by player
 	 * @param p : player whose turn it is
 	 */
-	public void turnEntry(Player p){
+	private void turnEntry(Player p){
 		Scanner sc = new Scanner(System.in);
 		String turnEntry;
 		do {
@@ -204,7 +203,7 @@ public class Game
 	 * Rolls the dice, controls a player's moves
 	 * @param p : the player moving
 	 */
-	public void move(Player p){
+	private void move(Player p){
 		if(p.getLocation().getRoom().isProperRoom()){
 			System.out.println("You are currently in the " + p.getLocation().getRoom().getName());
 			System.out.println("You may move anywhere in your current room, " +
@@ -212,11 +211,11 @@ public class Game
 			while(true){
 				//prints the board to the screen
 				System.out.println(board);
-				Cell.Direction chosenDirection = Cell.Direction.askForDirection(p, board);
+				Cell.Direction chosenDirection = Cell.Direction.input(p, board);
 				if(chosenDirection == null)return;
 				Cell oldPlayerCell = p.getLocation();
 				Cell newPlayerCell = board.move(p, chosenDirection);
-				p.moveToCell(newPlayerCell);
+				p.setCell(newPlayerCell);
 				if(newPlayerCell.getRoom().getCard() != oldPlayerCell.getRoom().getCard()) break;
 			}
 		}
@@ -229,11 +228,11 @@ public class Game
 			//displays whose turn it is and how many moves they have left
 			System.out.println(p.getToken().getName()+ " you have " + (numberOfMoves - moveNumber) + " moves left");
 			System.out.println("You may move in these directions: ");
-			Cell.Direction chosenDirection = Cell.Direction.askForDirection(p, board);
+			Cell.Direction chosenDirection = Cell.Direction.input(p, board);
 			if(chosenDirection == null) break;
 			//moves the player on the board based on their answer
 			Cell newPlayerCell = board.move(p, chosenDirection);
-			p.moveToCell(newPlayerCell);
+			p.setCell(newPlayerCell);
 			cellsMovedTo.add(newPlayerCell);
 			newPlayerCell.setUsedInRound(true);
 			if(p.getLocation().getRoom().isProperRoom()) break;
@@ -247,7 +246,7 @@ public class Game
 	 * checks for adjacent rooms cells if player is in doorway.
 	 * @param p player to check
 	 */
-	public Room checkForRoom(Player p){
+	private Room findRoom(Player p){
 		System.out.println(p.getLocation().getRoom().getRoomSize());
 		if(p.getLocation().getRoom().getType().equals("Door")){//in doorway
 			return board.checkSurroundingCells(p);
@@ -266,12 +265,11 @@ public class Game
 		CardTriplet guess = new CardTriplet(p.getLocation().getRoom().getCard());
 		System.out.println("Suggestion is: " + guess);
 
-		checkForRoom(p);
 		//character and weapon tokens move to room
-		Room currentRoom = checkForRoom(p);
+		Room currentRoom = findRoom(p);
 		Cell newCell = currentRoom.addCard(guess.getCharacter());
 		currentRoom.addCard(guess.getWeapon());
-		playerSuggestionMove(guess.getCharacter(), newCell);
+		moveSuggestedPlayer(guess.getCharacter(), newCell);
 
 		boolean refuted = doRefutations(p, guess);
 		if(!refuted){
@@ -293,10 +291,10 @@ public class Game
 	 * change a players position if they're character is used in a suggesting
 	 * @param ch: characterCard used
 	 */
-	private void playerSuggestionMove(CharacterCard ch, Cell newCell){
+	private void moveSuggestedPlayer(CharacterCard ch, Cell newCell){
 		for(Player p : players){
 			if(p.getToken().equals(ch)){//this is the player to move
-				p.moveToCell(newCell);
+				p.setCell(newCell);
 				return;
 			}
 		}
@@ -362,7 +360,7 @@ public class Game
 	 * waits to display output after input from player
 	 * @param p: player who is performing action
 	 */
-	public void waitForPlayer(Player p){
+	private void waitForPlayer(Player p){
 		System.out.println("=== SENSITIVE INFORMATION FOR PLAYER " + (players.indexOf(p)+1) + " (" + p.getToken().getName() + ") ===");
 		Scanner sc = new Scanner(System.in);
 		System.out.print("Push a character and enter key to continue");
@@ -374,7 +372,7 @@ public class Game
 	 * the player wins if correct, else is out
 	 * @param p: player making accusation
 	 */
-	public void makeAccusation(Player p){
+	private void makeAccusation(Player p){
 		System.out.println("Making an accusation here");
 		CardTriplet guess = new CardTriplet();
 		System.out.println("Accusation is: " + guess);

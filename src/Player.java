@@ -21,7 +21,7 @@ public class Player
 	public Player(CharacterCard aToken, Cell aLocation, boolean aIsExcluded)
 	{
 		token = aToken;
-		token.changeLocation(aLocation);
+		token.setCell(aLocation);
 		isExcluded = aIsExcluded;
 		cards = new ArrayList<>();
 	}
@@ -29,10 +29,6 @@ public class Player
 	//------------------------
 	// INTERFACE
 	//------------------------
-
-	public void setLocation(Cell aLocation) {
-		token.changeLocation(aLocation);
-	}
 
 	public void setIsExcluded(boolean aIsExcluded){
 		isExcluded = aIsExcluded;
@@ -43,7 +39,7 @@ public class Player
 	}
 
 	public Cell getLocation(){
-		return token.getLocation();
+		return token.getCell();
 	}
 
 	public boolean getExcluded(){
@@ -58,13 +54,8 @@ public class Player
 	 * move the player and associated character token to a new cell
 	 * @param cell: cell to move to
 	 */
-	public void moveToCell(Cell cell){
-		// removes the player from the cell
-		token.getLocation().setObject(null);
-		//tell the player which cell they are in
-		token.changeLocation(cell);
-		//place the player in the cell
-		token.getLocation().setObject(getToken());
+	public void setCell(Cell cell){
+		token.setCell(cell);
 	}
 
 	/**

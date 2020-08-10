@@ -59,10 +59,10 @@ public class Room {
 		Cell c = findEmptyCell();
 		if(aCard instanceof WeaponCard){
 			WeaponCard weapon = (WeaponCard) aCard;
-			weapon.moveToCell(c);
+			weapon.setCell(c);
 		}
 		if(aCard instanceof CharacterCard){
-			((CharacterCard)aCard).moveToCell(c);
+			((CharacterCard)aCard).setCell(c);
 		}
 		return c;
 	}

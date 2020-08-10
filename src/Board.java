@@ -36,7 +36,7 @@ public class Board
 			//tells the cell which player is on them
 			playerCell.setObject(player.getToken());
 			//tell the player which cell they are in
-			player.setLocation(playerCell);
+			player.setCell(playerCell);
 		}
 	}
 
