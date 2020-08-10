@@ -132,7 +132,8 @@ public class Game
 		Random rand = new Random();
 		int firstDice = rand.nextInt(6)+1;
 		int secondDice = rand.nextInt(6)+1;
-		return firstDice + secondDice; // 20;
+		return 20;
+		//return firstDice + secondDice;
 	}
 
 	public void runGame(){
@@ -170,6 +171,8 @@ public class Game
 
 		if(p.getLocation().getRoom().isProperRoom()){
 			System.out.println("You've entered the " + p.getLocation().getRoom().getName());
+			Room currentRoom = checkForRoom(p);
+			p.moveToCell(currentRoom.findEmptyCell());
 			turnEntry(p);
 		}
 
