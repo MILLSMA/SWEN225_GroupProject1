@@ -132,8 +132,8 @@ public class Game
 		Random rand = new Random();
 		int firstDice = rand.nextInt(6)+1;
 		int secondDice = rand.nextInt(6)+1;
-		return 20;
-		//return firstDice + secondDice;
+//		return 20;
+		return firstDice + secondDice;
 	}
 
 	public void runGame(){
