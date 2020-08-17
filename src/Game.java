@@ -10,10 +10,10 @@ public class Game
 	//Game Attributes
 	private boolean won;
 	//Game Associations
-	private final List<Player> players;
-	private final Board board;
-	private final CardTriplet envelope;
-	private final Scanner input;
+	private List<Player> players;
+	private Board board;
+	private CardTriplet envelope;
+	private Scanner input;
 
 
 	//------------------------
@@ -21,18 +21,27 @@ public class Game
 	//------------------------
 
 	public static void main(String...args){
-		new Game();
+		Game currentGame = new Game();
+		new boardUI(currentGame);
 	}
 
 	//------------------------
 	// CONSTRUCTOR
 	//------------------------
 
-	private Game() {
-		input = new Scanner(System.in);
-		int amountOfPlayers = 0;
+	//private Game() {
+
+	//}
+
+	/**
+	 * set up a new game with given number of players
+	 * @param amountOfPlayers: no. players in this game
+	 */
+	public void setUp(int amountOfPlayers){
+		//input = new Scanner(System.in);
+		//int amountOfPlayers = 0;
 		// Ask users for an integer between 3 and 6, repeat until valid integer received
-		do {
+		/*do {
 			System.out.print("How many players will be participating? (3 - 6): ");
 			try {
 				amountOfPlayers = input.nextInt();
@@ -40,7 +49,7 @@ public class Game
 				System.out.println("Choose between 3, 4, 5 and 6 players.");
 				input.nextLine();
 			}
-		} while (amountOfPlayers < 3 || amountOfPlayers > 6);
+		} while (amountOfPlayers < 3 || amountOfPlayers > 6);*/
 
 		players = createPlayers(amountOfPlayers);
 		board = new Board(players);
