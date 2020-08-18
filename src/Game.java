@@ -16,6 +16,7 @@ public class Game
 	private Scanner input;
 
 
+
 	//------------------------
 	// STATIC INITIALISATION METHODS
 	//------------------------
@@ -23,6 +24,10 @@ public class Game
 	public static void main(String...args){
 		Game currentGame = new Game();
 		new boardUI(currentGame);
+	}
+
+	public Board getBoard(){
+		return this.board;
 	}
 
 	//------------------------
@@ -37,7 +42,7 @@ public class Game
 	 * set up a new game with given number of players
 	 * @param amountOfPlayers: no. players in this game
 	 */
-	public void setUp(int amountOfPlayers){
+	public void setUp(int amountOfPlayers, boardUI boardUI){
 		//input = new Scanner(System.in);
 		//int amountOfPlayers = 0;
 		// Ask users for an integer between 3 and 6, repeat until valid integer received
