@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Scanner;
@@ -21,7 +22,8 @@ public enum CharacterCard implements Card {
 	public static final String ANSI_WHITE = "\u001B[37m";
 
 	private Cell cell;
-	private static final String[] colours = {ANSI_RED, ANSI_YELLOW, ANSI_WHITE, ANSI_GREEN, ANSI_CYAN, ANSI_PURPLE};
+	private static final String[] stringColours = {ANSI_RED, ANSI_YELLOW, ANSI_WHITE, ANSI_GREEN, ANSI_CYAN, ANSI_PURPLE};
+	private static final Color[] colours = {Color.RED, Color.YELLOW, Color.WHITE, Color.GREEN, Color.CYAN, Color.MAGENTA};
 	private static final String[] codes = {"s", "c", "w", "g", "k", "p"};
 
 	public static Collection<CharacterCard> getCharacters(){
@@ -62,7 +64,7 @@ public enum CharacterCard implements Card {
 		Scanner sc = new Scanner(System.in);
 		System.out.println("== Characters, enter code in [ ] ==");
 		for (int i=0; i<size(); i++) {
-			System.out.println(values()[i].getName() + " [" + colours[i] + codes[i] + ANSI_RESET +"]");
+			System.out.println(values()[i].getName() + " [" + stringColours[i] + codes[i] + ANSI_RESET +"]");
 		}
 		while(true) {
 			System.out.print("Enter character: ");
@@ -110,8 +112,12 @@ public enum CharacterCard implements Card {
 		if (cell != null) c.setObject(this);
 	}
 
+	public Color getColour(){
+		return colours[ordinal()];
+	}
+
 	@Override
 	public String toString() {
-		return colours[ordinal()] + codes[ordinal()] + ANSI_RESET;
+		return stringColours[ordinal()] + codes[ordinal()] + ANSI_RESET;
 	}
 }

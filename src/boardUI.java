@@ -1,17 +1,26 @@
+import sun.security.util.Cache;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class boardUI {
     static JFrame mainFrame;
-    static Board board;
-    static Canvas canvas = new Canvas();
+    static Canvas canvas;
     Border blackLineBorder = BorderFactory.createLineBorder(Color.black);
 
     public boardUI(Game g){
+        SwingUtilities.invokeLater(() -> init(g));
+    }
+
+    private void init(Game g){
+
         mainFrame = new JFrame("CLUEDO");
+        mainFrame.setResizable(false);
         mainFrame.setSize(600,600);
         JDialog setUpFrame = new JDialog(mainFrame, "Game Set Up");
         setUpFrame.setSize(275,120);
@@ -56,6 +65,7 @@ public class boardUI {
         GridBagConstraints constraints = new GridBagConstraints();
         JPanel turnPanel = new JPanel();
         JPanel cardPanel = new JPanel();
+        canvas = new Canvas();
         turnPanel.add(new Button("turnPanel"));
         cardPanel.add(new Button("cardPanel"));
 
@@ -83,6 +93,7 @@ public class boardUI {
         mainFrame.setVisible(true);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        canvas.setVisible(true);
         setUpFrame.setVisible(true);
 
     }
@@ -91,45 +102,57 @@ public class boardUI {
         g.setUp(i, this);
     }
     public static void createCanvas(Board board){
-        boardUI.board = board;
-        canvas.revalidate();
-        canvas.repaint();
+        canvas.board = board;
+        canvas.drawBoard();
     }
 
-    public static class Canvas extends JPanel{
+    public class Canvas extends JPanel{
         private static final int ROWS = 25, COLS = 24;
-        public void paintComponent (Graphics g)
-        {
-            super.paintComponent(g);
-            System.out.println(boardUI.board == null);
-            if(board != null) {
-                System.out.println("repaint");
-                int cellWidth = mainFrame.getWidth() / COLS;
-                int cellHeight = mainFrame.getHeight() / ROWS;
-                int widthCount = 0;
-                int heightCount = 0;
-                for (int xIndex = 0; xIndex < ROWS; xIndex++) {
-                    for (int yIndex = 0; yIndex < COLS; yIndex++) {
-                        if (board.board[xIndex][yIndex] == null) continue;
-                        Cell cellToDraw = board.board[xIndex][yIndex];
-                        g.setColor(cellToDraw.getColor());
-                        g.drawRect(widthCount, heightCount, cellWidth, cellHeight);
-                        widthCount += cellWidth;
-                        System.out.println("drawn Rect");
-                    }
-                    heightCount += cellHeight;
-                    widthCount = 0;
-                }
+        private Board board;
+        private int cellWidth, cellHeight;
+        private HashMap<Cell, drawTile> tilesToDraw = new HashMap<>();
+
+        public void paint(Graphics g) {
+           // g.drawString("I am painting", 50, 50);
+            //System.out.println("i am painting");
+            for (drawTile tile : tilesToDraw.values()) {
+                g.setColor(tile.tileColor);
+                g.fillRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
             }
         }
 
-        public void drawBoard(Graphics g){
-
-        }
-        public void updateBoard(){
-
+        public void drawBoard(){
+            tilesToDraw.clear();
+            cellWidth = this.getWidth() / COLS;
+            cellHeight = this.getHeight() / ROWS;
+            int widthCount = 0;
+            int heightCount = 0;
+            for (int xIndex = 0; xIndex < ROWS; xIndex++) {
+                for (int yIndex = 0; yIndex < COLS; yIndex++) {
+                    if (board.board[xIndex][yIndex] == null) continue;
+                    Cell cellToDraw = board.board[xIndex][yIndex];
+                    drawTile newTile = new drawTile(cellToDraw.getColor(), widthCount, heightCount, cellToDraw);
+                    tilesToDraw.put(cellToDraw, newTile);
+                    widthCount += cellWidth;
+                }
+                heightCount += cellHeight;
+                widthCount = 0;
+            }
+            this.repaint();
         }
     }
 
+    private class drawTile {
+        Color tileColor;
+        int xPosition, yPosition;
+        Cell cell;
+
+        drawTile(Color tc, int x, int y, Cell c){
+            this.tileColor = tc;
+            this.xPosition = x;
+            this.yPosition = y;
+            this.cell = c;
+        }
+    }
 
 }
