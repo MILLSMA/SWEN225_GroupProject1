@@ -21,26 +21,26 @@ public class boardUI {
         errorText.setForeground(Color.RED);
         errorText.setVisible(false);
 
+        //created this so user pressing enter does the same as pressing Go button
+        ActionListener submitActionListener = e -> {
+            int amountOfPlayers = 0;
+            try {
+                amountOfPlayers = Integer.parseInt(entry.getText());
+                if(amountOfPlayers >= 3 && amountOfPlayers <= 6){
+                    setUpFrame.dispose();
+                    callSetUp(amountOfPlayers, g);
 
-        submit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int amountOfPlayers = 0;
-                try {
-                    amountOfPlayers = Integer.parseInt(entry.getText());
-                    if(amountOfPlayers >= 3 && amountOfPlayers <= 6){
-                        setUpFrame.dispose();
-                        callSetUp(amountOfPlayers, g);
+                }else{
+                    errorText.setVisible(true);
 
-                    }else{
-                        errorText.setVisible(true);
-
-                    }
-                    }catch(NumberFormatException ex){
-                        errorText.setVisible(true);
-                    }
                 }
-        });
+            }catch(NumberFormatException ex){
+                errorText.setVisible(true);
+            }
+        };
+
+        entry.addActionListener(submitActionListener);
+        submit.addActionListener(submitActionListener);
         p.add(noPlayersLabel);
         p.add(entry);
         p.add(submit);
