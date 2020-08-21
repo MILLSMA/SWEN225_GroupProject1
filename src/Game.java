@@ -23,7 +23,7 @@ public class Game
 
 	public static void main(String...args){
 		Game currentGame = new Game();
-		new boardUI(currentGame);
+		new CluedoView(currentGame);
 	}
 
 	public Board getBoard(){
@@ -42,20 +42,7 @@ public class Game
 	 * set up a new game with given number of players
 	 * @param amountOfPlayers: no. players in this game
 	 */
-	public void setUp(int amountOfPlayers, boardUI boardUI){
-		//input = new Scanner(System.in);
-		//int amountOfPlayers = 0;
-		// Ask users for an integer between 3 and 6, repeat until valid integer received
-		/*do {
-			System.out.print("How many players will be participating? (3 - 6): ");
-			try {
-				amountOfPlayers = input.nextInt();
-			}catch(InputMismatchException e){
-				System.out.println("Choose between 3, 4, 5 and 6 players.");
-				input.nextLine();
-			}
-		} while (amountOfPlayers < 3 || amountOfPlayers > 6);*/
-
+	public void setUp(int amountOfPlayers, CluedoView view){
 		players = createPlayers(amountOfPlayers);
 		board = new Board(players);
 		won = false;

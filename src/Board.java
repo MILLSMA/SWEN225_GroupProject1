@@ -1,12 +1,10 @@
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.List;
 
 public class Board
 {
-	private final int ROWS = 25, COLS = 24;
+	public static final int ROWS = 25, COLS = 24;
 	//------------------------
 	// MEMBER VARIABLES
 	//------------------------
@@ -278,7 +276,7 @@ public class Board
 	 */
 	@Override
 	public String toString() {
-		boardUI.createCanvas(this);
+		CluedoView.createCanvas(this);
 		StringBuilder boardLayout = new StringBuilder();
 		for (int xIndex = 0; xIndex < ROWS; xIndex++) {
 			for (int yIndex = 0; yIndex < COLS; yIndex++) {
