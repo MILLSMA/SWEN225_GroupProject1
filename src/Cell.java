@@ -1,4 +1,6 @@
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class Cell
 {
@@ -55,6 +57,7 @@ public class Cell
 	private final Room room;
 	private Card object;
 	private boolean isUsedInRound;
+	private Color color;
 	//------------------------
 	// CONSTRUCTOR
 	//------------------------
@@ -72,6 +75,14 @@ public class Cell
 	//------------------------
 	// INTERFACE
 	//------------------------
+
+	public Color getColor(){
+		return this.color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
 
 	public boolean isUsedInRound(){
 		return isUsedInRound;

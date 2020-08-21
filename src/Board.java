@@ -1,6 +1,8 @@
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.List;
 
 public class Board
 {
@@ -11,7 +13,7 @@ public class Board
 
 	//Board Associations
 	private final HashMap<String, Room> rooms;
- 	private final Cell[][] board;
+ 	public final Cell[][] board;
 
  	private static final String boardFile = "///////////////////_/O O O O/_///////////////////\n" +
 			"/K K K K K K///_ _ _/O O O O/_ _ _///C C C C C C/\n" +
@@ -91,6 +93,13 @@ public class Board
 		return null;
 	}
 
+	private Color getRoomColor(Room room){
+		if(RoomCard.getRooms().contains(room)) return Color.LIGHT_GRAY;
+		else if(room.getType().equals("Hallway")) return Color.WHITE;
+		else if(room.getType().equals("Door")) return Color.DARK_GRAY;
+		else return Color.BLACK;
+	}
+
 	private void weaponStartPoints(){
 		List<RoomCard> roomValues = new ArrayList<>(RoomCard.getRooms());
 		List<WeaponCard> weapons = new ArrayList<>(WeaponCard.getWeapons());
@@ -120,7 +129,10 @@ public class Board
 			Room cellRoom = getRoom(cell.charAt(0));
 			Cell newCell = new Cell(cellPosition, cellRoom);
 			//add cell to room
-			if(cellRoom != null){cellRoom.addCell(newCell);}
+			if(cellRoom != null){
+				cellRoom.addCell(newCell);
+				newCell.setColor(getRoomColor(cellRoom));
+			}
 			board[yPosition][xPosition] = newCell;
 			if(left.charAt(0) != '/') newCell.setDirection(Cell.Direction.WEST, true);
 			if(right.charAt(0) != '/') newCell.setDirection(Cell.Direction.EAST, true);
@@ -266,6 +278,7 @@ public class Board
 	 */
 	@Override
 	public String toString() {
+		boardUI.createCanvas(this);
 		StringBuilder boardLayout = new StringBuilder();
 		for (int xIndex = 0; xIndex < ROWS; xIndex++) {
 			for (int yIndex = 0; yIndex < COLS; yIndex++) {

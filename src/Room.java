@@ -5,6 +5,7 @@ public class Room {
 	private String type = "";
 	Room(RoomCard roomCard) {
 		card = roomCard;
+		type = roomCard.getName();
 	}
 	Room(String str){
 		type = str;
