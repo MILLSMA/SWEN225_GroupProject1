@@ -1,8 +1,11 @@
 import java.awt.*;
-import java.util.List;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.List;
 
-public class Board {
+public class Board
+{
 	private final int ROWS = 25, COLS = 24;
 	//------------------------
 	// MEMBER VARIABLES
@@ -10,9 +13,9 @@ public class Board {
 
 	//Board Associations
 	private final HashMap<String, Room> rooms;
-	public final Cell[][] board;
+ 	public final Cell[][] board;
 
-	private static final String boardFile = "///////////////////_/O O O O/_///////////////////\n" +
+ 	private static final String boardFile = "///////////////////_/O O O O/_///////////////////\n" +
 			"/K K K K K K///_ _ _/O O O O/_ _ _///C C C C C C/\n" +
 			"/K K K K K K/_ _/O O O O O O O O/_ _/C C C C C C/\n" +
 			"/K K K K K K/_ _/O O O O O O O O/_ _/C C C C C C/\n" +
@@ -41,13 +44,14 @@ public class Board {
 	// CONSTRUCTOR
 	//------------------------
 
-	public Board(Collection<Player> allPlayers) {
+	public Board(Collection<Player> allPlayers)
+	{
 		rooms = new HashMap<>();
 		//creates the dummy rooms which are only needed for mechanics (not gameplay)
 		rooms.put("Door", new Room("Door"));
 		rooms.put("Wall", new Room("Wall"));
 		rooms.put("Hallway", new Room("Hallway"));
-		for (RoomCard card : RoomCard.getRooms()) {
+		for(RoomCard card : RoomCard.getRooms()){
 			rooms.put(card.getName(), new Room(card));
 		}
 		board = new Cell[ROWS][COLS];
@@ -69,40 +73,39 @@ public class Board {
 	// INTERFACE
 	//------------------------
 
-	public Room getRoom(RoomCard card) {
+	public Room getRoom(RoomCard card){
 		return rooms.get(card.getName());
 	}
 
 	/**
 	 * for reading the text file, when a character is given return
 	 * whichever room that character corresponds with
-	 *
 	 * @param c - character to check against
 	 * @return - the Room which the character corresponds too (or null if not found)
 	 */
 	private Room getRoom(char c) {
-		for (RoomCard card : RoomCard.getRooms()) {
+		for(RoomCard card : RoomCard.getRooms()) {
 			if (card.toString().charAt(0) == c) return getRoom(card);
 		}
-		if (c == ')') return new Room("Door");
-		if (c == '/') return rooms.get("Wall");
-		if (c == '_') return rooms.get("Hallway");
+		if(c == ')')return new Room("Door");
+		if(c == '/')return rooms.get("Wall");
+		if(c == '_')return rooms.get("Hallway");
 		return null;
 	}
 
-	private Color getRoomColor(Room room) {
-		if (RoomCard.getRooms().contains(room)) return Color.LIGHT_GRAY;
-		else if (room.getType().equals("Hallway")) return Color.WHITE;
-		else if (room.getType().equals("Door")) return Color.DARK_GRAY;
+	private Color getRoomColor(Room room){
+		if(RoomCard.getRooms().contains(room)) return Color.LIGHT_GRAY;
+		else if(room.getType().equals("Hallway")) return Color.WHITE;
+		else if(room.getType().equals("Door")) return Color.DARK_GRAY;
 		else return Color.BLACK;
 	}
 
-	private void weaponStartPoints() {
+	private void weaponStartPoints(){
 		List<RoomCard> roomValues = new ArrayList<>(RoomCard.getRooms());
 		List<WeaponCard> weapons = new ArrayList<>(WeaponCard.getWeapons());
 		Random rand = new Random();
 		RoomCard currentRoom;
-		for (WeaponCard w : weapons) {
+		for(WeaponCard w: weapons){
 			currentRoom = roomValues.remove(rand.nextInt(roomValues.size()));
 			rooms.get(currentRoom.getName()).addCard(w);
 		}
@@ -111,7 +114,7 @@ public class Board {
 	/**
 	 * reads the input file and creates the board accordingly
 	 */
-	private void createCells() {
+	private void createCells(){
 		//scanner to read the hardcoded CluedoBoard.txt file with a delimiter that reads all characters including whitespace
 		Scanner sc = new Scanner(boardFile).useDelimiter("(\\b|\\B)");
 		int xPosition = 0, yPosition = 0;
@@ -121,25 +124,25 @@ public class Board {
 		cell = sc.next();
 		right = sc.next();
 		//while the board file still has characters to read
-		while (sc.hasNext()) {
+		while(sc.hasNext()){
 			Position cellPosition = new Position(yPosition, xPosition);
 			Room cellRoom = getRoom(cell.charAt(0));
 			Cell newCell = new Cell(cellPosition, cellRoom);
 			//add cell to room
-			if (cellRoom != null) {
+			if(cellRoom != null){
 				cellRoom.addCell(newCell);
 				newCell.setColor(getRoomColor(cellRoom));
 			}
 			board[yPosition][xPosition] = newCell;
-			if (left.charAt(0) != '/') newCell.setDirection(Cell.Direction.WEST, true);
-			if (right.charAt(0) != '/') newCell.setDirection(Cell.Direction.EAST, true);
+			if(left.charAt(0) != '/') newCell.setDirection(Cell.Direction.WEST, true);
+			if(right.charAt(0) != '/') newCell.setDirection(Cell.Direction.EAST, true);
 
-			if (sc.hasNext("\n")) {
+			if(sc.hasNext("\n")){
 				sc.next();
 				xPosition = 0;
 				yPosition++;
-				if (sc.hasNext()) left = sc.next();
-			} else {
+				if(sc.hasNext()) left = sc.next();
+			}else {
 				xPosition++;
 				left = right;
 			}
@@ -156,16 +159,16 @@ public class Board {
 	 * beneath it and adds the correct directions to the available
 	 * directions list in each cell.
 	 */
-	private void updateCellDirections() {
-		for (int xIndex = 0; xIndex < ROWS - 1; xIndex++) {
-			for (int yIndex = 0; yIndex < COLS - 2; yIndex++) {
+	private void updateCellDirections(){
+		for (int xIndex = 0; xIndex < ROWS - 1 ; xIndex++) {
+			for (int yIndex = 0; yIndex < COLS - 2 ; yIndex++) {
 				Cell currentCell = board[xIndex][yIndex];
 				Cell belowCell = board[xIndex + 1][yIndex];
-				if (currentCell.getRoom() == belowCell.getRoom()) {
+				if(currentCell.getRoom() == belowCell.getRoom()){
 					currentCell.setDirection(Cell.Direction.SOUTH, true);
 					belowCell.setDirection(Cell.Direction.NORTH, true);
 				}
-				if (currentCell.getRoom().getType().equals("Door")) {
+				if(currentCell.getRoom().getType().equals("Door")){
 					Cell leftCell = board[xIndex][yIndex - 1];
 					Cell rightCell = board[xIndex][yIndex + 1];
 					RoomCard doorCard;
@@ -178,7 +181,7 @@ public class Board {
 					currentCell.setDirection(Cell.Direction.NORTH, true);
 					belowCell.setDirection(Cell.Direction.NORTH, true);
 				}
-				if (currentCell.getRoom() == rooms.get("Wall")) {
+				if(currentCell.getRoom() == rooms.get("Wall")){
 					// All directions false
 					for (Cell.Direction d : Cell.Direction.values()) {
 						currentCell.setDirection(d, false);
@@ -190,14 +193,13 @@ public class Board {
 
 	/**
 	 * moves the player on the board in which every direction is chosen
-	 *
-	 * @param p   - player to be moved
+	 * @param p - player to be moved
 	 * @param dir - relative direction for player to be moved
 	 * @return - the cell the player was moved into
 	 */
 	public Cell move(Player p, Cell.Direction dir) {
 		Position playerPos = p.getLocation().getPosition();
-		switch (dir) {
+		switch(dir){
 			case NORTH:
 				playerPos.setRow(playerPos.getRow() - 1);
 				break;
@@ -216,8 +218,7 @@ public class Board {
 
 	/**
 	 * Checks if the player has already used the Cell in the current round
-	 *
-	 * @param p   - Player
+	 * @param p - Player
 	 * @param dir - direction they chose to move
 	 * @return if move is illegal
 	 */
@@ -225,7 +226,7 @@ public class Board {
 		Position playerPos = p.getLocation().getPosition();
 		int row = playerPos.getRow();
 		int col = playerPos.getCol();
-		switch (dir) {
+		switch(dir){
 			case NORTH:
 				row--;
 				break;
@@ -245,28 +246,27 @@ public class Board {
 
 	/**
 	 * checks for a room in the four cells surround a players cell
-	 *
 	 * @param p: player
 	 * @return a room that has been found, null if none exists
 	 */
-	public Room checkSurroundingCells(Player p) {
+	public Room checkSurroundingCells(Player p){
 		Position playerPos = p.getLocation().getPosition();
 		int row = playerPos.getRow();
 		int col = playerPos.getCol();
 		Cell south = board[row + 1][col];
-		if (!south.getRoom().toString().equals("_") && south.getRoom().getRoomSize() > 1) {
+		if(!south.getRoom().toString().equals("_") && south.getRoom().getRoomSize() > 1){
 			return south.getRoom();
 		}
 		Cell north = board[row - 1][col];
-		if (!north.getRoom().toString().equals("_") && north.getRoom().getRoomSize() > 1) {
+		if(!north.getRoom().toString().equals("_") && north.getRoom().getRoomSize()> 1){
 			return north.getRoom();
 		}
 		Cell east = board[row][col + 1];
-		if (!east.getRoom().toString().equals("_") && east.getRoom().getRoomSize() > 1) {
+		if(!east.getRoom().toString().equals("_") && east.getRoom().getRoomSize() > 1 ){
 			return east.getRoom();
 		}
 		Cell west = board[row][col - 1];
-		if (!west.getRoom().toString().equals("_") && west.getRoom().getRoomSize() > 1) {
+		if(!west.getRoom().toString().equals("_") && west.getRoom().getRoomSize() > 1){
 			return west.getRoom();
 		}
 		return null;
@@ -274,15 +274,15 @@ public class Board {
 
 	/**
 	 * prints the board to the terminal for benefit of the player
-	 *
 	 * @return graphical ascii representation of the board
 	 */
 	@Override
 	public String toString() {
+		boardUI.createCanvas(this);
 		StringBuilder boardLayout = new StringBuilder();
 		for (int xIndex = 0; xIndex < ROWS; xIndex++) {
 			for (int yIndex = 0; yIndex < COLS; yIndex++) {
-				if (board[xIndex][yIndex] == null) continue;
+				if(board[xIndex][yIndex] == null) continue;
 				boardLayout.append(board[xIndex][yIndex].toString()).append(" ");
 			}
 			boardLayout.append("\n");
