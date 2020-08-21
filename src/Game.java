@@ -27,7 +27,7 @@ public class Game {
 		Game currentGame = new Game();
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				final boardUI GUI = new boardUI(currentGame);
+				final CluedoView GUI = new CluedoView(currentGame);
 			}
 		});
 
@@ -51,7 +51,7 @@ public class Game {
 	 *
 	 * @param amountOfPlayers: no. players in this game
 	 */
-	public void setUp(int amountOfPlayers, boardUI boardUI) {
+	public void setUp(int amountOfPlayers, CluedoView boardUI) {
 		//input = new Scanner(System.in);
 		//int amountOfPlayers = 0;
 		// Ask users for an integer between 3 and 6, repeat until valid integer received
@@ -163,7 +163,7 @@ public class Game {
 	}
 
 	private void runGame() {
-		boardUI.createCanvas(board);
+		CluedoView.createCanvas(board);
 		//This legitimately took hours too figure out, basically swing is a bastard and
 		//you have to do weird as shit to get it to update properly. just dont fuck with it plz <3
 		new Thread(() -> {
@@ -173,7 +173,7 @@ public class Game {
 					Timer t = new Timer(1000, new ActionListener(){
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							boardUI.canvas.drawBoard();
+							CluedoView.canvas.drawBoard();
 						}
 					});
 					t.start();

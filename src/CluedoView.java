@@ -8,12 +8,12 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class boardUI {
+public class CluedoView {
     static JFrame mainFrame;
     static Canvas canvas;
     Border blackLineBorder = BorderFactory.createLineBorder(Color.black);
 
-    public boardUI(Game g){
+    public CluedoView(Game g){
         SwingUtilities.invokeLater(() -> init(g));
     }
 
