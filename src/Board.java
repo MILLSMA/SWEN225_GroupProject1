@@ -242,6 +242,27 @@ public class Board
 		return board[row][col].isUsedInRound() || board[row][col].getObject() != null;
 	}
 
+	public Cell getNeighbourCell(Cell cell, Cell.Direction dir){
+		Position position = cell.getPosition();
+		int row = position.getRow();
+		int col = position.getCol();
+		switch(dir){
+			case NORTH:
+				row--;
+				break;
+			case SOUTH:
+				row++;
+				break;
+			case EAST:
+				col++;
+				break;
+			case WEST:
+				col--;
+				break;
+		}
+		return board[row][col];
+	}
+
 	/**
 	 * checks for a room in the four cells surround a players cell
 	 * @param p: player

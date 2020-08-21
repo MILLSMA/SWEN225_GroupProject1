@@ -170,12 +170,7 @@ public class Game {
 			while (!won || !allPlayersOut()) {
 
 				SwingUtilities.invokeLater(() -> {
-					Timer t = new Timer(1000, new ActionListener(){
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							CluedoView.canvas.drawBoard();
-						}
-					});
+					Timer t = new Timer(1000, e -> CluedoView.canvas.drawBoard());
 					t.start();
 				});
 				try {
@@ -290,6 +285,14 @@ public class Game {
 		for (Cell cell : cellsMovedTo) {
 			cell.setUsedInRound(false);
 		}
+	}
+
+	/**
+	 * new move method for testing the gui movement
+	 * @param p
+	 */
+	private void guiMove(Player p){
+
 	}
 
 	/**

@@ -2,7 +2,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class Cell
+public class Cell extends Locatable
 {
 	public enum Direction{
 		NORTH,
