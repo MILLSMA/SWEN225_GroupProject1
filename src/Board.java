@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Board
 {
-	private final int ROWS = 25, COLS = 24;
+	public static final int ROWS = 25, COLS = 24;
 	//------------------------
 	// MEMBER VARIABLES
 	//------------------------
@@ -92,10 +92,10 @@ public class Board
 	}
 
 	private Color getRoomColor(Room room){
-		if(RoomCard.getRooms().contains(room)) return Color.LIGHT_GRAY;
+		if (room.isProperRoom()) return Color.LIGHT_GRAY;
 		else if(room.getType().equals("Hallway")) return Color.WHITE;
-		else if(room.getType().equals("Door")) return Color.DARK_GRAY;
-		else return Color.BLACK;
+		else if(room.getType().equals("Door")) return Color.LIGHT_GRAY.darker();
+		else return Color.DARK_GRAY;
 	}
 
 	private void weaponStartPoints(){

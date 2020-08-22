@@ -1,14 +1,13 @@
-import sun.security.util.Cache;
-
 import javax.swing.*;
 import javax.swing.border.Border;
-import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CluedoView {
+    private static final int CELL_SIZE = 28;
+    private static final int BOARD_HEIGHT = CELL_SIZE*Board.ROWS;
+    private static final int BOARD_WIDTH = CELL_SIZE*Board.COLS;
     static JFrame mainFrame;
     static Canvas canvas;
     Border blackLineBorder = BorderFactory.createLineBorder(Color.black);
@@ -21,7 +20,7 @@ public class CluedoView {
 
         mainFrame = new JFrame("CLUEDO");
         mainFrame.setResizable(false);
-        mainFrame.setSize(600,600);
+        mainFrame.setSize(BOARD_WIDTH,BOARD_HEIGHT*5/4);
         JDialog setUpFrame = new JDialog(mainFrame, "Game Set Up");
         setUpFrame.setSize(275,120);
         mainFrame.setLocationRelativeTo(null);
@@ -107,7 +106,6 @@ public class CluedoView {
     }
 
     public class Canvas extends JPanel{
-        private static final int ROWS = 25, COLS = 24;
         private Board board;
         private int cellWidth, cellHeight;
         private HashMap<Cell, drawTile> tilesToDraw = new HashMap<>();
@@ -123,12 +121,12 @@ public class CluedoView {
 
         public void drawBoard(){
             tilesToDraw.clear();
-            cellWidth = this.getWidth() / COLS;
-            cellHeight = this.getHeight() / ROWS;
+            cellWidth = this.getWidth() / Board.COLS;
+            cellHeight = this.getHeight() / Board.ROWS;
             int widthCount = 0;
             int heightCount = 0;
-            for (int xIndex = 0; xIndex < ROWS; xIndex++) {
-                for (int yIndex = 0; yIndex < COLS; yIndex++) {
+            for (int xIndex = 0; xIndex < Board.ROWS; xIndex++) {
+                for (int yIndex = 0; yIndex < Board.COLS; yIndex++) {
                     if (board.board[xIndex][yIndex] == null) continue;
                     Cell cellToDraw = board.board[xIndex][yIndex];
                     drawTile newTile = new drawTile(cellToDraw.getColor(), widthCount, heightCount, cellToDraw);

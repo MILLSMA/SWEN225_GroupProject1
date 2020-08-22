@@ -23,7 +23,7 @@ public enum CharacterCard implements Card {
 
 	private Cell cell;
 	private static final String[] stringColours = {ANSI_RED, ANSI_YELLOW, ANSI_WHITE, ANSI_GREEN, ANSI_CYAN, ANSI_PURPLE};
-	private static final Color[] colours = {Color.RED, Color.YELLOW, Color.WHITE, Color.GREEN, Color.CYAN, Color.MAGENTA};
+	private static final Color[] colours = {Color.RED, Color.YELLOW, new Color(220, 220, 220), Color.GREEN, Color.CYAN, Color.MAGENTA};
 	private static final String[] codes = {"s", "c", "w", "g", "k", "p"};
 
 	public static Collection<CharacterCard> getCharacters(){
