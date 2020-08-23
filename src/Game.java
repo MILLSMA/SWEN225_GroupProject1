@@ -13,7 +13,7 @@ public class Game {
 	//Game Attributes
 	private boolean won;
 	//Game Associations
-	private List<Player> players;
+	private List<Player> players = new ArrayList<>();
 	private Board board;
 	private CardTriplet envelope;
 	private Scanner input;
@@ -25,10 +25,8 @@ public class Game {
 
 	public static void main(String... args) {
 		Game currentGame = new Game();
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				final CluedoView GUI = new CluedoView(currentGame);
-			}
+		SwingUtilities.invokeLater(() -> {
+			final CluedoView GUI = new CluedoView(currentGame);
 		});
 
 
@@ -49,23 +47,8 @@ public class Game {
 	/**
 	 * set up a new game with given number of players
 	 *
-	 * @param amountOfPlayers: no. players in this game
 	 */
-	public void setUp(int amountOfPlayers, CluedoView boardUI) {
-		//input = new Scanner(System.in);
-		//int amountOfPlayers = 0;
-		// Ask users for an integer between 3 and 6, repeat until valid integer received
-		/*do {
-			System.out.print("How many players will be participating? (3 - 6): ");
-			try {
-				amountOfPlayers = input.nextInt();
-			}catch(InputMismatchException e){
-				System.out.println("Choose between 3, 4, 5 and 6 players.");
-				input.nextLine();
-			}
-		} while (amountOfPlayers < 3 || amountOfPlayers > 6);*/
-
-		players = createPlayers(amountOfPlayers);
+	public void startGame() {
 		board = new Board(players);
 		won = false;
 		System.out.println("== Players in this Game == ");
@@ -80,6 +63,11 @@ public class Game {
 		envelope = decideSolution(allCards);
 		dealCards(allCards);
 		runGame();
+	}
+
+	public void createPlayer(String name, CharacterCard token, boolean more) {
+		players.add(new Player(token, null, name));
+		if (more) CluedoView.createPlayerSelectionDialog(this, players.size()+1);
 	}
 
 	/**
@@ -97,11 +85,18 @@ public class Game {
 		for (int index = 0; index < numPlayers; index++) {
 			int randomCardIndex = new Random().nextInt(characters.size());
 			CharacterCard randomCharacter = characters.get(randomCardIndex);
-			Player tempPlayer = new Player(randomCharacter, null, false);
+			Player tempPlayer = new Player(randomCharacter, null, "");
 			tempPlayerList.add(tempPlayer);
 			characters.remove(randomCardIndex);
 		}
 		return tempPlayerList;
+	}
+
+	public boolean isTokenTaken(CharacterCard c) {
+		for (Player p : players) {
+			if (p.getToken().equals(c)) return true;
+		}
+		return false;
 	}
 
 	/**
@@ -170,12 +165,7 @@ public class Game {
 			while (!won || !allPlayersOut()) {
 
 				SwingUtilities.invokeLater(() -> {
-					Timer t = new Timer(1000, new ActionListener(){
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							CluedoView.canvas.drawBoard();
-						}
-					});
+					Timer t = new Timer(1000, e -> CluedoView.boardCanvas.drawBoard());
 					t.start();
 				});
 				try {

@@ -55,6 +55,13 @@ public enum CharacterCard implements Card {
 		return sb.toString();
 	}
 
+	public static CharacterCard getToken(String s) {
+		for (CharacterCard c : values()) {
+			if (s.equals(c.getName())) return c;
+		}
+		return null;
+	}
+
 	/**
 	 * Get valid Character
 	 * Match given string with characterCard enum

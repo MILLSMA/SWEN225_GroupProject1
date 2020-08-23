@@ -2,14 +2,15 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 public class CluedoView {
-    private static final int CELL_SIZE = 28;
+    private static final int CELL_SIZE = 27;
     private static final int BOARD_HEIGHT = CELL_SIZE*Board.ROWS;
     private static final int BOARD_WIDTH = CELL_SIZE*Board.COLS;
     static JFrame mainFrame;
-    static Canvas canvas;
+    static Canvas boardCanvas;
     Border blackLineBorder = BorderFactory.createLineBorder(Color.black);
 
     public CluedoView(Game g){
@@ -17,56 +18,58 @@ public class CluedoView {
     }
 
     private void init(Game g){
-
-        mainFrame = new JFrame("CLUEDO");
+        mainFrame = new JFrame("Cluedo");
         mainFrame.setResizable(false);
         mainFrame.setSize(BOARD_WIDTH,BOARD_HEIGHT*5/4);
-        JDialog setUpFrame = new JDialog(mainFrame, "Game Set Up");
-        setUpFrame.setSize(275,120);
-        mainFrame.setLocationRelativeTo(null);
-        setUpFrame.setLocationRelativeTo(null);
 
-        JPanel p = new JPanel();
-        JLabel noPlayersLabel = new JLabel("Number of Players");
-        JTextField entry = new JTextField(4);
-        JButton submit = new JButton("Go");
-
-        JLabel errorText = new JLabel("Choose between 3, 4, 5 and 6 players.");
-        errorText.setForeground(Color.RED);
-        errorText.setVisible(false);
-
-        //created this so user pressing enter does the same as pressing Go button
-        ActionListener submitActionListener = e -> {
-            int amountOfPlayers = 0;
-            try {
-                amountOfPlayers = Integer.parseInt(entry.getText());
-                if(amountOfPlayers >= 3 && amountOfPlayers <= 6){
-                    setUpFrame.dispose();
-                    callSetUp(amountOfPlayers, g);
-                }else{
-                    errorText.setVisible(true);
-
-                }
-            }catch(NumberFormatException ex){
-                errorText.setVisible(true);
-            }
-        };
-
-        entry.addActionListener(submitActionListener);
-        submit.addActionListener(submitActionListener);
-        p.add(noPlayersLabel);
-        p.add(entry);
-        p.add(submit);
-        p.add(errorText);
-        setUpFrame.getContentPane().add(p);
+        createPlayerSelectionDialog(g, 1);
+//        // Setup for number of players
+//        JDialog setUpFrame = new JDialog(mainFrame, "Game Set Up");
+//        setUpFrame.setSize(275,120);
+//        mainFrame.setLocationRelativeTo(null);
+//        setUpFrame.setLocationRelativeTo(null);
+//
+//        JPanel panel = new JPanel();
+//        JTextField entry = new JTextField(5);
+//        JButton submit = new JButton("Go");
+//        JLabel errorText = new JLabel("Choose between 3, 4, 5 and 6 players.");
+//        errorText.setForeground(Color.RED);
+//        errorText.setVisible(false);
+//
+//        //created this so user pressing enter does the same as pressing Go button
+//        ActionListener submitActionListener = e -> {
+//            int amountOfPlayers;
+//            try {
+//                amountOfPlayers = Integer.parseInt(entry.getText());
+//                if(amountOfPlayers >= 3 && amountOfPlayers <= 6){
+//                    setUpFrame.dispose();
+//                    g.setUp(amountOfPlayers);
+//                }else{
+//                    errorText.setVisible(true);
+//
+//                }
+//            }catch(NumberFormatException ex){
+//                errorText.setVisible(true);
+//            }
+//        };
+//
+//        entry.addActionListener(submitActionListener);
+//        submit.addActionListener(submitActionListener);
+//        panel.add(new JLabel("Number of players"));
+//        panel.add(entry);
+//        panel.add(submit);
+//        panel.add(errorText);
+//        setUpFrame.getContentPane().add(panel);
 
         mainFrame.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         JPanel turnPanel = new JPanel();
         JPanel cardPanel = new JPanel();
-        canvas = new Canvas();
-        turnPanel.add(new Button("turnPanel"));
-        cardPanel.add(new Button("cardPanel"));
+        boardCanvas = new Canvas();
+        Border turnHeader = BorderFactory.createTitledBorder("Name's turn (Token)");
+        turnPanel.setBorder(turnHeader);
+        Border cardHeader = BorderFactory.createTitledBorder("Cards on hand");
+        cardPanel.setBorder(cardHeader);
 
         //creates the layout with the canvas taking up 80% of the height
         constraints.weightx = 1;
@@ -74,35 +77,95 @@ public class CluedoView {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.gridwidth = 3;
-        mainFrame.getContentPane().add(canvas, constraints);
+        constraints.gridwidth = GridBagConstraints.REMAINDER;
+        mainFrame.getContentPane().add(boardCanvas, constraints);
         constraints.weighty = 0.20;
         constraints.gridwidth = 1;
         constraints.gridx = 1;
         constraints.gridy = 1;
-        mainFrame.getContentPane().add(cardPanel, constraints);
+        mainFrame.getContentPane().add(turnPanel, constraints);
         constraints.gridx = 2;
         constraints.gridy = 1;
-        mainFrame.getContentPane().add(turnPanel, constraints);
+        mainFrame.getContentPane().add(cardPanel, constraints);
 
-        canvas.setBorder(blackLineBorder);
-        cardPanel.setBorder(blackLineBorder);
-        turnPanel.setBorder(blackLineBorder);
+        boardCanvas.setBorder(blackLineBorder);
 
         mainFrame.setVisible(true);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        canvas.setVisible(true);
-        setUpFrame.setVisible(true);
+        boardCanvas.setVisible(true);
+//        setUpFrame.setVisible(true);
 
     }
 
-    public void callSetUp(int i, Game g){
-        g.setUp(i, this);
-    }
     public static void createCanvas(Board board){
-        canvas.board = board;
-        canvas.drawBoard();
+        boardCanvas.board = board;
+        boardCanvas.drawBoard();
+    }
+
+    public static void createPlayerSelectionDialog(Game g, int number) {
+        // Setup for number of players
+        JDialog dialog = new JDialog(mainFrame, "Add Player");
+        dialog.setSize(350,200);
+        dialog.setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(6,2,0, 0));
+        panel.setBorder(BorderFactory.createTitledBorder("Add Player "+number));
+        panel.add(new JLabel("Player Name"));
+        JTextField entry = new JTextField();
+        panel.add(entry);
+
+        panel.add(new JLabel("Token"));
+        JLabel errorText = new JLabel("Please choose a token.");
+        errorText.setForeground(Color.RED);
+        errorText.setVisible(false);
+        panel.add(errorText);
+        ButtonGroup tokens = new ButtonGroup();
+        for (CharacterCard c : CharacterCard.values()) {
+            JRadioButton rb = new JRadioButton();
+            rb.setText(c.getName());
+            if (g.isTokenTaken(c)) rb.setEnabled(false);
+            tokens.add(rb);
+            panel.add(rb);
+        }
+
+        JButton add = new JButton("Add more");
+        JButton start = new JButton("Start");
+        if (number < 3) start.setEnabled(false);
+        if (number >= 6) add.setEnabled(false);
+
+        ActionListener addAction = e -> {
+            for (Enumeration<AbstractButton> buttons = tokens.getElements(); buttons.hasMoreElements();) {
+                AbstractButton button = buttons.nextElement();
+                if (button.isSelected()) {
+                    g.createPlayer(entry.getText(), CharacterCard.getToken(button.getText()), true);
+                    dialog.dispose();
+                }
+            }
+            errorText.setVisible(true);
+        };
+        ActionListener startAction = e -> {
+            for (Enumeration<AbstractButton> buttons = tokens.getElements(); buttons.hasMoreElements();) {
+                AbstractButton button = buttons.nextElement();
+                if (button.isSelected()) {
+                    g.createPlayer(entry.getText(), CharacterCard.getToken(button.getText()), false);
+                    g.startGame();
+                    dialog.dispose();
+                }
+            }
+            errorText.setVisible(true);
+        };
+
+        if (number < 6) entry.addActionListener(addAction);
+        else entry.addActionListener(startAction);
+        add.addActionListener(addAction);
+        start.addActionListener(startAction);
+
+        panel.add(start);
+        panel.add(add);
+        dialog.add(panel);
+        dialog.setVisible(true);
     }
 
     public class Canvas extends JPanel{
