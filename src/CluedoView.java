@@ -130,8 +130,8 @@ public class CluedoView {
             panel.add(rb);
         }
 
-        JButton add = new JButton("Add more");
-        JButton start = new JButton("Start");
+        JButton add = new JButton("Next Player");
+        JButton start = new JButton("Add and Start");
         if (number < 3) start.setEnabled(false);
         if (number >= 6) add.setEnabled(false);
 
@@ -166,6 +166,8 @@ public class CluedoView {
         panel.add(add);
         dialog.add(panel);
         dialog.setVisible(true);
+
+        dialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
     public class Canvas extends JPanel{
