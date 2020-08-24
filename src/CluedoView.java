@@ -104,6 +104,7 @@ public class CluedoView {
     }
 
     public static void createCanvas(Board board){
+        boardCanvas.addMouseMotionListener(boardCanvas);
         boardCanvas.board = board;
         boardCanvas.drawBoard();
     }
@@ -175,19 +176,31 @@ public class CluedoView {
         dialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
-    public class Canvas extends JPanel{
+    public void displayPlayerInformation(Player p){
+        JPanel turnPanel = (JPanel)mainFrame.getContentPane().getComponent(0);
+        
+    }
+
+    public class Canvas extends JPanel implements MouseMotionListener{
         private Board board;
         protected int cellWidth, cellHeight;
-        private HashMap<Cell, drawTile> tilesToDraw = new HashMap<>();
+        private drawTile lastHoveredTile;
+        private Color lastColor;
+        private HashMap<Integer, drawTile> tilesToDraw = new HashMap<>();
 
 		//paints the board (not overly efficient)
 		public void paint(Graphics g) {
 			tilesToDraw.values().forEach(tile -> {
 				g.setColor(tile.tileColor);
 				g.fillRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
+				g.setColor(Color.LIGHT_GRAY);
+                g.drawRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
 			});
 		}
 
+        /**
+         * updates all the data structures needed to paint the board
+         */
         public void drawBoard(){
             tilesToDraw.clear();
             cellWidth = this.getWidth() / Board.COLS + 1;
@@ -199,11 +212,27 @@ public class CluedoView {
                     if (board.board[xIndex][yIndex] == null) continue;
                     Cell cellToDraw = board.board[xIndex][yIndex];
                     drawTile newTile = new drawTile(cellToDraw.getColor(), widthCount, heightCount, cellToDraw);
-                    tilesToDraw.put(cellToDraw, newTile);
+                    tilesToDraw.put(cellToDraw.position.hashCode(), newTile);
                     widthCount += cellWidth;
                 }
                 heightCount += cellHeight;
                 widthCount = 0;
+            }
+            this.repaint();
+        }
+
+        /**
+         * updates the board, only slightly more efficient than draw board
+         */
+        public void updateBoard(){
+            for (int xIndex = 0; xIndex < Board.ROWS; xIndex++) {
+                for (int yIndex = 0; yIndex < Board.COLS; yIndex++) {
+                    Position tilePos = new Position(xIndex,yIndex);
+                    drawTile tileToUpdate = tilesToDraw.get(tilePos.hashCode());
+                    Cell superCell = board.board[xIndex][yIndex];
+                    if(superCell.getColor() != tileToUpdate.tileColor)
+                       if(tileToUpdate != lastHoveredTile) tileToUpdate.tileColor = superCell.getColor();
+                }
             }
             this.repaint();
         }
@@ -219,11 +248,40 @@ public class CluedoView {
                 public void mouseClicked(MouseEvent e) {
                     super.mouseClicked(e);
                     for (drawTile tile : tilesToDraw.values()) {
-                        if (tile.getRect().contains(e.getPoint())) futureReturn.complete(tile.cell);
+                        if (tile.getRect().contains(e.getPoint())) {
+                            futureReturn.complete(tile.cell);
+                        }
                     }
                 }
             });
             return futureReturn;
+        }
+
+        private Position screenCoordToPos(int x, int y){
+            int xpos = x / cellWidth;
+            int ypos = y / cellHeight;
+            return new Position(ypos, xpos);
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            try {
+                if (lastColor != null && lastHoveredTile != null) lastHoveredTile.tileColor = lastColor;
+
+                Position pos = screenCoordToPos(e.getX(), e.getY());
+                drawTile hoverTile = tilesToDraw.get(pos.hashCode());
+                lastColor = hoverTile.tileColor;
+                hoverTile.tileColor = new Color(57, 255, 20, 75);
+                this.repaint();
+                this.lastHoveredTile = hoverTile;
+            }catch(NullPointerException exception){
+
+            }
         }
     }
 

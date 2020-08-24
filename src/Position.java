@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Position
 {
 
@@ -38,7 +40,13 @@ public class Position
 		return col;
 	}
 
-
+	public boolean equals(Position pos){
+		return (this.row == pos.getRow() && this.col == pos.getCol());
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(row, col);
+	}
 	public String toString(){
 		return "(" + getRow()+ ", " + getCol()+ ")";
 	}

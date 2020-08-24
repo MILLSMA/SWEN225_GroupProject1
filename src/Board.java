@@ -172,6 +172,7 @@ public class Board
 					RoomCard doorCard;
 					//set the door to the room that it is closest too
 					doorCard = (leftCell.getRoom().isProperRoom()) ? leftCell.getRoom().getCard() : rightCell.getRoom().getCard();
+					doorCard.addDoor(currentCell);
 					currentCell.getRoom().setCard(doorCard);
 					//sets the cell above able to move down into the doorway
 					board[xIndex - 1][yIndex].setDirection(Cell.Direction.SOUTH, true);
@@ -297,7 +298,6 @@ public class Board
 	 */
 	@Override
 	public String toString() {
-		CluedoView.createCanvas(this);
 		StringBuilder boardLayout = new StringBuilder();
 		for (int xIndex = 0; xIndex < ROWS; xIndex++) {
 			for (int yIndex = 0; yIndex < COLS; yIndex++) {
