@@ -1,7 +1,11 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
@@ -12,7 +16,10 @@ public class CluedoView {
     private static final int BOARD_WIDTH = CELL_SIZE*Board.COLS;
     static JFrame mainFrame;
     static Canvas boardCanvas;
-    Border blackLineBorder = BorderFactory.createLineBorder(Color.black);
+    static Border blackLineBorder = BorderFactory.createLineBorder(Color.black);
+
+    static JPanel turnPanel = new JPanel();
+
 
     public CluedoView(Game g){
         SwingUtilities.invokeLater(() -> init(g));
@@ -26,28 +33,33 @@ public class CluedoView {
 
         mainFrame.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-        JPanel turnPanel = new JPanel();
+
         JPanel cardPanel = new JPanel();
+        Dimension smallPanelDimensions = new Dimension((int)(mainFrame.getWidth() * 0.5), (int)(mainFrame.getHeight()*0.2));
         boardCanvas = new Canvas();
-        boardCanvas.setSize(BOARD_WIDTH, BOARD_HEIGHT);
         turnPanel.add(new Button("turnPanel"));
+
         cardPanel.add(new Button("cardPanel"));
 
         //creates the layout with the canvas taking up 80% of the height
         constraints.weightx = 1;
-        constraints.weighty = 0.8;
+        constraints.weighty = 0.7;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = 3;
         mainFrame.getContentPane().add(boardCanvas, constraints);
-        constraints.weighty = 0.2;
+        constraints.weighty = 0;
         constraints.gridwidth = 1;
         constraints.gridx = 1;
         constraints.gridy = 1;
+        constraints.weightx = 0.5;
         mainFrame.getContentPane().add(cardPanel, constraints);
         constraints.gridx = 2;
         constraints.gridy = 1;
+        constraints.weightx = 0.5;
+        cardPanel.setMaximumSize(smallPanelDimensions);
+        turnPanel.setMaximumSize(smallPanelDimensions);
         mainFrame.getContentPane().add(turnPanel, constraints);
 
         boardCanvas.setBorder(blackLineBorder);
@@ -59,6 +71,141 @@ public class CluedoView {
 
         boardCanvas.setVisible(true);
     }
+
+
+    /**
+     * displays options to a player if they have entered a room
+     * @param g
+     * @param p
+     */
+    public static void turnRoomFrame(Game g, Player p){
+        JButton suggestionButton = new JButton("Suggestion");
+        JButton accusationButton = new JButton("Accusation");
+
+        suggestionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                suggestionFame(g);
+                //g.makeSuggestion(p);
+                System.out.println(p.getToken().getName() + " is making a suggestion");
+                turnPanel.remove(suggestionButton);
+                turnPanel.remove(accusationButton);
+            }
+
+        });
+
+        accusationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //g.makeAccusation(p);
+                System.out.println(p.getToken().getName() + " is making an accusation");
+                turnPanel.remove(suggestionButton);
+                turnPanel.remove(accusationButton);
+            }
+
+        });
+        mainFrame.add(suggestionButton);
+        mainFrame.add(accusationButton);
+    }
+
+    public static void suggestionFame(Game g) {
+        JDialog guessFrame = new JDialog(mainFrame, "Enter Guess");
+        guessFrame.setSize(350,500);
+        guessFrame.setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(14,2,0, 0));
+        panel.add(new JLabel("Select Character"));
+
+        JLabel charError = new JLabel("Please choose a character.");
+        charError.setForeground(Color.RED);
+        charError.setVisible(false);
+        panel.add(charError);
+        ButtonGroup characters = new ButtonGroup();
+        for (CharacterCard c : CharacterCard.values()) {
+            JRadioButton rb = new JRadioButton();
+            rb.setText(c.getName());
+            characters.add(rb);
+            panel.add(rb);
+        }
+
+        panel.add(new JLabel("Select Weapon"));
+
+        JLabel weaponError = new JLabel("Please choose a weapon.");
+        weaponError.setForeground(Color.RED);
+        weaponError.setVisible(false);
+        panel.add(weaponError);
+        ButtonGroup weapons = new ButtonGroup();
+        for (WeaponCard c : WeaponCard.values()) {
+            JRadioButton rb = new JRadioButton();
+            rb.setText(c.getName());
+            weapons.add(rb);
+            panel.add(rb);
+        }
+
+        panel.add(new JLabel("Select Room"));
+
+        JLabel roomError = new JLabel("Please choose a Room.");
+        roomError.setForeground(Color.RED);
+        roomError.setVisible(false);
+        panel.add(roomError);
+        ButtonGroup rooms = new ButtonGroup();
+        for (RoomCard c : RoomCard.values()) {
+            JRadioButton rb = new JRadioButton();
+            rb.setText(c.getName());
+            rooms.add(rb);
+            panel.add(rb);
+        }
+
+
+        JButton add = new JButton("Submit");
+        ActionListener startAction = e -> {
+            boolean selectChar = false;
+            boolean selectWeap = false;
+            boolean selectRoom = false;
+            selectChar = isSelectCard(charError, characters, selectChar);
+
+            selectWeap = isSelectCard(weaponError, weapons, selectWeap);
+
+            selectRoom = isSelectCard(roomError, rooms, selectRoom);
+
+
+            if(!selectChar) charError.setVisible(true);
+            if(!selectWeap) weaponError.setVisible(true);
+            if(!selectRoom) roomError.setVisible(true);
+
+        };
+
+        add.addActionListener(startAction);
+        panel.add(add);
+
+
+
+        guessFrame.add(panel);
+        guessFrame.setVisible(true);
+
+        guessFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    }
+
+    /**
+     * check if an option has been selected from given radio buttons
+     * @param charError
+     * @param characters
+     * @param selectChar
+     * @return
+     */
+    private static boolean isSelectCard(JLabel charError, ButtonGroup characters, boolean selectChar) {
+        for (Enumeration<AbstractButton> buttons = characters.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                System.out.println(button.getText());
+                selectChar= true;
+                charError.setVisible(false);;
+            }
+        }
+        return selectChar;
+    }
+
 
     public static void createCanvas(Board board){
         boardCanvas.addMouseMotionListener(boardCanvas);
@@ -138,9 +285,57 @@ public class CluedoView {
         });
     }
 
-    public void displayPlayerInformation(Player p){
-        JPanel turnPanel = (JPanel)mainFrame.getContentPane().getComponent(0);
-        
+    public static void displayPlayerInformation(Player p, int moves){
+        Font displayFont = new Font("Serif", Font.PLAIN, 14);
+        System.out.println("displaying user information");
+        JPanel turnPanel = (JPanel)mainFrame.getContentPane().getComponent(1);
+        turnPanel.setLayout(new GridLayout(3,0));
+        turnPanel.removeAll();
+        turnPanel.invalidate();
+
+        JPanel namePanel = new JPanel();
+        namePanel.setLayout(new FlowLayout());
+        JLabel imageLabel = new JLabel(new ImageIcon(playerImage(p.getToken().getName())));
+        namePanel.add(imageLabel);
+        JLabel nameLabel = new JLabel(p.getToken().getName());
+        nameLabel.setFont(displayFont);
+        namePanel.add(nameLabel);
+        namePanel.setBorder(blackLineBorder);
+
+        JPanel movePanel = new JPanel();
+        movePanel.setLayout(new FlowLayout());
+        JLabel moveLabel = new JLabel("You may move " + moves + " tiles");
+        movePanel.setFont(displayFont);
+        movePanel.add(moveLabel);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBorder(blackLineBorder);
+        buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.add(new JButton("Roll Dice"));
+        buttonPanel.add(new JButton("Suggest"));
+        buttonPanel.add(new JButton("Accuse"));
+
+        turnPanel.add(namePanel);
+        turnPanel.add(movePanel);
+        turnPanel.add(buttonPanel);
+        namePanel.repaint();
+        turnPanel.setVisible(true);
+        turnPanel.revalidate();
+    }
+
+    private static BufferedImage playerImage(String playerName){
+        BufferedImage image = null;
+        String fileName = "Resources/" +  playerName.replace(' ', '_')+".png";
+        try {
+            image = ImageIO.read(new File(fileName));
+        }catch(IOException e){
+            CluedoView.showDialog(e.getMessage());
+        }
+        return image;
+    }
+
+    public static void showDialog(String message){
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(mainFrame, message));
     }
 
     public class Canvas extends JPanel implements MouseMotionListener{
@@ -153,11 +348,15 @@ public class CluedoView {
 		//paints the board (not overly efficient)
 		public void paint(Graphics g) {
 			tilesToDraw.values().forEach(tile -> {
-				g.setColor(tile.tileColor);
-				g.fillRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
+			    g.setColor(tile.cell.getColor());
+                g.fillRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
 				g.setColor(Color.LIGHT_GRAY);
                 g.drawRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
-			});
+                if(tile.cell.getObject() instanceof CharacterCard) {
+                    String playername = tile.cell.getObject().getName();
+                    g.drawImage(playerImage(playername), tile.xPosition, tile.yPosition, null);
+                }
+            });
 		}
 
         /**
@@ -166,7 +365,7 @@ public class CluedoView {
         public void drawBoard(){
             tilesToDraw.clear();
             cellWidth = this.getWidth() / Board.COLS + 1;
-            cellHeight = this.getHeight() / Board.ROWS;
+            cellHeight = this.getHeight() / Board.ROWS -3;
             int widthCount = 0;
             int heightCount = 0;
             for (int xIndex = 0; xIndex < Board.ROWS; xIndex++) {
