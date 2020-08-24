@@ -88,7 +88,7 @@ public class Game {
 		for (int index = 0; index < numPlayers; index++) {
 			int randomCardIndex = new Random().nextInt(characters.size());
 			CharacterCard randomCharacter = characters.get(randomCardIndex);
-			Player tempPlayer = new Player(randomCharacter, null, false);
+			Player tempPlayer = new Player(randomCharacter, null, randomCharacter.getName());
 			tempPlayerList.add(tempPlayer);
 			characters.remove(randomCardIndex);
 		}

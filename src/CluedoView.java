@@ -177,20 +177,20 @@ public class CluedoView {
 
     public class Canvas extends JPanel{
         private Board board;
-        private int cellWidth, cellHeight;
+        protected int cellWidth, cellHeight;
         private HashMap<Cell, drawTile> tilesToDraw = new HashMap<>();
 
 		//paints the board (not overly efficient)
 		public void paint(Graphics g) {
 			tilesToDraw.values().forEach(tile -> {
 				g.setColor(tile.tileColor);
-				g.fillRect(tile.xPosition, tile.yPosition, tile.cellWidth, tile.cellHeight);
+				g.fillRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
 			});
 		}
 
         public void drawBoard(){
             tilesToDraw.clear();
-            cellWidth = this.getWidth() / Board.COLS;
+            cellWidth = this.getWidth() / Board.COLS + 1;
             cellHeight = this.getHeight() / Board.ROWS;
             int widthCount = 0;
             int heightCount = 0;
@@ -234,7 +234,6 @@ public class CluedoView {
 	private class drawTile {
 		Color tileColor;
 		int xPosition, yPosition;
-		int cellHeight, cellWidth;
 		Rectangle rect;
 		Cell cell;
 
@@ -243,7 +242,7 @@ public class CluedoView {
 			this.xPosition = x;
 			this.yPosition = y;
 			this.cell = c;
-			rect = new Rectangle(xPosition, yPosition, cellWidth, cellHeight);
+			rect = new Rectangle(xPosition, yPosition, CluedoView.boardCanvas.cellWidth, CluedoView.boardCanvas.cellHeight);
 		}
 
 		public Rectangle getRect() {
