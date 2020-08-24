@@ -74,28 +74,6 @@ public class Game {
 		if (more) CluedoView.createPlayerSelectionDialog(this, players.size()+1);
 	}
 
-	/**
-	 * Creates a new player object for each player in the game
-	 *
-	 * @param numPlayers: number of players in the came
-	 * @return : List of player objects
-	 */
-	private List<Player> createPlayers(int numPlayers) {
-		//creates an arraylist for the new characters to be stored
-		ArrayList<Player> tempPlayerList = new ArrayList<>(6);
-		//creates an arrayList with all of the characters in the Character enum
-		ArrayList<CharacterCard> characters = new ArrayList<>(CharacterCard.getCharacters());
-		//creates a defined number of players with random Character card assigned
-		for (int index = 0; index < numPlayers; index++) {
-			int randomCardIndex = new Random().nextInt(characters.size());
-			CharacterCard randomCharacter = characters.get(randomCardIndex);
-			Player tempPlayer = new Player(randomCharacter, null, randomCharacter.getName());
-			tempPlayerList.add(tempPlayer);
-			characters.remove(randomCardIndex);
-		}
-		return tempPlayerList;
-	}
-
 	public boolean isTokenTaken(CharacterCard c) {
 		for (Player p : players) {
 			if (p.getToken().equals(c)) return true;

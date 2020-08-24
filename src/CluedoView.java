@@ -81,34 +81,26 @@ public class CluedoView {
      * @param p
      */
     public static void turnRoomFrame(Game g, Player p){
-        suggestionButton.setVisible(true);
-        accusationButton.setVisible(true);
+        suggestionButton.setEnabled(true);
+        accusationButton.setEnabled(true);
 
-        suggestionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                suggestionFame(g, true);
-                //g.makeSuggestion(p);
-                System.out.println(p.getToken().getName() + " is making a suggestion");
-            }
-
+        suggestionButton.addActionListener(e -> {
+            suggestionFrame(g, true);
+            //g.makeSuggestion(p);
+            System.out.println(p.getToken().getName() + " is making a suggestion");
         });
 
-        accusationButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //g.makeAccusation(p);
-                suggestionFame(g, true);
-                System.out.println(p.getToken().getName() + " is making an accusation");
-
-            }
+        accusationButton.addActionListener(e -> {
+            //g.makeAccusation(p);
+            suggestionFrame(g, false);
+            System.out.println(p.getToken().getName() + " is making an accusation");
 
         });
     }
 
-    public static void suggestionFame(Game g, boolean suggestion) {
-        suggestionButton.setVisible(false);
-        accusationButton.setVisible(false);
+    public static void suggestionFrame(Game g, boolean suggestion) {
+        suggestionButton.setEnabled(false);
+        accusationButton.setEnabled(false);
 
         JDialog guessFrame = new JDialog(mainFrame, "Enter Guess");
         guessFrame.setSize(350,500);
@@ -157,7 +149,6 @@ public class CluedoView {
             rooms.add(rb);
             panel.add(rb);
         }
-
 
         JButton add = new JButton("Submit");
         ActionListener startAction = e -> {
@@ -315,10 +306,12 @@ public class CluedoView {
         buttonPanel.setBorder(blackLineBorder);
         buttonPanel.setLayout(new FlowLayout());
         buttonPanel.add(new JButton("Roll Dice"));
+        suggestionButton.setVisible(true);
+        accusationButton.setVisible(true);
+        suggestionButton.setEnabled(false);
+        accusationButton.setEnabled(false);
         buttonPanel.add(suggestionButton);
         buttonPanel.add(accusationButton);
-        suggestionButton.setVisible(false);
-        accusationButton.setVisible(false);
         turnPanel.add(namePanel);
         turnPanel.add(movePanel);
         turnPanel.add(buttonPanel);
