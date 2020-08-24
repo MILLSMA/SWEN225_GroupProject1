@@ -1,11 +1,7 @@
-import sun.security.util.Cache;
-
 import javax.swing.*;
 import javax.swing.border.Border;
-import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
@@ -26,51 +22,14 @@ public class CluedoView {
         mainFrame = new JFrame("Cluedo");
         mainFrame.setResizable(false);
         mainFrame.setSize(BOARD_WIDTH,BOARD_HEIGHT*5/4);
-
         createPlayerSelectionDialog(g, 1);
-//        // Setup for number of players
-//        JDialog setUpFrame = new JDialog(mainFrame, "Game Set Up");
-//        setUpFrame.setSize(275,120);
-//        mainFrame.setLocationRelativeTo(null);
-//        setUpFrame.setLocationRelativeTo(null);
-//
-//        JPanel panel = new JPanel();
-//        JTextField entry = new JTextField(5);
-//        JButton submit = new JButton("Go");
-//        JLabel errorText = new JLabel("Choose between 3, 4, 5 and 6 players.");
-//        errorText.setForeground(Color.RED);
-//        errorText.setVisible(false);
-//
-//        //created this so user pressing enter does the same as pressing Go button
-//        ActionListener submitActionListener = e -> {
-//            int amountOfPlayers;
-//            try {
-//                amountOfPlayers = Integer.parseInt(entry.getText());
-//                if(amountOfPlayers >= 3 && amountOfPlayers <= 6){
-//                    setUpFrame.dispose();
-//                    g.setUp(amountOfPlayers);
-//                }else{
-//                    errorText.setVisible(true);
-//
-//                }
-//            }catch(NumberFormatException ex){
-//                errorText.setVisible(true);
-//            }
-//        };
-//
-//        entry.addActionListener(submitActionListener);
-//        submit.addActionListener(submitActionListener);
-//        panel.add(new JLabel("Number of players"));
-//        panel.add(entry);
-//        panel.add(submit);
-//        panel.add(errorText);
-//        setUpFrame.getContentPane().add(panel);
 
         mainFrame.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         JPanel turnPanel = new JPanel();
         JPanel cardPanel = new JPanel();
         boardCanvas = new Canvas();
+        boardCanvas.setSize(BOARD_WIDTH, BOARD_HEIGHT);
         turnPanel.add(new Button("turnPanel"));
         cardPanel.add(new Button("cardPanel"));
 
@@ -82,7 +41,7 @@ public class CluedoView {
         constraints.gridy = 0;
         constraints.gridwidth = 3;
         mainFrame.getContentPane().add(boardCanvas, constraints);
-        constraints.weighty = 0.20;
+        constraints.weighty = 0.2;
         constraints.gridwidth = 1;
         constraints.gridx = 1;
         constraints.gridy = 1;
@@ -99,8 +58,6 @@ public class CluedoView {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         boardCanvas.setVisible(true);
-//        setUpFrame.setVisible(true);
-
     }
 
     public static void createCanvas(Board board){
@@ -172,7 +129,12 @@ public class CluedoView {
         dialog.add(panel);
         dialog.setVisible(true);
 
-        dialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+                System.exit(0);
+            }
+        });
     }
 
     public class Canvas extends JPanel{
