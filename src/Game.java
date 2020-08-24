@@ -1,5 +1,7 @@
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +14,7 @@ public class Game {
 	//Game Attributes
 	private boolean won;
 	//Game Associations
-	private List<Player> players;
+	private List<Player> players = new ArrayList<>();
 	private Board board;
 	private CardTriplet envelope;
 	Pathfinder pathfinder;
@@ -25,10 +27,8 @@ public class Game {
 
 	public static void main(String... args) {
 		Game currentGame = new Game();
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				final CluedoView GUI = new CluedoView(currentGame);
-			}
+		SwingUtilities.invokeLater(() -> {
+			final CluedoView GUI = new CluedoView(currentGame);
 		});
 
 
@@ -49,23 +49,8 @@ public class Game {
 	/**
 	 * set up a new game with given number of players
 	 *
-	 * @param amountOfPlayers: no. players in this game
 	 */
-	public void setUp(int amountOfPlayers, CluedoView boardUI) {
-		//input = new Scanner(System.in);
-		//int amountOfPlayers = 0;
-		// Ask users for an integer between 3 and 6, repeat until valid integer received
-		/*do {
-			System.out.print("How many players will be participating? (3 - 6): ");
-			try {
-				amountOfPlayers = input.nextInt();
-			}catch(InputMismatchException e){
-				System.out.println("Choose between 3, 4, 5 and 6 players.");
-				input.nextLine();
-			}
-		} while (amountOfPlayers < 3 || amountOfPlayers > 6);*/
-
-		players = createPlayers(amountOfPlayers);
+	public void startGame() {
 		board = new Board(players);
 		pathfinder = new Pathfinder(board);
 		won = false;
@@ -81,6 +66,11 @@ public class Game {
 		envelope = decideSolution(allCards);
 		dealCards(allCards);
 		runGame();
+	}
+
+	public void createPlayer(String name, CharacterCard token, boolean more) {
+		players.add(new Player(token, null, name));
+		if (more) CluedoView.createPlayerSelectionDialog(this, players.size()+1);
 	}
 
 	/**
@@ -103,6 +93,13 @@ public class Game {
 			characters.remove(randomCardIndex);
 		}
 		return tempPlayerList;
+	}
+
+	public boolean isTokenTaken(CharacterCard c) {
+		for (Player p : players) {
+			if (p.getToken().equals(c)) return true;
+		}
+		return false;
 	}
 
 	/**
@@ -169,7 +166,7 @@ public class Game {
 			while (!won || !allPlayersOut()) {
 
 				SwingUtilities.invokeLater(() -> {
-					Timer t = new Timer(300, e -> CluedoView.canvas.drawBoard());
+					Timer t = new Timer(300, e -> CluedoView.boardCanvas.drawBoard());
 					t.start();
 				});
 
@@ -294,7 +291,7 @@ public class Game {
 		Cell goalCell;
 		try {
 			//waits for the player to click on a cell and the gets it
-			goalCell = CluedoView.canvas.getCell().get();
+			goalCell = CluedoView.boardCanvas.getCell().get();
 			Cell playerCell = p.getLocation();
 			//finds the shortest path to the selected cell
 			ArrayList<Locatable> selectedCells = new ArrayList<>(pathfinder.findPath(playerCell, goalCell));

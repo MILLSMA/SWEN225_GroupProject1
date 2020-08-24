@@ -9,6 +9,7 @@ public class Player
 
 	//Player Attributes
 	private final CharacterCard token;
+	private final String name;
 	private boolean isExcluded;
 
 	//Player Associations
@@ -18,12 +19,13 @@ public class Player
 	// CONSTRUCTOR
 	//------------------------
 
-	public Player(CharacterCard aToken, Cell aLocation, boolean aIsExcluded)
+	public Player(CharacterCard aToken, Cell aLocation, String n)
 	{
 		token = aToken;
 		token.setCell(aLocation);
-		isExcluded = aIsExcluded;
+		isExcluded = false;
 		cards = new ArrayList<>();
+		name = n;
 	}
 
 	//------------------------
