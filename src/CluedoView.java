@@ -1,10 +1,16 @@
 import sun.security.util.Cache;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.tree.AbstractLayoutCache;
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -16,7 +22,7 @@ public class CluedoView {
     private static final int BOARD_WIDTH = CELL_SIZE*Board.COLS;
     static JFrame mainFrame;
     static Canvas boardCanvas;
-    Border blackLineBorder = BorderFactory.createLineBorder(Color.black);
+    static Border blackLineBorder = BorderFactory.createLineBorder(Color.black);
 
     public CluedoView(Game g){
         SwingUtilities.invokeLater(() -> init(g));
@@ -70,25 +76,30 @@ public class CluedoView {
         GridBagConstraints constraints = new GridBagConstraints();
         JPanel turnPanel = new JPanel();
         JPanel cardPanel = new JPanel();
+        Dimension smallPanelDimensions = new Dimension((int)(mainFrame.getWidth() * 0.5), (int)(mainFrame.getHeight()*0.2));
         boardCanvas = new Canvas();
         turnPanel.add(new Button("turnPanel"));
         cardPanel.add(new Button("cardPanel"));
 
         //creates the layout with the canvas taking up 80% of the height
         constraints.weightx = 1;
-        constraints.weighty = 0.8;
+        constraints.weighty = 0.7;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = 3;
         mainFrame.getContentPane().add(boardCanvas, constraints);
-        constraints.weighty = 0.20;
+        constraints.weighty = 0;
         constraints.gridwidth = 1;
         constraints.gridx = 1;
         constraints.gridy = 1;
+        constraints.weightx = 0.5;
         mainFrame.getContentPane().add(cardPanel, constraints);
         constraints.gridx = 2;
         constraints.gridy = 1;
+        constraints.weightx = 0.5;
+        cardPanel.setMaximumSize(smallPanelDimensions);
+        turnPanel.setMaximumSize(smallPanelDimensions);
         mainFrame.getContentPane().add(turnPanel, constraints);
 
         boardCanvas.setBorder(blackLineBorder);
@@ -176,9 +187,57 @@ public class CluedoView {
         dialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
-    public void displayPlayerInformation(Player p){
-        JPanel turnPanel = (JPanel)mainFrame.getContentPane().getComponent(0);
-        
+    public static void displayPlayerInformation(Player p, int moves){
+        Font displayFont = new Font("Serif", Font.PLAIN, 14);
+        System.out.println("displaying user information");
+        JPanel turnPanel = (JPanel)mainFrame.getContentPane().getComponent(1);
+        turnPanel.setLayout(new GridLayout(3,0));
+        turnPanel.removeAll();
+        turnPanel.invalidate();
+
+        JPanel namePanel = new JPanel();
+        namePanel.setLayout(new FlowLayout());
+        JLabel imageLabel = new JLabel(new ImageIcon(playerImage(p.getToken().getName())));
+        namePanel.add(imageLabel);
+        JLabel nameLabel = new JLabel(p.getToken().getName());
+        nameLabel.setFont(displayFont);
+        namePanel.add(nameLabel);
+        namePanel.setBorder(blackLineBorder);
+
+        JPanel movePanel = new JPanel();
+        movePanel.setLayout(new FlowLayout());
+        JLabel moveLabel = new JLabel("You may move " + moves + " tiles");
+        movePanel.setFont(displayFont);
+        movePanel.add(moveLabel);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBorder(blackLineBorder);
+        buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.add(new JButton("Roll Dice"));
+        buttonPanel.add(new JButton("Suggest"));
+        buttonPanel.add(new JButton("Accuse"));
+
+        turnPanel.add(namePanel);
+        turnPanel.add(movePanel);
+        turnPanel.add(buttonPanel);
+        namePanel.repaint();
+        turnPanel.setVisible(true);
+        turnPanel.revalidate();
+    }
+
+    private static BufferedImage playerImage(String playerName){
+        BufferedImage image = null;
+        String fileName = "Resources/" +  playerName.replace(' ', '_')+".png";
+        try {
+            image = ImageIO.read(new File(fileName));
+        }catch(IOException e){
+            CluedoView.showDialog(e.getMessage());
+        }
+        return image;
+    }
+
+    public static void showDialog(String message){
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(mainFrame, message));
     }
 
     public class Canvas extends JPanel implements MouseMotionListener{
@@ -191,11 +250,15 @@ public class CluedoView {
 		//paints the board (not overly efficient)
 		public void paint(Graphics g) {
 			tilesToDraw.values().forEach(tile -> {
-				g.setColor(tile.tileColor);
-				g.fillRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
+			    g.setColor(tile.cell.getColor());
+                g.fillRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
 				g.setColor(Color.LIGHT_GRAY);
                 g.drawRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
-			});
+                if(tile.cell.getObject() instanceof CharacterCard) {
+                    String playername = tile.cell.getObject().getName();
+                    g.drawImage(playerImage(playername), tile.xPosition, tile.yPosition, null);
+                }
+            });
 		}
 
         /**
@@ -204,7 +267,7 @@ public class CluedoView {
         public void drawBoard(){
             tilesToDraw.clear();
             cellWidth = this.getWidth() / Board.COLS + 1;
-            cellHeight = this.getHeight() / Board.ROWS;
+            cellHeight = this.getHeight() / Board.ROWS -3;
             int widthCount = 0;
             int heightCount = 0;
             for (int xIndex = 0; xIndex < Board.ROWS; xIndex++) {

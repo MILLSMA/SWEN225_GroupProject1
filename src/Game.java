@@ -203,7 +203,10 @@ public class Game {
 	private void doTurn(Player p) {
 		//place holder code
 		System.out.println("\n== " + p.getToken().getName() + "'s turn ==");
-		guiMove(p, rollDice());
+		int diceRoll = rollDice();
+		SwingUtilities.invokeLater(() -> CluedoView.displayPlayerInformation(p, diceRoll));
+		guiMove(p, diceRoll);
+
 
 		if (p.getLocation().getRoom().isProperRoom()) {
 			System.out.println("You've entered the " + p.getLocation().getRoom().getName());
@@ -314,12 +317,11 @@ public class Game {
 					TimeUnit.MILLISECONDS.sleep(400);
 				}
 			} else {
-				System.out.println("You cannot move here");
+				CluedoView.showDialog("You cannot move here");
 				guiMove(p, roll);
 			}
 		} catch (Exception e) {
-			System.out.println("Move failed due to " + e.getMessage());
-			System.out.println("Please try again");
+			CluedoView.showDialog("Move could not be made due to " + e.getMessage() + "\nPlease try again");
 			guiMove(p, roll);
 		}
 	}

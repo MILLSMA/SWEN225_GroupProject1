@@ -33,7 +33,6 @@ public class Cell extends Locatable
 	//------------------------
 
 	public Color getColor(){
-		if(object != null && object instanceof CharacterCard) return ((CharacterCard) object).getColour();
 		return this.color;
 	}
 
