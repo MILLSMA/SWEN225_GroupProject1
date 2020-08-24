@@ -1,8 +1,7 @@
-import javax.swing.*;
 import javax.swing.Timer;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Game {
 
@@ -16,6 +15,7 @@ public class Game {
 	private List<Player> players;
 	private Board board;
 	private CardTriplet envelope;
+	Pathfinder pathfinder;
 	private Scanner input;
 
 
@@ -67,6 +67,7 @@ public class Game {
 
 		players = createPlayers(amountOfPlayers);
 		board = new Board(players);
+		pathfinder = new Pathfinder(board);
 		won = false;
 		System.out.println("== Players in this Game == ");
 		for (int i = 0; i < players.size(); i++) {
@@ -164,19 +165,14 @@ public class Game {
 
 	private void runGame() {
 		CluedoView.createCanvas(board);
-		//This legitimately took hours too figure out, basically swing is a bastard and
-		//you have to do weird as shit to get it to update properly. just dont fuck with it plz <3
 		new Thread(() -> {
 			while (!won || !allPlayersOut()) {
 
 				SwingUtilities.invokeLater(() -> {
-					Timer t = new Timer(1000, e -> CluedoView.canvas.drawBoard());
+					Timer t = new Timer(300, e -> CluedoView.canvas.drawBoard());
 					t.start();
 				});
-				try {
-					Thread.sleep(1000);
-				} catch (Exception e) {
-				}
+
 				for (Player player : players) {
 					if (!won && !player.getExcluded()) doTurn(player);
 				}
@@ -209,7 +205,7 @@ public class Game {
 	private void doTurn(Player p) {
 		//place holder code
 		System.out.println("\n== " + p.getToken().getName() + "'s turn ==");
-		move(p);
+		guiMove(p);
 
 		if (p.getLocation().getRoom().isProperRoom()) {
 			System.out.println("You've entered the " + p.getLocation().getRoom().getName());
@@ -248,51 +244,75 @@ public class Game {
 	 *
 	 * @param p : the player moving
 	 */
-	private void move(Player p) {
-		if (p.getLocation().getRoom().isProperRoom()) {
-			System.out.println("You are currently in the " + p.getLocation().getRoom().getName());
-			System.out.println("You may move anywhere in your current room, " +
-					"your turn will start once you exit.");
-			while (true) {
-				//prints the board to the screen
-				System.out.println(board);
-				Cell.Direction chosenDirection = Cell.Direction.input(p, board);
-				if (chosenDirection == null) return;
-				Cell oldPlayerCell = p.getLocation();
-				Cell newPlayerCell = board.move(p, chosenDirection);
-				p.setCell(newPlayerCell);
-				if (newPlayerCell.getRoom().getCard() != oldPlayerCell.getRoom().getCard()) break;
-			}
-		}
-		ArrayList<Cell> cellsMovedTo = new ArrayList<>();
-		int numberOfMoves = rollDice();
-		System.out.println("You rolled " + numberOfMoves + ". You may move " + numberOfMoves + " spaces");
-		for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
-			//prints the board to the screen
-			System.out.println(board);
-			//displays whose turn it is and how many moves they have left
-			System.out.println(p.getToken().getName() + " you have " + (numberOfMoves - moveNumber) + " moves left");
-			System.out.println("You may move in these directions: ");
-			Cell.Direction chosenDirection = Cell.Direction.input(p, board);
-			if (chosenDirection == null) break;
-			//moves the player on the board based on their answer
-			Cell newPlayerCell = board.move(p, chosenDirection);
-			p.setCell(newPlayerCell);
-			cellsMovedTo.add(newPlayerCell);
-			newPlayerCell.setUsedInRound(true);
-			if (p.getLocation().getRoom().isProperRoom()) break;
-		}
-		for (Cell cell : cellsMovedTo) {
-			cell.setUsedInRound(false);
-		}
-	}
+//	private void move(Player p) {
+//		if (p.getLocation().getRoom().isProperRoom()) {
+//			System.out.println("You are currently in the " + p.getLocation().getRoom().getName());
+//			System.out.println("You may move anywhere in your current room, " +
+//					"your turn will start once you exit.");
+//			while (true) {
+//				//prints the board to the screen
+//				System.out.println(board);
+//				Cell.Direction chosenDirection = Cell.Direction.input(p, board);
+//				if (chosenDirection == null) return;
+//				Cell oldPlayerCell = p.getLocation();
+//				Cell newPlayerCell = board.move(p, chosenDirection);
+//				p.setCell(newPlayerCell);
+//				if (newPlayerCell.getRoom().getCard() != oldPlayerCell.getRoom().getCard()) break;
+//			}
+//		}
+//		ArrayList<Cell> cellsMovedTo = new ArrayList<>();
+//		int numberOfMoves = rollDice();
+//		System.out.println("You rolled " + numberOfMoves + ". You may move " + numberOfMoves + " spaces");
+//		for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
+//			//prints the board to the screen
+//			System.out.println(board);
+//			//displays whose turn it is and how many moves they have left
+//			System.out.println(p.getToken().getName() + " you have " + (numberOfMoves - moveNumber) + " moves left");
+//			System.out.println("You may move in these directions: ");
+//			Cell.Direction chosenDirection = Cell.Direction.input(p, board);
+//			if (chosenDirection == null) break;
+//			//moves the player on the board based on their answer
+//			Cell newPlayerCell = board.move(p, chosenDirection);
+//			p.setCell(newPlayerCell);
+//			cellsMovedTo.add(newPlayerCell);
+//			newPlayerCell.setUsedInRound(true);
+//			if (p.getLocation().getRoom().isProperRoom()) break;
+//		}
+//		for (Cell cell : cellsMovedTo) {
+//			cell.setUsedInRound(false);
+//		}
+//	}
 
 	/**
 	 * new move method for testing the gui movement
+	 *
 	 * @param p
 	 */
-	private void guiMove(Player p){
-
+	private void guiMove(Player p) {
+		int amountOfMoves = rollDice();
+		System.out.println("You have " + amountOfMoves + "to move");
+		Cell goalCell;
+		try {
+			//waits for the player to click on a cell and the gets it
+			goalCell = CluedoView.canvas.getCell().get();
+			Cell playerCell = p.getLocation();
+			//finds the shortest path to the selected cell
+			ArrayList<Locatable> selectedCells = new ArrayList<>(pathfinder.findPath(playerCell, goalCell));
+			//if the path length is within the allowed amount of moves, move the player step by step
+			if (selectedCells.size() - 1 <= amountOfMoves) {
+				for (Locatable cell : selectedCells) {
+					p.setCell((Cell) cell);
+					TimeUnit.MILLISECONDS.sleep(300);
+				}
+			} else {
+				System.out.println("You cannot move here");
+				guiMove(p);
+			}
+		} catch (Exception e) {
+			System.out.println("Move failed due to " + e.getMessage());
+			System.out.println("Please try again");
+			guiMove(p);
+		}
 	}
 
 	/**
