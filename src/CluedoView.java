@@ -27,6 +27,8 @@ public class CluedoView {
     static Border blackLineBorder = BorderFactory.createLineBorder(Color.black);
 
     static JPanel turnPanel = new JPanel();
+    static JButton suggestionButton = new JButton("Suggestion");
+    static JButton accusationButton = new JButton("Accusation");
 
 
     public CluedoView(Game g){
@@ -133,17 +135,15 @@ public class CluedoView {
      * @param p
      */
     public static void turnRoomFrame(Game g, Player p){
-        JButton suggestionButton = new JButton("Suggestion");
-        JButton accusationButton = new JButton("Accusation");
+        suggestionButton.setVisible(true);
+        accusationButton.setVisible(true);
 
         suggestionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                suggestionFame(g);
+                suggestionFame(g, true);
                 //g.makeSuggestion(p);
                 System.out.println(p.getToken().getName() + " is making a suggestion");
-                turnPanel.remove(suggestionButton);
-                turnPanel.remove(accusationButton);
             }
 
         });
@@ -152,17 +152,18 @@ public class CluedoView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //g.makeAccusation(p);
+                suggestionFame(g, true);
                 System.out.println(p.getToken().getName() + " is making an accusation");
-                turnPanel.remove(suggestionButton);
-                turnPanel.remove(accusationButton);
+
             }
 
         });
-        mainFrame.add(suggestionButton);
-        mainFrame.add(accusationButton);
     }
 
-    public static void suggestionFame(Game g) {
+    public static void suggestionFame(Game g, boolean suggestion) {
+        suggestionButton.setVisible(false);
+        accusationButton.setVisible(false);
+
         JDialog guessFrame = new JDialog(mainFrame, "Enter Guess");
         guessFrame.setSize(350,500);
         guessFrame.setLocationRelativeTo(null);
@@ -227,6 +228,8 @@ public class CluedoView {
             if(!selectChar) charError.setVisible(true);
             if(!selectWeap) weaponError.setVisible(true);
             if(!selectRoom) roomError.setVisible(true);
+
+            if(selectChar && selectWeap && (selectRoom || suggestion))guessFrame.dispose();
 
         };
 
@@ -361,9 +364,10 @@ public class CluedoView {
         buttonPanel.setBorder(blackLineBorder);
         buttonPanel.setLayout(new FlowLayout());
         buttonPanel.add(new JButton("Roll Dice"));
-        buttonPanel.add(new JButton("Suggest"));
-        buttonPanel.add(new JButton("Accuse"));
-
+        buttonPanel.add(suggestionButton);
+        buttonPanel.add(accusationButton);
+        suggestionButton.setVisible(false);
+        accusationButton.setVisible(false);
         turnPanel.add(namePanel);
         turnPanel.add(movePanel);
         turnPanel.add(buttonPanel);
