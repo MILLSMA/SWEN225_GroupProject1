@@ -16,6 +16,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
+
+
 public class CluedoView {
     private static final int CELL_SIZE = 27;
     private static final int BOARD_HEIGHT = CELL_SIZE*Board.ROWS;
@@ -23,6 +25,9 @@ public class CluedoView {
     static JFrame mainFrame;
     static Canvas boardCanvas;
     static Border blackLineBorder = BorderFactory.createLineBorder(Color.black);
+
+    static JPanel turnPanel = new JPanel();
+
 
     public CluedoView(Game g){
         SwingUtilities.invokeLater(() -> init(g));
@@ -34,6 +39,7 @@ public class CluedoView {
         mainFrame.setSize(BOARD_WIDTH,BOARD_HEIGHT*5/4);
 
         createPlayerSelectionDialog(g, 1);
+
 //        // Setup for number of players
 //        JDialog setUpFrame = new JDialog(mainFrame, "Game Set Up");
 //        setUpFrame.setSize(275,120);
@@ -74,11 +80,17 @@ public class CluedoView {
 
         mainFrame.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-        JPanel turnPanel = new JPanel();
+
+
+
+
+
+
         JPanel cardPanel = new JPanel();
         Dimension smallPanelDimensions = new Dimension((int)(mainFrame.getWidth() * 0.5), (int)(mainFrame.getHeight()*0.2));
         boardCanvas = new Canvas();
         turnPanel.add(new Button("turnPanel"));
+
         cardPanel.add(new Button("cardPanel"));
 
         //creates the layout with the canvas taking up 80% of the height
@@ -113,6 +125,141 @@ public class CluedoView {
 //        setUpFrame.setVisible(true);
 
     }
+
+
+    /**
+     * displays options to a player if they have entered a room
+     * @param g
+     * @param p
+     */
+    public static void turnRoomFrame(Game g, Player p){
+        JButton suggestionButton = new JButton("Suggestion");
+        JButton accusationButton = new JButton("Accusation");
+
+        suggestionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                suggestionFame(g);
+                //g.makeSuggestion(p);
+                System.out.println(p.getToken().getName() + " is making a suggestion");
+                turnPanel.remove(suggestionButton);
+                turnPanel.remove(accusationButton);
+            }
+
+        });
+
+        accusationButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //g.makeAccusation(p);
+                System.out.println(p.getToken().getName() + " is making an accusation");
+                turnPanel.remove(suggestionButton);
+                turnPanel.remove(accusationButton);
+            }
+
+        });
+        mainFrame.add(suggestionButton);
+        mainFrame.add(accusationButton);
+    }
+
+    public static void suggestionFame(Game g) {
+        JDialog guessFrame = new JDialog(mainFrame, "Enter Guess");
+        guessFrame.setSize(350,500);
+        guessFrame.setLocationRelativeTo(null);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(14,2,0, 0));
+        panel.add(new JLabel("Select Character"));
+
+        JLabel charError = new JLabel("Please choose a character.");
+        charError.setForeground(Color.RED);
+        charError.setVisible(false);
+        panel.add(charError);
+        ButtonGroup characters = new ButtonGroup();
+        for (CharacterCard c : CharacterCard.values()) {
+            JRadioButton rb = new JRadioButton();
+            rb.setText(c.getName());
+            characters.add(rb);
+            panel.add(rb);
+        }
+
+        panel.add(new JLabel("Select Weapon"));
+
+        JLabel weaponError = new JLabel("Please choose a weapon.");
+        weaponError.setForeground(Color.RED);
+        weaponError.setVisible(false);
+        panel.add(weaponError);
+        ButtonGroup weapons = new ButtonGroup();
+        for (WeaponCard c : WeaponCard.values()) {
+            JRadioButton rb = new JRadioButton();
+            rb.setText(c.getName());
+            weapons.add(rb);
+            panel.add(rb);
+        }
+
+        panel.add(new JLabel("Select Room"));
+
+        JLabel roomError = new JLabel("Please choose a Room.");
+        roomError.setForeground(Color.RED);
+        roomError.setVisible(false);
+        panel.add(roomError);
+        ButtonGroup rooms = new ButtonGroup();
+        for (RoomCard c : RoomCard.values()) {
+            JRadioButton rb = new JRadioButton();
+            rb.setText(c.getName());
+            rooms.add(rb);
+            panel.add(rb);
+        }
+
+
+        JButton add = new JButton("Submit");
+        ActionListener startAction = e -> {
+            boolean selectChar = false;
+            boolean selectWeap = false;
+            boolean selectRoom = false;
+            selectChar = isSelectCard(charError, characters, selectChar);
+
+            selectWeap = isSelectCard(weaponError, weapons, selectWeap);
+
+            selectRoom = isSelectCard(roomError, rooms, selectRoom);
+
+
+            if(!selectChar) charError.setVisible(true);
+            if(!selectWeap) weaponError.setVisible(true);
+            if(!selectRoom) roomError.setVisible(true);
+
+        };
+
+        add.addActionListener(startAction);
+        panel.add(add);
+
+
+
+        guessFrame.add(panel);
+        guessFrame.setVisible(true);
+
+        guessFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    }
+
+    /**
+     * check if an option has been selected from given radio buttons
+     * @param charError
+     * @param characters
+     * @param selectChar
+     * @return
+     */
+    private static boolean isSelectCard(JLabel charError, ButtonGroup characters, boolean selectChar) {
+        for (Enumeration<AbstractButton> buttons = characters.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                System.out.println(button.getText());
+                selectChar= true;
+                charError.setVisible(false);;
+            }
+        }
+        return selectChar;
+    }
+
 
     public static void createCanvas(Board board){
         boardCanvas.addMouseMotionListener(boardCanvas);

@@ -210,6 +210,7 @@ public class Game {
 
 		if (p.getLocation().getRoom().isProperRoom()) {
 			System.out.println("You've entered the " + p.getLocation().getRoom().getName());
+			CluedoView.turnRoomFrame(this, p);
 			Room currentRoom = findRoom(p);
 			p.setCell(currentRoom.findEmptyCell());
 			turnEntry(p);
