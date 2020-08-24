@@ -20,7 +20,6 @@ public class Game {
 	Pathfinder pathfinder;
 	private Scanner input;
 
-
 	//------------------------
 	// STATIC INITIALISATION METHODS
 	//------------------------
@@ -202,11 +201,14 @@ public class Game {
 	 */
 	private void doTurn(Player p) {
 		//place holder code
+
 		System.out.println("\n== " + p.getToken().getName() + "'s turn ==");
+
 		guiMove(p, rollDice());
 
 		if (p.getLocation().getRoom().isProperRoom()) {
 			System.out.println("You've entered the " + p.getLocation().getRoom().getName());
+			CluedoView.turnRoomFrame(this, p);
 			Room currentRoom = findRoom(p);
 			p.setCell(currentRoom.findEmptyCell());
 			turnEntry(p);
