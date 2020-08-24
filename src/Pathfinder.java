@@ -6,13 +6,11 @@ import java.util.stream.Collectors;
  * @param <K> object
  */
 public class Pathfinder<K extends Locatable> {
-	private PriorityQueue<Node> fringe;
-	private Collection<Node> visited;
 	private Node start;
 	private K goal;
 	private ArrayList<Node> pathway;
 	private ArrayList<K> objectPath;
-	private Board board;
+	private final Board board;
 	
 	Pathfinder(Board board){
 		this.board = board;
@@ -27,13 +25,13 @@ public class Pathfinder<K extends Locatable> {
 	public ArrayList<K> findPath(K start, K goal){
 		this.goal = goal;
 		this.start = new Node(start, getEstimate(start), 0);
-		visited = new HashSet<>();
+		Collection<Node> visited = new HashSet<>();
 		pathway = new ArrayList<>();
 
 		//creates a priority queue bases on the distance of each locatable objects
 		//distance from the goal node
-		fringe = new PriorityQueue<>((node1, node2) -> {
-			if (node2.getF() + node2.getG()  > node1.getF()+ node1.getG()) {
+		PriorityQueue<Node> fringe = new PriorityQueue<>((node1, node2) -> {
+			if (node2.getF() + node2.getG() > node1.getF() + node1.getG()) {
 				return -1;
 			} else {
 				return 1;

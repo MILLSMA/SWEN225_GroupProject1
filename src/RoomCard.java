@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Scanner;
@@ -13,6 +14,7 @@ public enum RoomCard implements Card {
 	LIBRARY,
 	STUDY;
 
+	private ArrayList<Cell> doors = new ArrayList<>();
 	private static final String[] codes = {"K", "O", "C", "B", "D", "L", "H", "I", "S"};
 
 	public static Collection<RoomCard> getRooms(){
@@ -21,6 +23,13 @@ public enum RoomCard implements Card {
 
 	public static int size(){
 		return values().length;
+	}
+
+	public ArrayList<Cell> getDoors() {
+		return doors;
+	}
+	public void addDoor(Cell door) {
+		this.doors.add(door);
 	}
 
 	/**

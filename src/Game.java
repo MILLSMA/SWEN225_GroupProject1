@@ -64,6 +64,7 @@ public class Game {
 		allCards.addAll(WeaponCard.getWeapons());
 		allCards.addAll(RoomCard.getRooms());
 		envelope = decideSolution(allCards);
+		input = new Scanner(System.in);
 		dealCards(allCards);
 		runGame();
 	}
@@ -166,7 +167,7 @@ public class Game {
 			while (!won || !allPlayersOut()) {
 
 				SwingUtilities.invokeLater(() -> {
-					Timer t = new Timer(300, e -> CluedoView.boardCanvas.drawBoard());
+					Timer t = new Timer(400, e -> CluedoView.boardCanvas.updateBoard());
 					t.start();
 				});
 
@@ -202,7 +203,7 @@ public class Game {
 	private void doTurn(Player p) {
 		//place holder code
 		System.out.println("\n== " + p.getToken().getName() + "'s turn ==");
-		guiMove(p);
+		guiMove(p, rollDice());
 
 		if (p.getLocation().getRoom().isProperRoom()) {
 			System.out.println("You've entered the " + p.getLocation().getRoom().getName());
@@ -285,31 +286,48 @@ public class Game {
 	 *
 	 * @param p
 	 */
-	private void guiMove(Player p) {
-		int amountOfMoves = rollDice();
-		System.out.println("You have " + amountOfMoves + "to move");
+	private void guiMove(Player p, int roll) {
+		int amountOfMoves = roll;
+		System.out.println("You can move " + roll + " tiles.");
 		Cell goalCell;
 		try {
 			//waits for the player to click on a cell and the gets it
 			goalCell = CluedoView.boardCanvas.getCell().get();
 			Cell playerCell = p.getLocation();
+
+			//if clicking in a room, the pathfinder won't waste time finding a path
+			//to the exact cell clicked, just the door to the room
+			if(RoomCard.getRooms().contains(goalCell.getRoom().getCard())){
+				goalCell = goalCell.getRoom().getCard().getDoors().iterator().next();
+			}
+			if (RoomCard.getRooms().contains(playerCell.getRoom().getCard())){
+				playerCell = playerCell.getRoom().getCard().getDoors().iterator().next();
+			}
+			if(goalCell.getRoom().getType().equals("Wall") || getEstimate(playerCell, goalCell) > 12) amountOfMoves = Integer.MIN_VALUE;
 			//finds the shortest path to the selected cell
-			ArrayList<Locatable> selectedCells = new ArrayList<>(pathfinder.findPath(playerCell, goalCell));
+			ArrayList<Locatable> selectedCells = new ArrayList<>();
+			if(amountOfMoves > 0) selectedCells.addAll(pathfinder.findPath(playerCell, goalCell));
 			//if the path length is within the allowed amount of moves, move the player step by step
 			if (selectedCells.size() - 1 <= amountOfMoves) {
 				for (Locatable cell : selectedCells) {
 					p.setCell((Cell) cell);
-					TimeUnit.MILLISECONDS.sleep(300);
+					TimeUnit.MILLISECONDS.sleep(400);
 				}
 			} else {
 				System.out.println("You cannot move here");
-				guiMove(p);
+				guiMove(p, roll);
 			}
 		} catch (Exception e) {
 			System.out.println("Move failed due to " + e.getMessage());
 			System.out.println("Please try again");
-			guiMove(p);
+			guiMove(p, roll);
 		}
+	}
+	private double getEstimate(Cell first, Cell second){
+		Position firstPosition = first.getPosition();
+		Position secondPosition = second.getPosition();
+		return Math.sqrt((secondPosition.getRow()-firstPosition.getRow())*(secondPosition.getRow()-firstPosition.getRow()) +
+				(secondPosition.getCol()-firstPosition.getCol())*((secondPosition.getCol()-firstPosition.getCol())));
 	}
 
 	/**
