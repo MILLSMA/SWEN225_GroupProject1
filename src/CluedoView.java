@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
@@ -115,77 +116,47 @@ public class CluedoView {
         accusationButton.setEnabled(false);
 
         JDialog guessFrame = new JDialog(mainFrame, "Enter Guess");
-        guessFrame.setSize(350,500);
+        guessFrame.setSize(350,300);
         guessFrame.setLocationRelativeTo(null);
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(14,2,0, 0));
+        panel.setLayout(new GridLayout(4,2,0, 0));
+
+
+        //CHARACTER
         panel.add(new JLabel("Select Character"));
+        ArrayList<String> charValues = new ArrayList<>();
+        for (CharacterCard c : CharacterCard.values())charValues.add(c.getName());
 
-        JLabel charError = new JLabel("Please choose a character.");
-        charError.setForeground(Color.RED);
-        charError.setVisible(false);
-        panel.add(charError);
-        ButtonGroup characters = new ButtonGroup();
-        for (CharacterCard c : CharacterCard.values()) {
-            JRadioButton rb = new JRadioButton();
-            rb.setText(c.getName());
-            characters.add(rb);
-            panel.add(rb);
-        }
+        JComboBox<String> characterSelect = new JComboBox(charValues.toArray());
+        panel.add(characterSelect);
 
+        //WEAPON
         panel.add(new JLabel("Select Weapon"));
 
-        JLabel weaponError = new JLabel("Please choose a weapon.");
-        weaponError.setForeground(Color.RED);
-        weaponError.setVisible(false);
-        panel.add(weaponError);
-        ButtonGroup weapons = new ButtonGroup();
-        for (WeaponCard c : WeaponCard.values()) {
-            JRadioButton rb = new JRadioButton();
-            rb.setText(c.getName());
-            weapons.add(rb);
-            panel.add(rb);
+        ArrayList<String> WeapValues = new ArrayList<>();
+        for (WeaponCard c : WeaponCard.values()) WeapValues.add(c.getName());
+
+        JComboBox<String> weaponSelect = new JComboBox(WeapValues.toArray());
+        panel.add(weaponSelect);
+
+        //ROOM (ACCUSATION ONLY)
+        if(!suggestion){
+            panel.add(new JLabel("Select Room"));
+
+            ArrayList<String> roomValues = new ArrayList<>();
+            for (RoomCard c : RoomCard.values())roomValues.add(c.getName());
+
+            JComboBox<String> roomSelect = new JComboBox(roomValues.toArray());
+            panel.add(roomSelect);
         }
 
-        if(!suggestion)panel.add(new JLabel("Select Room"));
-
-        JLabel roomError = new JLabel("Please choose a Room.");
-        roomError.setForeground(Color.RED);
-        roomError.setVisible(false);
-        panel.add(roomError);
-        ButtonGroup rooms = new ButtonGroup();
-        for (RoomCard c : RoomCard.values()) {
-            JRadioButton rb = new JRadioButton();
-            rb.setText(c.getName());
-            rooms.add(rb);
-            if(!suggestion)panel.add(rb);
-        }
 
         JButton add = new JButton("Submit");
         ActionListener startAction = e -> {
-
-            AbstractButton selectChar = isSelectCard(charError, characters);
-            if(selectChar == null) charError.setVisible(true);
-
-            AbstractButton selectWeap = selectWeap = isSelectCard(weaponError, weapons);
-            if(selectWeap == null) weaponError.setVisible(true);
-
-            AbstractButton selectRoom=null;
-            if(!suggestion) {
-                selectRoom = isSelectCard(roomError, rooms);
-                if (selectRoom == null) roomError.setVisible(true);
-            }
-
-
-
-
-
-            if(selectChar != null && selectWeap != null && (selectRoom != null || suggestion)){
-                guessFrame.dispose();
-                g.makeSuggestion(p, selectChar.getText(), selectWeap.getText());
-            }
-
+            //do not need error for blank entry as default value always set
+            guessFrame.dispose();
+            if(suggestion) g.makeSuggestion(p,(String) characterSelect.getSelectedItem(), (String)weaponSelect.getSelectedItem());
         };
 
         add.addActionListener(startAction);
