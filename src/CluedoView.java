@@ -24,6 +24,8 @@ public class CluedoView {
     static JButton suggestionButton = new JButton("Suggestion");
     static JButton accusationButton = new JButton("Accusation");
 
+    static boolean nextTurn = true;
+
 
     public CluedoView(Game g){
         SwingUtilities.invokeLater(() -> init(g));
@@ -102,7 +104,7 @@ public class CluedoView {
 
         });
 
-        while(!turn.get()){
+        while(!nextTurn){
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -267,6 +269,14 @@ public class CluedoView {
         });
     }
 
+    public static  void changeNextTurn(){
+        nextTurn = !nextTurn;
+    }
+
+    public static boolean getNextTurn(){
+        return  nextTurn;
+    }
+
     public static void displayPlayerInformation(Player p, int moves){
         Font displayFont = new Font("Serif", Font.PLAIN, 14);
         System.out.println("displaying user information");
@@ -382,6 +392,8 @@ public class CluedoView {
             }
             this.repaint();
         }
+
+
         /**
          * Gets the cell the user clicks on - allows the game to wait
          * for the uses response
@@ -408,6 +420,8 @@ public class CluedoView {
             int ypos = y / cellHeight;
             return new Position(ypos, xpos);
         }
+
+
 
         @Override
         public void mouseDragged(MouseEvent e) {
