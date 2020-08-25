@@ -188,10 +188,11 @@ public class Game {
 
 		if (p.getLocation().getRoom().isProperRoom()) {
 			System.out.println("You've entered the " + p.getLocation().getRoom().getName());
-			CluedoView.turnRoomFrame(this, p);
+
 			Room currentRoom = findRoom(p);
 			p.setCell(currentRoom.findEmptyCell());
-			turnEntry(p);
+			CluedoView.turnRoomFrame(this, p);
+			//turnEntry(p);
 		}
 
 	}
@@ -212,7 +213,7 @@ public class Game {
 		if (turnEntry.matches("(?i)a|accusation")) {
 			makeAccusation(p);
 		} else if (turnEntry.matches("(?i)s|suggestion")) {
-			makeSuggestion(p);
+			makeSuggestion(p, "", "");
 		} else {
 			p.displayHand();
 			turnEntry(p);
@@ -317,7 +318,7 @@ public class Game {
 	 * @param p player to check
 	 */
 	private Room findRoom(Player p) {
-		System.out.println(p.getLocation().getRoom().getRoomSize());
+		//System.out.println(p.getLocation().getRoom().getRoomSize());
 		if (p.getLocation().getRoom().getType().equals("Door")) {//in doorway
 			return board.checkSurroundingCells(p);
 		} else if (p.getLocation().getRoom().getRoomSize() > 1) {//inside room
@@ -331,9 +332,8 @@ public class Game {
 	 *
 	 * @param p: player whose turn it is
 	 */
-	private void makeSuggestion(Player p) {
-		System.out.println("Making a suggestion here");
-		CardTriplet guess = new CardTriplet(p.getLocation().getRoom().getCard());
+	public void makeSuggestion(Player p, String character, String weapon) {
+		CardTriplet guess = new CardTriplet( character, weapon, p.getLocation().getRoom().getCard());
 		System.out.println("Suggestion is: " + guess);
 
 		//character and weapon tokens move to room

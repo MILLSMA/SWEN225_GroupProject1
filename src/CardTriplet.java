@@ -22,6 +22,12 @@ public class CardTriplet {
 		room = r;
 	}
 
+	public CardTriplet(String c, String w, RoomCard r){
+		character = CharacterCard.valueOf(replaceSpace(c));
+		weapon = WeaponCard.valueOf(replaceSpace(w));
+		room = r;
+	}
+
 	/**
 	 * Construct card triplet during suggestion
 	 * room must be room player is in
@@ -72,6 +78,11 @@ public class CardTriplet {
 		return character == that.character &&
 				weapon == that.weapon &&
 				room == that.room;
+	}
+
+	public String replaceSpace(String s){
+
+		return s.replace(' ', '_').toUpperCase();
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CluedoView {
     private static final int CELL_SIZE = 27;
@@ -84,21 +85,32 @@ public class CluedoView {
         suggestionButton.setEnabled(true);
         accusationButton.setEnabled(true);
 
+        AtomicBoolean turn = new AtomicBoolean(false);
+
         suggestionButton.addActionListener(e -> {
-            suggestionFrame(g, true);
+            suggestionFrame(g, p, true);
             //g.makeSuggestion(p);
             System.out.println(p.getToken().getName() + " is making a suggestion");
+            turn.set(true);
         });
 
         accusationButton.addActionListener(e -> {
             //g.makeAccusation(p);
-            suggestionFrame(g, false);
+            suggestionFrame(g, p, false);
             System.out.println(p.getToken().getName() + " is making an accusation");
 
         });
+
+        while(!turn.get()){
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public static void suggestionFrame(Game g, boolean suggestion) {
+    public static void suggestionFrame(Game g, Player p, boolean suggestion) {
         suggestionButton.setEnabled(false);
         accusationButton.setEnabled(false);
 
@@ -136,7 +148,7 @@ public class CluedoView {
             panel.add(rb);
         }
 
-        panel.add(new JLabel("Select Room"));
+        if(!suggestion)panel.add(new JLabel("Select Room"));
 
         JLabel roomError = new JLabel("Please choose a Room.");
         roomError.setForeground(Color.RED);
@@ -147,26 +159,32 @@ public class CluedoView {
             JRadioButton rb = new JRadioButton();
             rb.setText(c.getName());
             rooms.add(rb);
-            panel.add(rb);
+            if(!suggestion)panel.add(rb);
         }
 
         JButton add = new JButton("Submit");
         ActionListener startAction = e -> {
-            boolean selectChar = false;
-            boolean selectWeap = false;
-            boolean selectRoom = false;
-            selectChar = isSelectCard(charError, characters, selectChar);
 
-            selectWeap = isSelectCard(weaponError, weapons, selectWeap);
+            AbstractButton selectChar = isSelectCard(charError, characters);
+            if(selectChar == null) charError.setVisible(true);
 
-            selectRoom = isSelectCard(roomError, rooms, selectRoom);
+            AbstractButton selectWeap = selectWeap = isSelectCard(weaponError, weapons);
+            if(selectWeap == null) weaponError.setVisible(true);
+
+            AbstractButton selectRoom=null;
+            if(!suggestion) {
+                selectRoom = isSelectCard(roomError, rooms);
+                if (selectRoom == null) roomError.setVisible(true);
+            }
 
 
-            if(!selectChar) charError.setVisible(true);
-            if(!selectWeap) weaponError.setVisible(true);
-            if(!selectRoom) roomError.setVisible(true);
 
-            if(selectChar && selectWeap && (selectRoom || suggestion))guessFrame.dispose();
+
+
+            if(selectChar != null && selectWeap != null && (selectRoom != null || suggestion)){
+                guessFrame.dispose();
+                g.makeSuggestion(p, selectChar.getText(), selectWeap.getText());
+            }
 
         };
 
@@ -182,22 +200,21 @@ public class CluedoView {
     }
 
     /**
-     * check if an option has been selected from given radio buttons
+     * checks a gets a selected option from given radio buttons
      * @param charError
      * @param characters
-     * @param selectChar
      * @return
      */
-    private static boolean isSelectCard(JLabel charError, ButtonGroup characters, boolean selectChar) {
+    private static AbstractButton isSelectCard(JLabel charError, ButtonGroup characters) {
         for (Enumeration<AbstractButton> buttons = characters.getElements(); buttons.hasMoreElements();) {
             AbstractButton button = buttons.nextElement();
             if (button.isSelected()) {
-                System.out.println(button.getText());
-                selectChar= true;
+                //System.out.println(button.getText());
                 charError.setVisible(false);;
+                return button;
             }
         }
-        return selectChar;
+        return null;
     }
 
 
