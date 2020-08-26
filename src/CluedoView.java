@@ -6,7 +6,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
@@ -90,16 +90,24 @@ public class CluedoView {
 
         AtomicBoolean turn = new AtomicBoolean(false);
 
+        // remove all action listeners
+        for (ActionListener a : suggestionButton.getActionListeners()) {
+            suggestionButton.removeActionListener(a);
+        }
         suggestionButton.addActionListener(e -> {
-            suggestionFrame(g, p, true);
+            createGuessFrame(g, p, true);
             //g.makeSuggestion(p);
-            System.out.println(p.getToken().getName() + " is making a suggestion");
+            //System.out.println(p.getToken().getName() + " is making a suggestion");
             turn.set(true);
         });
 
+        // remove all action listeners
+        for (ActionListener a : accusationButton.getActionListeners()) {
+            accusationButton.removeActionListener(a);
+        }
         accusationButton.addActionListener(e -> {
             //g.makeAccusation(p);
-            suggestionFrame(g, p, false);
+            createGuessFrame(g, p, false);
             System.out.println(p.getToken().getName() + " is making an accusation");
 
         });
@@ -113,46 +121,46 @@ public class CluedoView {
         }
     }
 
-    public static void suggestionFrame(Game g, Player p, boolean suggestion) {
+    public static void createGuessFrame(Game g, Player p, boolean suggestion) {
         suggestionButton.setEnabled(false);
         accusationButton.setEnabled(false);
 
         JDialog guessFrame = new JDialog(mainFrame, "Enter Guess");
-        guessFrame.setSize(350,300);
+        guessFrame.setSize(350,180);
         guessFrame.setLocationRelativeTo(null);
 
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4,2,0, 0));
-
+        if (suggestion) panel.setBorder(BorderFactory.createTitledBorder("New Suggestion"));
+        else panel.setBorder(BorderFactory.createTitledBorder("New Accusation"));
 
         //CHARACTER
         panel.add(new JLabel("Select Character"));
-        ArrayList<String> charValues = new ArrayList<>();
-        for (CharacterCard c : CharacterCard.values())charValues.add(c.getName());
+        String[] characters = Arrays.stream(CharacterCard.values()).map(CharacterCard::getName).toArray(String[]::new);
 
-        JComboBox<String> characterSelect = new JComboBox(charValues.toArray());
+        JComboBox<String> characterSelect = new JComboBox<>(characters);
         panel.add(characterSelect);
 
         //WEAPON
         panel.add(new JLabel("Select Weapon"));
+        String[] weapons = Arrays.stream(WeaponCard.values()).map(WeaponCard::getName).toArray(String[]::new);
 
-        ArrayList<String> WeapValues = new ArrayList<>();
-        for (WeaponCard c : WeaponCard.values()) WeapValues.add(c.getName());
-
-        JComboBox<String> weaponSelect = new JComboBox(WeapValues.toArray());
+        JComboBox<String> weaponSelect = new JComboBox<>(weapons);
         panel.add(weaponSelect);
 
         //ROOM (ACCUSATION ONLY)
+        panel.add(new JLabel("Select Room"));
         if(!suggestion){
-            panel.add(new JLabel("Select Room"));
+            String[] rooms = Arrays.stream(RoomCard.values()).map(RoomCard::getName).toArray(String[]::new);
 
-            ArrayList<String> roomValues = new ArrayList<>();
-            for (RoomCard c : RoomCard.values())roomValues.add(c.getName());
-
-            JComboBox<String> roomSelect = new JComboBox(roomValues.toArray());
+            JComboBox<String> roomSelect = new JComboBox<>(rooms);
+            panel.add(roomSelect);
+        } else {
+            JComboBox<String> roomSelect = new JComboBox<>();
+            roomSelect.addItem(p.getLocation().getRoom().getName());
+            roomSelect.setEnabled(false);
             panel.add(roomSelect);
         }
-
 
         JButton add = new JButton("Submit");
         ActionListener startAction = e -> {
@@ -271,6 +279,14 @@ public class CluedoView {
 
     public static  void changeNextTurn(){
         nextTurn = !nextTurn;
+    }
+
+    public static  void nextTurnTrue(){
+        nextTurn = true;
+    }
+
+    public static  void nextTurnFalse(){
+        nextTurn = false;
     }
 
     public static boolean getNextTurn(){

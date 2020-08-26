@@ -20,7 +20,7 @@ public class Board
 			"/K K K K K K/_ _/O O O O O O O O/_ _/) C C C C C/\n" +
 			"/K K K K K K/_ _)O O O O O O O O)_ _ _/C C C C C/\n" +
 			"///K K K ) K/_ _/O O O O O O O O/_ _ _ _ _ _ _ _/\n" +
-			"/_ _ _ _ _ _ _ _/O ) O O O O ) O)_ _ _ _ _ _ _ _/\n" +
+			"/_ _ _ _ _ _ _ _/O ) O O O O ) O)_ _ _ _ _ _ _///\n" +
 			"///_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _/B B B B B B/\n" +
 			"/D D D D D/_ _ _ _ _ _ _ _ _ _ _ _ _ ) B B B B B/\n" +
 			"/D D D D D D D D/_ _///////////_ _ _/B B B B B B/\n" +
