@@ -411,6 +411,8 @@ public class Game {
 			}
 			if (!possibleCards.isEmpty()) {
 				SwingUtilities.invokeLater(() -> CluedoView.createRefutationDialog(this, asking, possibleCards, guess, p));
+
+				//here is a comment so i can push changes
 				CluedoView.flagNextTurn();
 				return true;
 			}
