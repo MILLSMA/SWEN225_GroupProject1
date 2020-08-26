@@ -393,6 +393,7 @@ public class Game {
 		boolean found = false;
 		int asked = 0;
 		while (!found && asked < players.size() - 1) {
+			//if()
 			Player asking;
 			if (players.indexOf(p) + asked + 1 >= players.size()) {
 				//loop back through char collection from index zero
@@ -402,42 +403,22 @@ public class Game {
 				asking = players.get(players.indexOf(p) + asked + 1);
 			}
 			asked++;
-			System.out.println("\nChecking cards...");
-			waitForPlayer(asking);
 			//Does the next player have any possible cards to show
 			ArrayList<Card> possibleCards = new ArrayList<>();
 			for (Card c : guess.getSet()) {
 				if (asking.getCards().contains(c))
 					possibleCards.add(c);
 			}
-			if (possibleCards.isEmpty()) {
-				System.out.println("You have no cards that match this guess");
-			} else {
-				SwingUtilities.invokeLater(() -> CluedoView.createRefutationDialog(this, p, possibleCards, guess));
-				System.out.println("You must reveal one of these cards");
-				for (Card c : possibleCards) {
-					System.out.println((possibleCards.indexOf(c) + 1) + " : " + c.getName());
-					found = true;
-				}
-				int itemToShow = 0;
-				do {
-					System.out.print("Enter a number to reveal a card: ");
-					try {
-						itemToShow = input.nextInt();
-					} catch (InputMismatchException e) {
-						System.out.println("Must be between 1 and " + possibleCards.size());
-						input.nextLine();
-					}
-				} while (itemToShow < 1 || itemToShow > possibleCards.size());
-
-				System.out.println("\nRevealing card...");
-				waitForPlayer(p);
-				System.out.println("The revealed card is: " + possibleCards.get(itemToShow - 1).getName());
+			if (!possibleCards.isEmpty()) {
+				SwingUtilities.invokeLater(() -> CluedoView.createRefutationDialog(this, asking, possibleCards, guess, p));
+				return true;
 			}
 		}
 		CluedoView.flagNextTurn();
-		return found;
+		return false;
 	}
+
+
 
 
 	/**
