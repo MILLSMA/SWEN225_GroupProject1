@@ -82,7 +82,8 @@ public class CluedoView {
         suggestionButton.setEnabled(true);
         accusationButton.setEnabled(true);
 
-        AtomicBoolean turn = new AtomicBoolean(false);
+
+        //AtomicBoolean turn = new AtomicBoolean(false);
 
         // remove all action listeners
         for (ActionListener a : suggestionButton.getActionListeners()) {
@@ -92,7 +93,7 @@ public class CluedoView {
             createGuessDialog(g, p, true);
             //g.makeSuggestion(p);
             //System.out.println(p.getToken().getName() + " is making a suggestion");
-            turn.set(true);
+            //turn.set(true);
         });
 
         // remove all action listeners
@@ -177,52 +178,89 @@ public class CluedoView {
         guessFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
-    public static void createRefutationDialog(Game g, Player p, ArrayList<Card> cards, CardTriplet suggestion){
-        JDialog refDialog = new JDialog(mainFrame, "Refutation");
+    public static void createRefutationDialog(Game g, Player toReveal, ArrayList<Card> cards, CardTriplet suggestion, Player toReceive){
+        JDialog refDialog = new JDialog(mainFrame, "ATTENTION " + toReveal.getToken().getName().toUpperCase());
         refDialog.setSize(350,200);
         refDialog.setLocationRelativeTo(null);
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(5,1,0, 0));
+        mainPanel.setLayout(new GridLayout(3,1,0, 0));
         mainPanel.add(new JLabel("Suggestion: " + suggestion.toString()));
-        mainPanel.add(new JLabel(p.getToken().getName() + " make refutation"));
 
 
-        String[] cardList = new String[cards.size()];
-        for(int i = 1; i <  cards.size(); i++){
-            cardList[i] = cards.get(i).getName();
-        }
+        String[] cardList = cards.stream().map(Card::getName).toArray(String[]::new);
 
+
+        System.out.println(cardList.toString());
         JComboBox<String> cardSelect = new JComboBox<>(cardList);
 
-        JButton submitRefutation = new JButton(("Refute"));
+        JButton button = new JButton((toReveal.getToken().getName() + ": push make refutation"));
+
+
         ActionListener refuteAction = e -> {
             refDialog.dispose();
+            displayCard((String) cardSelect.getSelectedItem(), toReceive.getToken().getName());
         };
-        submitRefutation.addActionListener(refuteAction);
 
-        JButton toggleShow = new JButton("Reveal");
-        ActionListener showAction = e -> {
-            toggleShow.setVisible(false);
-            submitRefutation.setVisible(true);
+
+        ActionListener display = e ->{
+            button.setText("Submit Refute");
+            button.addActionListener(refuteAction);
             cardSelect.setVisible(true);
+
+
         };
-        toggleShow.addActionListener(showAction);
 
-        mainPanel.add(toggleShow);
-        toggleShow.setVisible(true);
-
-        mainPanel.add(submitRefutation);
-        submitRefutation.setVisible(false);
+        button.addActionListener(display);
 
         mainPanel.add(cardSelect);
         cardSelect.setVisible(false);
+
+        mainPanel.add(button);
+        button.setVisible(true);
 
         mainPanel.setVisible(true);
         refDialog.add(mainPanel);
         refDialog.setVisible(true);
 
         refDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    }
+
+    public static void displayCard(String cardName, String playername){
+        JDialog cardDisplayDialog = new JDialog(mainFrame, "ATTENTION " + playername.toUpperCase());
+        cardDisplayDialog.setSize(350,200);
+        cardDisplayDialog.setLocationRelativeTo(null);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridLayout(2,1,0, 0));
+
+        JButton button = new JButton(playername + ": push to see card");
+
+        JLabel card = new JLabel(cardName);
+        ActionListener closeDialog = e ->{
+            cardDisplayDialog.dispose();
+        };
+
+        ActionListener display = e ->{
+            button.setText("Push again to close");
+            button.addActionListener(closeDialog);
+            card.setVisible(true);
+        };
+
+        button.addActionListener(display);
+
+        mainPanel.add(button);
+        button.setVisible(true);
+
+        mainPanel.add(card);
+        card.setVisible(false);
+
+        mainPanel.setVisible(true);
+        cardDisplayDialog.add(mainPanel);
+        cardDisplayDialog.setVisible(true);
+
+        cardDisplayDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
     }
 
     public static void createCanvas(Board board){
@@ -301,6 +339,11 @@ public class CluedoView {
                 System.exit(0);
             }
         });
+    }
+
+    public static void gameOver(boolean won){
+
+
     }
 
     public static void flagNextTurn(){
