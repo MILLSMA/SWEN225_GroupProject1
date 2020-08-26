@@ -149,24 +149,27 @@ public class CluedoView {
         panel.add(weaponSelect);
 
         //ROOM (ACCUSATION ONLY)
+
+        JComboBox<String> roomSelect;
         panel.add(new JLabel("Select Room"));
         if(!suggestion){
             String[] rooms = Arrays.stream(RoomCard.values()).map(RoomCard::getName).toArray(String[]::new);
 
-            JComboBox<String> roomSelect = new JComboBox<>(rooms);
-            panel.add(roomSelect);
+            roomSelect = new JComboBox<>(rooms);
         } else {
-            JComboBox<String> roomSelect = new JComboBox<>();
+            roomSelect = new JComboBox<>();
             roomSelect.addItem(p.getLocation().getRoom().getName());
             roomSelect.setEnabled(false);
-            panel.add(roomSelect);
+
         }
+        panel.add(roomSelect);
 
         JButton add = new JButton("Submit");
         ActionListener startAction = e -> {
             //do not need error for blank entry as default value always set
             guessFrame.dispose();
             if(suggestion) g.makeSuggestion(p,(String) characterSelect.getSelectedItem(), (String)weaponSelect.getSelectedItem());
+            else g.makeAccusation(p, (String) characterSelect.getSelectedItem(), (String)weaponSelect.getSelectedItem(), (String)roomSelect.getSelectedItem() );
         };
 
         add.addActionListener(startAction);

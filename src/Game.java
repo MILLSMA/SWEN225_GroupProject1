@@ -214,7 +214,8 @@ public class Game {
 		} while (!(turnEntry.matches("(?i)a|s|c|accusation|suggestion|view cards|")));
 
 		if (turnEntry.matches("(?i)a|accusation")) {
-			makeAccusation(p);
+			System.out.println("accusation instead of suggestion - never reached");
+			//makeAccusation(p);
 		} else if (turnEntry.matches("(?i)s|suggestion")) {
 			makeSuggestion(p, "", "");
 		} else {
@@ -356,7 +357,8 @@ public class Game {
 			} while (!(accusationChoice.matches("(?i)y|n|yes|no")));
 
 			if (accusationChoice.matches("(?i)y|yes")) {
-				makeAccusation(p);
+				System.out.println("accusation following suggestion");
+				//makeAccusation(p);
 			}
 		}
 
@@ -452,9 +454,9 @@ public class Game {
 	 *
 	 * @param p: player making accusation
 	 */
-	private void makeAccusation(Player p) {
+	public void makeAccusation(Player p, String character, String weapon, String room) {
 		System.out.println("Making an accusation here");
-		CardTriplet guess = new CardTriplet();
+		CardTriplet guess = new CardTriplet(character, weapon, room);
 		System.out.println("Accusation is: " + guess);
 		if (guess.equals(envelope)) {
 			//correct, game won
@@ -468,5 +470,7 @@ public class Game {
 			System.out.println("You still need to make refutations");
 			p.setIsExcluded(true);
 		}
+
+		CluedoView.nextTurnTrue();
 	}
 }
