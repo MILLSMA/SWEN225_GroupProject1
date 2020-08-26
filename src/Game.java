@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.Timer;
+import javax.xml.stream.util.XMLEventAllocator;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
@@ -282,15 +283,10 @@ public class Game {
 			goalCell = CluedoView.boardCanvas.getCell().get();
 			Cell playerCell = p.getLocation();
 
-			//if clicking in a room, the pathfinder won't waste time finding a path
-			//to the exact cell clicked, just the door to the room
-			if(RoomCard.getRooms().contains(goalCell.getRoom().getCard())){
-				goalCell = goalCell.getRoom().getCard().getDoors().iterator().next();
-			}
-			if (RoomCard.getRooms().contains(playerCell.getRoom().getCard())){
-				playerCell = playerCell.getRoom().getCard().getDoors().iterator().next();
-			}
-			if(goalCell.getRoom().getType().equals("Wall") || getEstimate(playerCell, goalCell) > 12) amountOfMoves = Integer.MIN_VALUE;
+			goalCell = closestDoor(goalCell, playerCell);
+			playerCell = closestDoor(playerCell, goalCell);
+
+			if(goalCell.getRoom().getType().equals("Wall") || getEstimate(playerCell, goalCell) > roll) amountOfMoves = Integer.MIN_VALUE;
 			//finds the shortest path to the selected cell
 			ArrayList<Locatable> selectedCells = new ArrayList<>();
 			if(amountOfMoves > 0) selectedCells.addAll(pathfinder.findPath(playerCell, goalCell));
@@ -314,6 +310,17 @@ public class Game {
 		Position secondPosition = second.getPosition();
 		return Math.sqrt((secondPosition.getRow()-firstPosition.getRow())*(secondPosition.getRow()-firstPosition.getRow()) +
 				(secondPosition.getCol()-firstPosition.getCol())*((secondPosition.getCol()-firstPosition.getCol())));
+	}
+
+	private Cell closestDoor(Cell cellToChange, Cell measuringCell){
+		double closest = Double.MAX_VALUE;
+		Cell changedCell = cellToChange;
+		if(RoomCard.getRooms().contains(cellToChange.getRoom().getCard())){
+			for (Cell door : cellToChange.getRoom().getCard().getDoors()) {
+				if(getEstimate(measuringCell, door) < closest) changedCell = door;
+			}
+		}
+		return changedCell;
 	}
 
 	/**

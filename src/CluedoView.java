@@ -362,15 +362,44 @@ public class CluedoView {
 		//paints the board (not overly efficient)
 		public void paint(Graphics g) {
 			tilesToDraw.values().forEach(tile -> {
-			    g.setColor(tile.cell.getColor());
-                g.fillRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
-				g.setColor(Color.LIGHT_GRAY);
-                g.drawRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
+			    if(tile.cell.getRoom().getType().equals("Hallway")) {
+                    g.drawImage(playerImage("hallway"), tile.xPosition, tile.yPosition, null);
+                }else  if(tile.cell.getRoom().getType().equals("Wall")) {
+                    g.drawImage(playerImage("wall"), tile.xPosition, tile.yPosition, null);
+                }else if(tile.cell.getRoom().getType().equals("Door")){
+                    g.drawImage(playerImage("door_" + doorDirection(tile.cell)), tile.xPosition, tile.yPosition, null);
+                }
+			    else if(RoomCard.getRooms().contains(tile.cell.getRoom().getCard())){
+                    g.drawImage(playerImage("floorboard"), tile.xPosition, tile.yPosition, null);
+                }else {
+                    g.setColor(tile.cell.getColor());
+                    g.fillRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
+                    g.setColor(Color.LIGHT_GRAY);
+                    g.drawRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
+                }
                 if(tile.cell.getObject() instanceof CharacterCard) {
                     String playername = tile.cell.getObject().getName();
                     g.drawImage(playerImage(playername), tile.xPosition, tile.yPosition, null);
                 }
             });
+		}
+
+		private String doorDirection(Cell door){
+		    Cell above, left, right, below;
+		    above = board.getNeighbourCell(door, Locatable.Direction.NORTH);
+		    below = board.getNeighbourCell(door, Locatable.Direction.SOUTH);
+            left = board.getNeighbourCell(door, Locatable.Direction.WEST);
+            right = board.getNeighbourCell(door, Locatable.Direction.EAST);
+
+            if(RoomCard.isProperRoom(above.getRoom()) && RoomCard.isProperRoom(below.getRoom())){
+                if(RoomCard.isProperRoom(left.getRoom())) return "right";
+                if(RoomCard.isProperRoom(right.getRoom())) return "left";
+            }else if(RoomCard.isProperRoom(left.getRoom()) && RoomCard.isProperRoom(right.getRoom())){
+                if(RoomCard.isProperRoom(above.getRoom())) return "down";
+                if(RoomCard.isProperRoom(below.getRoom())) return "up";
+            } else if(RoomCard.isProperRoom(below.getRoom())) return "up";
+            return "down";
+
 		}
 
         /**
