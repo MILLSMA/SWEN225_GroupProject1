@@ -303,7 +303,7 @@ public class CluedoView {
 
         JPanel namePanel = new JPanel();
         namePanel.setLayout(new FlowLayout());
-        JLabel imageLabel = new JLabel(new ImageIcon(playerImage(p.getToken().getName())));
+        JLabel imageLabel = new JLabel(new ImageIcon(boardCanvas.playerImage(p.getToken().getName())));
         namePanel.add(imageLabel);
         JLabel nameLabel = new JLabel(p.getToken().getName());
         nameLabel.setFont(displayFont);
@@ -334,17 +334,11 @@ public class CluedoView {
         turnPanel.revalidate();
     }
 
-    private static BufferedImage playerImage(String playerName){
-        BufferedImage image = null;
-        String fileName = "Resources/" +  playerName.replace(' ', '_')+".png";
-        try {
-            image = ImageIO.read(new File(fileName));
-        }catch(IOException e){
-            CluedoView.showDialog(e.getMessage());
-        }
-        return image;
-    }
 
+    /**
+     * displays a dialog box with the message in the paramater
+     * @param message - string, message you want to display
+     */
     public static void showDialog(String message){
         SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(mainFrame, message));
     }
@@ -359,21 +353,7 @@ public class CluedoView {
 		//paints the board (not overly efficient)
 		public void paint(Graphics g) {
 			tilesToDraw.values().forEach(tile -> {
-			    if(tile.cell.getRoom().getType().equals("Hallway")) {
-                    g.drawImage(playerImage("hallway"), tile.xPosition, tile.yPosition, null);
-                }else  if(tile.cell.getRoom().getType().equals("Wall")) {
-                    g.drawImage(playerImage("wall"), tile.xPosition, tile.yPosition, null);
-                }else if(tile.cell.getRoom().getType().equals("Door")){
-                    g.drawImage(playerImage("door_" + doorDirection(tile.cell)), tile.xPosition, tile.yPosition, null);
-                }
-			    else if(RoomCard.getRooms().contains(tile.cell.getRoom().getCard())){
-                    g.drawImage(playerImage("floorboard"), tile.xPosition, tile.yPosition, null);
-                }else {
-                    g.setColor(tile.cell.getColor());
-                    g.fillRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
-                    g.setColor(Color.LIGHT_GRAY);
-                    g.drawRect(tile.xPosition, tile.yPosition, cellWidth, cellHeight);
-                }
+                g.drawImage(tile.image, tile.xPosition, tile.yPosition, null);
                 if(tile.cell.getObject() instanceof CharacterCard) {
                     String playername = tile.cell.getObject().getName();
                     g.drawImage(playerImage(playername), tile.xPosition, tile.yPosition, null);
@@ -381,10 +361,45 @@ public class CluedoView {
             });
 		}
 
-		private String doorDirection(Cell door){
-		    Cell above, left, right, below;
-		    above = board.getNeighbourCell(door, Locatable.Direction.NORTH);
-		    below = board.getNeighbourCell(door, Locatable.Direction.SOUTH);
+        /**
+         * gets the image that corresponds to the name given
+         * @param playerName - name of image excluding extension
+         * @return - buffered image
+         */
+        private BufferedImage playerImage(String playerName){
+            BufferedImage image = null;
+            String fileName = "Resources/" +  playerName.replace(' ', '_')+".png";
+            try {
+                image = ImageIO.read(new File(fileName));
+            }catch(IOException e){
+                CluedoView.showDialog(e.getMessage());
+            }
+            return image;
+        }
+
+        /**
+         * returns to the image that belongs to the given cell
+         * @param cell - Cell of image you want to receive
+         * @return - image of the cell to display
+         */
+        private BufferedImage cellImage(Cell cell){
+            String name;
+            if(cell.getRoom().getType().equals("Wall")) name = "wall";
+            else if(cell.getRoom().getType().equals("Hallway")) name = "hallway";
+            else if(cell.getRoom().getType().equals("Door")) name = "door " + doorDirection(cell);
+            else name = "floorboard";
+            return playerImage(name);
+        }
+
+        /**
+         * gets the direction the door is supposed to faceing, for viewing purposes
+         * @param door - cell that is a door
+         * @return
+         */
+        private String doorDirection(Cell door){
+            Cell above, left, right, below;
+            above = board.getNeighbourCell(door, Locatable.Direction.NORTH);
+            below = board.getNeighbourCell(door, Locatable.Direction.SOUTH);
             left = board.getNeighbourCell(door, Locatable.Direction.WEST);
             right = board.getNeighbourCell(door, Locatable.Direction.EAST);
 
@@ -397,7 +412,7 @@ public class CluedoView {
             } else if(RoomCard.isProperRoom(below.getRoom())) return "up";
             return "down";
 
-		}
+        }
 
         /**
          * updates all the data structures needed to paint the board
@@ -413,6 +428,7 @@ public class CluedoView {
                     if (board.board[xIndex][yIndex] == null) continue;
                     Cell cellToDraw = board.board[xIndex][yIndex];
                     drawTile newTile = new drawTile(cellToDraw.getColor(), widthCount, heightCount, cellToDraw);
+                    newTile.setImage(cellImage(cellToDraw));
                     tilesToDraw.put(cellToDraw.position.hashCode(), newTile);
                     widthCount += cellWidth;
                 }
@@ -496,6 +512,7 @@ public class CluedoView {
 	 */
 	private class drawTile {
 		Color tileColor;
+		BufferedImage image;
 		int xPosition, yPosition;
 		Rectangle rect;
 		Cell cell;
@@ -508,7 +525,11 @@ public class CluedoView {
 			rect = new Rectangle(xPosition, yPosition, CluedoView.boardCanvas.cellWidth, CluedoView.boardCanvas.cellHeight);
 		}
 
-		public Rectangle getRect() {
+        public void setImage(BufferedImage image) {
+            this.image = image;
+        }
+
+        public Rectangle getRect() {
 			return this.rect;
 		}
 	}
