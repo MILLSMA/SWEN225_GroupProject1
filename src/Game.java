@@ -179,7 +179,7 @@ public class Game {
 	 * @param p : the player making the turn
 	 */
 	private void doTurn(Player p) {
-		CluedoView.changeNextTurn();
+		CluedoView.nextTurnFalse();
 		//place holder code
 		System.out.println("\n== " + p.getToken().getName() + "'s turn ==");
 		int diceRoll = rollDice();
@@ -195,7 +195,7 @@ public class Game {
 			CluedoView.turnRoomFrame(this, p);
 			//turnEntry(p);
 		}else{
-			CluedoView.changeNextTurn();
+			CluedoView.nextTurnTrue();
 		}
 
 	}
@@ -428,7 +428,7 @@ public class Game {
 				System.out.println("The revealed card is: " + possibleCards.get(itemToShow - 1).getName());
 			}
 		}
-		CluedoView.changeNextTurn();
+		CluedoView.nextTurnTrue();
 		return found;
 	}
 

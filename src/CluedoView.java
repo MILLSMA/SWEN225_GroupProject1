@@ -281,6 +281,14 @@ public class CluedoView {
         nextTurn = !nextTurn;
     }
 
+    public static  void nextTurnTrue(){
+        nextTurn = true;
+    }
+
+    public static  void nextTurnFalse(){
+        nextTurn = false;
+    }
+
     public static boolean getNextTurn(){
         return  nextTurn;
     }
