@@ -1,6 +1,5 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -19,7 +18,6 @@ public class CluedoView {
     private static final int BOARD_WIDTH = CELL_SIZE*Board.COLS;
     static JFrame mainFrame;
     static Canvas boardCanvas;
-    static Border blackLineBorder = BorderFactory.createLineBorder(Color.black);
 
     static JPanel turnPanel = new JPanel();
     static JButton suggestionButton = new JButton("Suggestion");
@@ -69,23 +67,18 @@ public class CluedoView {
         turnPanel.setMaximumSize(smallPanelDimensions);
         mainFrame.getContentPane().add(turnPanel, constraints);
 
-        boardCanvas.setBorder(blackLineBorder);
-        cardPanel.setBorder(blackLineBorder);
-        turnPanel.setBorder(blackLineBorder);
-
         mainFrame.setVisible(true);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         boardCanvas.setVisible(true);
     }
 
-
     /**
      * displays options to a player if they have entered a room
      * @param g
      * @param p
      */
-    public static void turnRoomFrame(Game g, Player p){
+    public static void enableRoomButtons(Game g, Player p){
         suggestionButton.setEnabled(true);
         accusationButton.setEnabled(true);
 
@@ -96,7 +89,7 @@ public class CluedoView {
             suggestionButton.removeActionListener(a);
         }
         suggestionButton.addActionListener(e -> {
-            createGuessFrame(g, p, true);
+            createGuessDialog(g, p, true);
             //g.makeSuggestion(p);
             //System.out.println(p.getToken().getName() + " is making a suggestion");
             turn.set(true);
@@ -108,7 +101,7 @@ public class CluedoView {
         }
         accusationButton.addActionListener(e -> {
             //g.makeAccusation(p);
-            createGuessFrame(g, p, false);
+            createGuessDialog(g, p, false);
             System.out.println(p.getToken().getName() + " is making an accusation");
 
         });
@@ -122,7 +115,7 @@ public class CluedoView {
         }
     }
 
-    public static void createGuessFrame(Game g, Player p, boolean suggestion) {
+    public static void createGuessDialog(Game g, Player p, boolean suggestion) {
         suggestionButton.setEnabled(false);
         accusationButton.setEnabled(false);
 
@@ -184,12 +177,12 @@ public class CluedoView {
         guessFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
-    public static void refutationDialog(Game g, Player p, ArrayList<Card> cards, CardTriplet suggestion){
+    public static void createRefutationDialog(Game g, Player p, ArrayList<Card> cards, CardTriplet suggestion){
         JDialog refDialog = new JDialog(mainFrame, "Refutation");
         refDialog.setSize(350,200);
         refDialog.setLocationRelativeTo(null);
-        JPanel mainPanel = new JPanel();
 
+        JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayout(5,1,0, 0));
         mainPanel.add(new JLabel("Suggestion: " + suggestion.toString()));
         mainPanel.add(new JLabel(p.getToken().getName() + " make refutation"));
@@ -225,14 +218,12 @@ public class CluedoView {
         mainPanel.add(cardSelect);
         cardSelect.setVisible(false);
 
-        refDialog.add(mainPanel);
         mainPanel.setVisible(true);
+        refDialog.add(mainPanel);
         refDialog.setVisible(true);
 
         refDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
     }
-
 
     public static void createCanvas(Board board){
         boardCanvas.addMouseMotionListener(boardCanvas);
@@ -312,20 +303,16 @@ public class CluedoView {
         });
     }
 
-    public static  void changeNextTurn(){
-        nextTurn = !nextTurn;
-    }
-
-    public static  void nextTurnTrue(){
+    public static void flagNextTurn(){
         nextTurn = true;
     }
 
-    public static  void nextTurnFalse(){
+    public static void resetNextTurn(){
         nextTurn = false;
     }
 
     public static boolean getNextTurn(){
-        return  nextTurn;
+        return nextTurn;
     }
 
     public static void displayPlayerInformation(Player p, int moves){
@@ -343,7 +330,6 @@ public class CluedoView {
         JLabel nameLabel = new JLabel(p.getToken().getName());
         nameLabel.setFont(displayFont);
         namePanel.add(nameLabel);
-        namePanel.setBorder(blackLineBorder);
 
         JPanel movePanel = new JPanel();
         movePanel.setLayout(new FlowLayout());
@@ -352,7 +338,6 @@ public class CluedoView {
         movePanel.add(moveLabel);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(blackLineBorder);
         buttonPanel.setLayout(new FlowLayout());
         buttonPanel.add(new JButton("Roll Dice"));
         suggestionButton.setVisible(true);

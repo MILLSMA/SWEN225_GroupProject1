@@ -1,8 +1,5 @@
 import javax.swing.*;
 import javax.swing.Timer;
-import javax.xml.stream.util.XMLEventAllocator;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -180,7 +177,7 @@ public class Game {
 	 * @param p : the player making the turn
 	 */
 	private void doTurn(Player p) {
-		CluedoView.nextTurnFalse();
+		CluedoView.resetNextTurn();
 		//place holder code
 		System.out.println("\n== " + p.getToken().getName() + "'s turn ==");
 		int diceRoll = rollDice();
@@ -193,10 +190,10 @@ public class Game {
 
 			Room currentRoom = findRoom(p);
 			p.setCell(currentRoom.findEmptyCell());
-			CluedoView.turnRoomFrame(this, p);
+			CluedoView.enableRoomButtons(this, p);
 			//turnEntry(p);
 		}else{
-			CluedoView.nextTurnTrue();
+			CluedoView.flagNextTurn();
 		}
 
 	}
@@ -356,17 +353,17 @@ public class Game {
 		boolean refuted = doRefutations(p, guess);
 		if (!refuted) {
 			System.out.println("\nNo cards were revealed this round");
-			Scanner sc = new Scanner(System.in);
-			String accusationChoice;
-			do {
-				System.out.print(" Make Accusation (Y/N): ");
-				accusationChoice = sc.next();
-			} while (!(accusationChoice.matches("(?i)y|n|yes|no")));
+//			Scanner sc = new Scanner(System.in);
+//			String accusationChoice;
+//			do {
+//				System.out.print(" Make Accusation (Y/N): ");
+//				accusationChoice = sc.next();
+//			} while (!(accusationChoice.matches("(?i)y|n|yes|no")));
 
-			if (accusationChoice.matches("(?i)y|yes")) {
-				System.out.println("accusation following suggestion");
-				//makeAccusation(p);
-			}
+//			if (accusationChoice.matches("(?i)y|yes")) {
+//				System.out.println("accusation following suggestion");
+//				//makeAccusation(p);
+//			}
 		}
 
 	}
@@ -416,7 +413,7 @@ public class Game {
 			if (possibleCards.isEmpty()) {
 				System.out.println("You have no cards that match this guess");
 			} else {
-				CluedoView.refutationDialog(this, p, possibleCards, guess);
+				SwingUtilities.invokeLater(() -> CluedoView.createRefutationDialog(this, p, possibleCards, guess));
 				System.out.println("You must reveal one of these cards");
 				for (Card c : possibleCards) {
 					System.out.println((possibleCards.indexOf(c) + 1) + " : " + c.getName());
@@ -438,7 +435,7 @@ public class Game {
 				System.out.println("The revealed card is: " + possibleCards.get(itemToShow - 1).getName());
 			}
 		}
-		CluedoView.nextTurnTrue();
+		CluedoView.flagNextTurn();
 		return found;
 	}
 
@@ -479,6 +476,6 @@ public class Game {
 			p.setIsExcluded(true);
 		}
 
-		CluedoView.nextTurnTrue();
+		CluedoView.flagNextTurn();
 	}
 }
