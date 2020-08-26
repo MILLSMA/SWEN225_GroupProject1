@@ -194,6 +194,8 @@ public class Game {
 			p.setCell(currentRoom.findEmptyCell());
 			CluedoView.turnRoomFrame(this, p);
 			//turnEntry(p);
+		}else{
+			CluedoView.changeNextTurn();
 		}
 
 	}
@@ -357,6 +359,7 @@ public class Game {
 				makeAccusation(p);
 			}
 		}
+
 	}
 
 	/**
