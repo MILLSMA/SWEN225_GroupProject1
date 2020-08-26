@@ -28,6 +28,12 @@ public class CardTriplet {
 		room = r;
 	}
 
+	public CardTriplet(String c, String w, String r){
+		character = CharacterCard.valueOf(replaceSpace(c));
+		weapon = WeaponCard.valueOf(replaceSpace(w));
+		room = RoomCard.valueOf(replaceSpace(r));
+	}
+
 	/**
 	 * Construct card triplet during suggestion
 	 * room must be room player is in
