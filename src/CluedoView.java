@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -183,22 +184,53 @@ public class CluedoView {
         guessFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
-    /**
-     * checks a gets a selected option from given radio buttons
-     * @param charError
-     * @param characters
-     * @return
-     */
-    private static AbstractButton isSelectCard(JLabel charError, ButtonGroup characters) {
-        for (Enumeration<AbstractButton> buttons = characters.getElements(); buttons.hasMoreElements();) {
-            AbstractButton button = buttons.nextElement();
-            if (button.isSelected()) {
-                //System.out.println(button.getText());
-                charError.setVisible(false);;
-                return button;
-            }
+    public static void refutationDialog(Game g, Player p, ArrayList<Card> cards, CardTriplet suggestion){
+        JDialog refDialog = new JDialog(mainFrame, "Refutation");
+        refDialog.setSize(350,200);
+        refDialog.setLocationRelativeTo(null);
+        JPanel mainPanel = new JPanel();
+
+        mainPanel.setLayout(new GridLayout(5,1,0, 0));
+        mainPanel.add(new JLabel("Suggestion: " + suggestion.toString()));
+        mainPanel.add(new JLabel(p.getToken().getName() + " make refutation"));
+
+
+        String[] cardList = new String[cards.size()];
+        for(int i = 1; i <  cards.size(); i++){
+            cardList[i] = cards.get(i).getName();
         }
-        return null;
+
+        JComboBox<String> cardSelect = new JComboBox<>(cardList);
+
+        JButton submitRefutation = new JButton(("Refute"));
+        ActionListener refuteAction = e -> {
+            refDialog.dispose();
+        };
+        submitRefutation.addActionListener(refuteAction);
+
+        JButton toggleShow = new JButton("Reveal");
+        ActionListener showAction = e -> {
+            toggleShow.setVisible(false);
+            submitRefutation.setVisible(true);
+            cardSelect.setVisible(true);
+        };
+        toggleShow.addActionListener(showAction);
+
+        mainPanel.add(toggleShow);
+        toggleShow.setVisible(true);
+
+        mainPanel.add(submitRefutation);
+        submitRefutation.setVisible(false);
+
+        mainPanel.add(cardSelect);
+        cardSelect.setVisible(false);
+
+        refDialog.add(mainPanel);
+        mainPanel.setVisible(true);
+        refDialog.setVisible(true);
+
+        refDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
     }
 
 

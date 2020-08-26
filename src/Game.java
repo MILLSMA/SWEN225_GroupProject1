@@ -416,6 +416,7 @@ public class Game {
 			if (possibleCards.isEmpty()) {
 				System.out.println("You have no cards that match this guess");
 			} else {
+				CluedoView.refutationDialog(this, p, possibleCards, guess);
 				System.out.println("You must reveal one of these cards");
 				for (Card c : possibleCards) {
 					System.out.println((possibleCards.indexOf(c) + 1) + " : " + c.getName());
