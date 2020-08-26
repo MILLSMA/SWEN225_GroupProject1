@@ -20,6 +20,9 @@ public enum RoomCard implements Card {
 	public static Collection<RoomCard> getRooms(){
 		return Arrays.asList(values());
 	}
+	public static boolean isProperRoom(Room room){
+		return getRooms().contains(room.getCard());
+	}
 
 	public static int size(){
 		return values().length;
