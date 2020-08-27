@@ -280,6 +280,7 @@ public class CluedoView {
             @Override
             public void mouseReleased(MouseEvent e) {
                 cardDisplayDialog.dispose();
+                flagNextTurn();
             }
         });
 
@@ -294,6 +295,7 @@ public class CluedoView {
                     public void mouseReleased(MouseEvent e) {
                         super.mouseReleased(e);
                         cardDisplayDialog.dispose();
+                        flagNextTurn();
                     }
                 });
                 label.setText("Click again to close window");
