@@ -180,39 +180,79 @@ public class CluedoView {
 
     public static void createRefutationDialog(Game g, Player toReveal, ArrayList<Card> cards, CardTriplet suggestion, Player toReceive){
         JDialog refDialog = new JDialog(mainFrame, "ATTENTION " + toReveal.getToken().getName().toUpperCase());
-        refDialog.setSize(350,200);
+        refDialog.setSize(250,300);
         refDialog.setLocationRelativeTo(null);
 
+        int columns = cards.size();
+
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(3,1,0, 0));
-        mainPanel.add(new JLabel("Suggestion: " + suggestion.toString()));
+        mainPanel.setLayout(new GridLayout(5,1,0, 0));
+        mainPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 0.1;
+        mainPanel.add(new JLabel(toReceive.getName() + " suggested this:"), gbc);
 
-        String[] cardList = cards.stream().map(Card::getName).toArray(String[]::new);
-        JComboBox<String> cardSelect = new JComboBox<>(cardList);
+        JPanel suggestionCardDisplay = new JPanel();
+        suggestionCardDisplay.setLayout(new GridLayout(1, 3,0,0));
+        for (Card card : suggestion.getSet()) {
+            suggestionCardDisplay.add(new JLabel(new ImageIcon(boardCanvas.playerImage(card.getName() + "_Card"))));
+        }
+        gbc.gridy = 1;
+        gbc.weighty = 0.4;
+        mainPanel.add(suggestionCardDisplay, gbc);
 
-        JButton button = new JButton((toReveal.getToken().getName() + ": push make refutation"));
+        gbc.gridy = 2;
+        gbc.weighty = 0.1;
+        mainPanel.add(new JLabel("Click a card below to refute with it"), gbc);
+        JPanel refuteCardDisplay = new JPanel();
+        refuteCardDisplay.setLayout(new GridLayout(1,columns,0,0));
+        for (Card card : cards) {
+            JLabel cardLabel = new JLabel(new ImageIcon(boardCanvas.playerImage(card.getName() + "_Card")));
+            cardLabel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    super.mouseReleased(e);
+                    refDialog.dispose();
+                    displayCard(card, toReceive.getName());
+                }
+            });
+            refuteCardDisplay.add(cardLabel);
+        }
+        gbc.gridy = 3;
+        gbc.weighty = 1;
+        mainPanel.add(refuteCardDisplay, gbc);
+        //mainPanel.add(new JLabel("Suggestion: " + suggestion.toString()));
 
-        ActionListener refuteAction = e -> {
-            refDialog.dispose();
-            displayCard((String) cardSelect.getSelectedItem(), toReceive.getToken().getName());
-        };
 
-        ActionListener display = e ->{
-            button.setText("Submit Refute");
-            button.addActionListener(refuteAction);
-            cardSelect.setVisible(true);
+//        String[] cardList = cards.stream().map(Card::getName).toArray(String[]::new);
+//        JComboBox<String> cardSelect = new JComboBox<>(cardList);
+//
+//        JButton button = new JButton((toReveal.getToken().getName() + ": push make refutation"));
+//
+//        ActionListener refuteAction = e -> {
+//            refDialog.dispose();
+//            displayCard((String) cardSelect.getSelectedItem(), toReceive.getToken().getName());
+//        };
+//
+//        ActionListener display = e ->{
+//            button.setText("Submit Refute");
+//            button.addActionListener(refuteAction);
+//            cardSelect.setVisible(true);
+//
+//
+//        };
+//
+//        button.addActionListener(display);
 
+       // mainPanel.add(cardSelect);
+//        cardSelect.setVisible(false);
 
-        };
-
-        button.addActionListener(display);
-
-        mainPanel.add(cardSelect);
-        cardSelect.setVisible(false);
-
-        mainPanel.add(button);
-        button.setVisible(true);
-
+//        mainPanel.add(button);
+//        button.setVisible(true);
+//        refDialog.pack();
         mainPanel.setVisible(true);
         refDialog.add(mainPanel);
         refDialog.setVisible(true);
@@ -220,29 +260,61 @@ public class CluedoView {
         refDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
-    public static void displayCard(String cardName, String playername){
+    public static void displayCard(Card cardChosen, String playername){
         JDialog cardDisplayDialog = new JDialog(mainFrame, "ATTENTION " + playername.toUpperCase());
-        cardDisplayDialog.setSize(350,200);
+        cardDisplayDialog.setSize(300,200);
         cardDisplayDialog.setLocationRelativeTo(null);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayout(2,1,0, 0));
+        mainPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.weighty = 0.1;
+        JLabel label = new JLabel(playername + " click the blank card to reveal it");
+        mainPanel.add(label, gbc);
 
-        JButton button = new JButton(playername + ": push to see card");
+        gbc.gridy = 1;
+        JLabel card = new JLabel(new ImageIcon(boardCanvas.playerImage(cardChosen.getName() + "_Card")));
+        card.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                cardDisplayDialog.dispose();
+            }
+        });
 
-        JLabel card = new JLabel(cardName);
-        ActionListener closeDialog = e -> cardDisplayDialog.dispose();
+        JLabel blankCard = new JLabel(new ImageIcon(boardCanvas.playerImage( "Blank_Card")));
+        blankCard.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                blankCard.setIcon(new ImageIcon(boardCanvas.playerImage(cardChosen.getName() + "_Card")));
+                blankCard.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        super.mouseReleased(e);
+                        cardDisplayDialog.dispose();
+                    }
+                });
+                label.setText("Click again to close window");
+                mainPanel.revalidate();
+            }
+        });
+        mainPanel.add(blankCard, gbc);
+        //JButton button = new JButton(playername + ": push to see card");
 
-        ActionListener display = e ->{
-            button.setText("Push again to close");
-            button.addActionListener(closeDialog);
-            card.setVisible(true);
-        };
 
-        button.addActionListener(display);
-
-        mainPanel.add(button);
-        button.setVisible(true);
+//        ActionListener closeDialog = e -> cardDisplayDialog.dispose();
+//
+//        ActionListener display = e ->{
+//            button.setText("Push again to close");
+//            button.addActionListener(closeDialog);
+//            card.setVisible(true);
+//        };
+//
+//        button.addActionListener(display);
+//
+//        mainPanel.add(button);
+//        button.setVisible(true);
 
         mainPanel.add(card);
         card.setVisible(false);

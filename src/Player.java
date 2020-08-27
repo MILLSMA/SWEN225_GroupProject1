@@ -36,6 +36,10 @@ public class Player
 		isExcluded = aIsExcluded;
 	}
 
+	public String getName(){
+		return this.name;
+	}
+
 	public CharacterCard getToken(){
 		return token;
 	}
