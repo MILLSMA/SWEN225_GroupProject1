@@ -137,7 +137,7 @@ public class Game {
 	private void runGame() {
 		CluedoView.createCanvas(board);
 		new Thread(() -> {
-			while (!won || !allPlayersOut()) {
+			while (!won && !allPlayersOut()) {
 
 				SwingUtilities.invokeLater(() -> {
 					Timer t = new Timer(400, e -> CluedoView.updateBoard());
@@ -150,6 +150,8 @@ public class Game {
 			}
 			if (allPlayersOut()) {
 				System.out.println("All Players are out!");
+				SwingUtilities.invokeLater(() -> CluedoView.gameOver(null, envelope));
+
 			}
 		}).start();
 	}
@@ -393,9 +395,6 @@ public class Game {
 			}
 			if (!possibleCards.isEmpty()) {
 				SwingUtilities.invokeLater(() -> CluedoView.createRefutationDialog(this, asking, possibleCards, guess, p));
-
-				//here is a comment so i can push changes
-				CluedoView.flagNextTurn();
 				return true;
 			}
 		}
@@ -432,16 +431,16 @@ public class Game {
 		if (guess.equals(envelope)) {
 			//correct, game won
 			won = true;
-			System.out.println("This is the correct solution");
-			System.out.println("Player " + (players.indexOf(p) + 1) + " : " + p.getToken().getName() + " has won the game!");
+			SwingUtilities.invokeLater(() -> CluedoView.gameOver(p, envelope));
 		} else {
 			//the player was incorrect and so is  now out
 			System.out.println("Incorrect solution");
 			System.out.println(p.getToken().getName() + " is out!");
 			System.out.println("You still need to make refutations");
 			p.setIsExcluded(true);
+			CluedoView.flagNextTurn();
 		}
 
-		CluedoView.flagNextTurn();
+
 	}
 }

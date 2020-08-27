@@ -231,7 +231,10 @@ public class CluedoView {
         JButton button = new JButton(playername + ": push to see card");
 
         JLabel card = new JLabel(cardName);
-        ActionListener closeDialog = e -> cardDisplayDialog.dispose();
+        ActionListener closeDialog = e -> {
+            cardDisplayDialog.dispose();
+            flagNextTurn();
+        };
 
         ActionListener display = e ->{
             button.setText("Push again to close");
@@ -252,6 +255,37 @@ public class CluedoView {
         cardDisplayDialog.setVisible(true);
 
         cardDisplayDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+    }
+
+    public static void gameOver(Player p, CardTriplet s){
+        JDialog gameOverDialog = new JDialog(mainFrame, "GAME OVER");
+        gameOverDialog.setSize(350,200);
+        gameOverDialog.setLocationRelativeTo(null);
+
+        JPanel mainPanel = new JPanel();
+        JLabel gameOver = new JLabel("The game is over");
+        JLabel text2 = new JLabel("All Players are out");
+        if(p != null){
+            text2.setText(p.getToken().getName() + " has won!");
+        }
+        JLabel solution = new JLabel("The Solution was :" + s.toString());
+
+        JButton button = new JButton("Close");
+        ActionListener endGame = e ->{
+            System.exit(0);
+        };
+
+        button.addActionListener(endGame);
+
+        mainPanel.add(gameOver);
+        mainPanel.add(text2);
+        mainPanel.add(solution);
+        mainPanel.add(button);
+
+        mainPanel.setVisible(true);
+        gameOverDialog.add(mainPanel);
+        gameOverDialog.setVisible(true);
 
     }
 
