@@ -15,9 +15,7 @@ public class Game {
 	private List<Player> players = new ArrayList<>();
 	private Board board;
 	private CardTriplet envelope;
-	Pathfinder pathfinder;
-	private Scanner input;
-
+	private Pathfinder<Cell> pathfinder;
 
 	//------------------------
 	// STATIC INITIALISATION METHODS
@@ -50,7 +48,7 @@ public class Game {
 	 */
 	public void startGame() {
 		board = new Board(players);
-		pathfinder = new Pathfinder(board);
+		pathfinder = new Pathfinder<>(board);
 		won = false;
 		System.out.println("== Players in this Game == ");
 		for (int i = 0; i < players.size(); i++) {
@@ -62,7 +60,6 @@ public class Game {
 		allCards.addAll(WeaponCard.getWeapons());
 		allCards.addAll(RoomCard.getRooms());
 		envelope = decideSolution(allCards);
-		input = new Scanner(System.in);
 		dealCards(allCards);
 		runGame();
 	}
@@ -143,7 +140,7 @@ public class Game {
 			while (!won || !allPlayersOut()) {
 
 				SwingUtilities.invokeLater(() -> {
-					Timer t = new Timer(400, e -> CluedoView.boardCanvas.updateBoard());
+					Timer t = new Timer(400, e -> CluedoView.updateBoard());
 					t.start();
 				});
 
@@ -182,11 +179,14 @@ public class Game {
 		System.out.println("\n== " + p.getToken().getName() + "'s turn ==");
 		int diceRoll = rollDice();
 		SwingUtilities.invokeLater(() -> CluedoView.displayPlayerInformation(p, diceRoll));
-		guiMove(p, diceRoll);
-
+		List<Cell> cellsMovedTo = new ArrayList<>();
+		move(p, diceRoll, cellsMovedTo);
+		for (Cell cell : cellsMovedTo) {
+			cell.setUsedInRound(false);
+		}
 
 		if (p.getLocation().getRoom().isProperRoom()) {
-			System.out.println("You've entered the " + p.getLocation().getRoom().getName());
+			CluedoView.changePlayerInfo("You've entered the " + p.getLocation().getRoom().getName());
 
 			Room currentRoom = findRoom(p);
 			p.setCell(currentRoom.findEmptyCell());
@@ -195,38 +195,13 @@ public class Game {
 		}else{
 			CluedoView.flagNextTurn();
 		}
-
 	}
 
-	/**
-	 * retrieves and validates turn entry by player
-	 *
-	 * @param p : player whose turn it is
-	 */
-	private void turnEntry(Player p) {
-		Scanner sc = new Scanner(System.in);
-		String turnEntry;
-		do {
-			System.out.print("Accusation (A) | Suggestion (S) | View Cards (C): ");
-			turnEntry = sc.next();
-		} while (!(turnEntry.matches("(?i)a|s|c|accusation|suggestion|view cards|")));
-
-		if (turnEntry.matches("(?i)a|accusation")) {
-			System.out.println("accusation instead of suggestion - never reached");
-			//makeAccusation(p);
-		} else if (turnEntry.matches("(?i)s|suggestion")) {
-			makeSuggestion(p, "", "");
-		} else {
-			p.displayHand();
-			turnEntry(p);
-		}
-	}
-
-	/**
-	 * Rolls the dice, controls a player's moves
-	 *
-	 * @param p : the player moving
-	 */
+//	/**
+//	 * Rolls the dice, controls a player's moves
+//	 *
+//	 * @param p : the player moving
+//	 */
 //	private void move(Player p) {
 //		if (p.getLocation().getRoom().isProperRoom()) {
 //			System.out.println("You are currently in the " + p.getLocation().getRoom().getName());
@@ -269,39 +244,48 @@ public class Game {
 	/**
 	 * new move method for testing the gui movement
 	 *
-	 * @param p
 	 */
-	private void guiMove(Player p, int roll) {
+	private void move(Player p, int roll, List<Cell> cellsMovedTo) {
 		int amountOfMoves = roll;
 		System.out.println("You can move " + roll + " tiles.");
 		Cell goalCell;
 		try {
 			//waits for the player to click on a cell and the gets it
-			goalCell = CluedoView.boardCanvas.getCell().get();
+			goalCell = CluedoView.getCell();
 			Cell playerCell = p.getLocation();
 
 			goalCell = closestDoor(goalCell, playerCell);
 			playerCell = closestDoor(playerCell, goalCell);
 
-			if(goalCell.getRoom().getType().equals("Wall") || getEstimate(playerCell, goalCell) > roll) amountOfMoves = Integer.MIN_VALUE;
+			if(goalCell.getRoom().isWall() || getEstimate(playerCell, goalCell) > roll) amountOfMoves = Integer.MIN_VALUE;
 			//finds the shortest path to the selected cell
 			ArrayList<Locatable> selectedCells = new ArrayList<>();
 			if(amountOfMoves > 0) selectedCells.addAll(pathfinder.findPath(playerCell, goalCell));
 			//if the path length is within the allowed amount of moves, move the player step by step
 			if (selectedCells.size() - 1 <= amountOfMoves) {
 				for (Locatable cell : selectedCells) {
-					p.setCell((Cell) cell);
+					Cell c = (Cell) cell;
+					p.setCell(c);
+					cellsMovedTo.add(c);
+					c.setUsedInRound(true);
 					TimeUnit.MILLISECONDS.sleep(400);
+				}
+				if (roll > selectedCells.size()-1 && p.getLocation().getRoom().isHallway()) {
+					int newRoll = roll-(selectedCells.size()-1);
+					SwingUtilities.invokeLater(() -> CluedoView.displayPlayerInformation(p, newRoll));
+					move(p, newRoll, cellsMovedTo);
 				}
 			} else {
 				CluedoView.showDialog("You cannot move here");
-				guiMove(p, roll);
+				move(p, roll, cellsMovedTo);
 			}
+
 		} catch (Exception e) {
 			CluedoView.showDialog("Move could not be made due to " + e.getMessage() + "\nPlease try again");
-			guiMove(p, roll);
+			move(p, roll, cellsMovedTo);
 		}
 	}
+
 	private double getEstimate(Cell first, Cell second){
 		Position firstPosition = first.getPosition();
 		Position secondPosition = second.getPosition();
@@ -327,7 +311,7 @@ public class Game {
 	 */
 	private Room findRoom(Player p) {
 		//System.out.println(p.getLocation().getRoom().getRoomSize());
-		if (p.getLocation().getRoom().getType().equals("Door")) {//in doorway
+		if (p.getLocation().getRoom().isDoor()) {//in doorway
 			return board.checkSurroundingCells(p);
 		} else if (p.getLocation().getRoom().getRoomSize() > 1) {//inside room
 			return p.getLocation().getRoom();
@@ -390,10 +374,8 @@ public class Game {
 	 * @return boolean: true if a card is shown
 	 */
 	private boolean doRefutations(Player p, CardTriplet guess) {
-		boolean found = false;
 		int asked = 0;
-		while (!found && asked < players.size() - 1) {
-			//if()
+		while (asked < players.size() - 1) {
 			Player asking;
 			if (players.indexOf(p) + asked + 1 >= players.size()) {
 				//loop back through char collection from index zero

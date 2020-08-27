@@ -10,18 +10,20 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CluedoView {
     private static final int CELL_SIZE = 27;
     private static final int BOARD_HEIGHT = CELL_SIZE*Board.ROWS;
     private static final int BOARD_WIDTH = CELL_SIZE*Board.COLS;
-    static JFrame mainFrame;
-    static Canvas boardCanvas;
 
-    static JPanel turnPanel = new JPanel();
-    static JButton suggestionButton = new JButton("Suggestion");
-    static JButton accusationButton = new JButton("Accusation");
+    private static final JFrame mainFrame = new JFrame("Cluedo");
+    private static Canvas boardCanvas;
+    private static final JPanel turnPanel = new JPanel();
+    private static final JButton suggestionButton = new JButton("Suggest");
+    private static final JButton accusationButton = new JButton("Accuse");
+    private static final JLabel playerInfo = new JLabel();
 
     static boolean nextTurn = true;
 
@@ -31,7 +33,6 @@ public class CluedoView {
     }
 
     private void init(Game g){
-        mainFrame = new JFrame("Cluedo");
         mainFrame.setResizable(false);
         mainFrame.setSize(BOARD_WIDTH,BOARD_HEIGHT*5/4);
         createPlayerSelectionDialog(g, 1);
@@ -67,7 +68,6 @@ public class CluedoView {
         turnPanel.setMaximumSize(smallPanelDimensions);
         mainFrame.getContentPane().add(turnPanel, constraints);
 
-        mainFrame.setVisible(true);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         boardCanvas.setVisible(true);
@@ -187,21 +187,15 @@ public class CluedoView {
         mainPanel.setLayout(new GridLayout(3,1,0, 0));
         mainPanel.add(new JLabel("Suggestion: " + suggestion.toString()));
 
-
         String[] cardList = cards.stream().map(Card::getName).toArray(String[]::new);
-
-
-        System.out.println(cardList.toString());
         JComboBox<String> cardSelect = new JComboBox<>(cardList);
 
         JButton button = new JButton((toReveal.getToken().getName() + ": push make refutation"));
-
 
         ActionListener refuteAction = e -> {
             refDialog.dispose();
             displayCard((String) cardSelect.getSelectedItem(), toReceive.getToken().getName());
         };
-
 
         ActionListener display = e ->{
             button.setText("Submit Refute");
@@ -237,9 +231,7 @@ public class CluedoView {
         JButton button = new JButton(playername + ": push to see card");
 
         JLabel card = new JLabel(cardName);
-        ActionListener closeDialog = e ->{
-            cardDisplayDialog.dispose();
-        };
+        ActionListener closeDialog = e -> cardDisplayDialog.dispose();
 
         ActionListener display = e ->{
             button.setText("Push again to close");
@@ -283,7 +275,7 @@ public class CluedoView {
         panel.add(entry);
 
         panel.add(new JLabel("Token"));
-        JLabel errorText = new JLabel("Please choose a token.");
+        JLabel errorText = new JLabel();
         errorText.setForeground(Color.RED);
         errorText.setVisible(false);
         panel.add(errorText);
@@ -302,6 +294,11 @@ public class CluedoView {
         if (number >= 6) add.setEnabled(false);
 
         ActionListener addAction = e -> {
+            if (entry.getText().isEmpty()) {
+                errorText.setText("Please enter a name.");
+                errorText.setVisible(true);
+                return;
+            }
             for (Enumeration<AbstractButton> buttons = tokens.getElements(); buttons.hasMoreElements();) {
                 AbstractButton button = buttons.nextElement();
                 if (button.isSelected()) {
@@ -309,17 +306,25 @@ public class CluedoView {
                     dialog.dispose();
                 }
             }
+            errorText.setText("Please choose a token.");
             errorText.setVisible(true);
         };
         ActionListener startAction = e -> {
+            if (entry.getText().isEmpty()) {
+                errorText.setText("Please enter a name.");
+                errorText.setVisible(true);
+                return;
+            }
             for (Enumeration<AbstractButton> buttons = tokens.getElements(); buttons.hasMoreElements();) {
                 AbstractButton button = buttons.nextElement();
                 if (button.isSelected()) {
                     g.createPlayer(entry.getText(), CharacterCard.getToken(button.getText()), false);
                     g.startGame();
+                    mainFrame.setVisible(true);
                     dialog.dispose();
                 }
             }
+            errorText.setText("Please choose a token.");
             errorText.setVisible(true);
         };
 
@@ -360,7 +365,6 @@ public class CluedoView {
 
     public static void displayPlayerInformation(Player p, int moves){
         Font displayFont = new Font("Serif", Font.PLAIN, 14);
-        System.out.println("displaying user information");
         JPanel turnPanel = (JPanel)mainFrame.getContentPane().getComponent(1);
         turnPanel.setLayout(new GridLayout(3,0));
         turnPanel.removeAll();
@@ -376,9 +380,9 @@ public class CluedoView {
 
         JPanel movePanel = new JPanel();
         movePanel.setLayout(new FlowLayout());
-        JLabel moveLabel = new JLabel("You may move " + moves + " tiles");
+        playerInfo.setText("You may move " + moves + " tiles");
         movePanel.setFont(displayFont);
-        movePanel.add(moveLabel);
+        movePanel.add(playerInfo);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
@@ -397,6 +401,9 @@ public class CluedoView {
         turnPanel.revalidate();
     }
 
+    public static void changePlayerInfo(String text) {
+        playerInfo.setText(text);
+    }
 
     /**
      * displays a dialog box with the message in the paramater
@@ -404,6 +411,20 @@ public class CluedoView {
      */
     public static void showDialog(String message){
         SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(mainFrame, message));
+    }
+
+    public static void updateBoard() {
+        boardCanvas.updateBoard();
+    }
+
+    public static Cell getCell() {
+        try {
+            return boardCanvas.getCell().get();
+        } catch (Exception e) {
+            CluedoView.showDialog(e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public class Canvas extends JPanel implements MouseMotionListener{
@@ -447,9 +468,9 @@ public class CluedoView {
          */
         private BufferedImage cellImage(Cell cell){
             String name;
-            if(cell.getRoom().getType().equals("Wall")) name = "wall";
-            else if(cell.getRoom().getType().equals("Hallway")) name = "hallway";
-            else if(cell.getRoom().getType().equals("Door")) name = "door " + doorDirection(cell);
+            if(cell.getRoom().isWall()) name = "wall";
+            else if(cell.getRoom().isHallway()) name = "hallway";
+            else if(cell.getRoom().isDoor()) name = "door " + doorDirection(cell);
             else name = "floorboard";
             return playerImage(name);
         }

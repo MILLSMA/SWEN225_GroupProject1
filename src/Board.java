@@ -33,7 +33,7 @@ public class Board
 			"/_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _/I I I I I I I/\n" +
 			"///_ _ _ _ _ _ _ _/H H ) ) H H/_ _ _/I I I I I///\n" +
 			"/L L L L L L )/_ _/H H H H H H/_ _ _ _ _ _ _ _ _/\n" +
-			"/L L L L L L L/_ _/H H H H H H/_ _ _ _ _ _ _ _///\n" +
+			"/L L L L L L L/_ _/H H H H H ) _ _ _ _ _ _ _ _///\n" +
 			"/L L L L L L L/_ _/H H H H H H/_ _/) S S S S S///\n" +
 			"/L L L L L L L/_ _/H H H H H H/_ _/S S S S S S S/\n" +
 			"/L L L L L L L/_ _/H H H H H H/_ _/S S S S S S S/\n" +
@@ -93,8 +93,8 @@ public class Board
 
 	private Color getRoomColor(Room room){
 		if (room.isProperRoom()) return Color.LIGHT_GRAY;
-		else if(room.getType().equals("Hallway")) return Color.WHITE;
-		else if(room.getType().equals("Door")) return Color.LIGHT_GRAY.darker();
+		else if(room.isHallway()) return Color.WHITE;
+		else if(room.isDoor()) return Color.LIGHT_GRAY.darker();
 		else return Color.DARK_GRAY;
 	}
 
@@ -166,7 +166,7 @@ public class Board
 					currentCell.setDirection(Cell.Direction.SOUTH, true);
 					belowCell.setDirection(Cell.Direction.NORTH, true);
 				}
-				if(currentCell.getRoom().getType().equals("Door")){
+				if(currentCell.getRoom().isDoor()){
 					Cell leftCell = board[xIndex][yIndex - 1];
 					Cell rightCell = board[xIndex][yIndex + 1];
 					RoomCard doorCard;

@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Room {
 	private RoomCard card;
-	private String type = "";
+	private String type;
 	Room(RoomCard roomCard) {
 		card = roomCard;
 		type = roomCard.getName();
@@ -34,9 +34,9 @@ public class Room {
 		return card != null;
 	}
 
-	public String getType(){
-		return type;
-	}
+	public boolean isDoor() { return type.equals("Door"); }
+	public boolean isHallway() { return type.equals("Hallway"); }
+	public boolean isWall() { return type.equals("Wall"); }
 
 	public List<Card> getCards(){
 		return cards;
@@ -88,8 +88,8 @@ public class Room {
 
 	@Override
 	public String toString() {
-		if(type.equals("Door")) return ")";
-		else if(type.equals("Hallway")) return "_";
+		if(isDoor()) return ")";
+		else if(isHallway()) return "_";
 		else if(card != null) return card.toString();
 		else return "/";
 	}
