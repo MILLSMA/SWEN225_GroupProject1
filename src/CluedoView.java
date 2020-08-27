@@ -194,7 +194,7 @@ public class CluedoView {
 
         ActionListener refuteAction = e -> {
             refDialog.dispose();
-            displayCard((String) cardSelect.getSelectedItem(), toReceive.getToken().getName());
+            displayCard((String) cardSelect.getSelectedItem(), toReceive);
         };
 
         ActionListener display = e ->{
@@ -220,15 +220,16 @@ public class CluedoView {
         refDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
-    public static void displayCard(String cardName, String playername){
-        JDialog cardDisplayDialog = new JDialog(mainFrame, "ATTENTION " + playername.toUpperCase());
+    public static void displayCard(String cardName, Player p){
+        JDialog cardDisplayDialog = new JDialog(mainFrame, "ATTENTION " + p.getToken().getName().toUpperCase());
         cardDisplayDialog.setSize(350,200);
         cardDisplayDialog.setLocationRelativeTo(null);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayout(2,1,0, 0));
 
-        JButton button = new JButton(playername + ": push to see card");
+        JButton button = new JButton(p.getToken().getName() + ": push to see card");
+
 
         JLabel card = new JLabel(cardName);
         ActionListener closeDialog = e -> {
@@ -250,12 +251,44 @@ public class CluedoView {
         mainPanel.add(card);
         card.setVisible(false);
 
+
         mainPanel.setVisible(true);
         cardDisplayDialog.add(mainPanel);
         cardDisplayDialog.setVisible(true);
 
         cardDisplayDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
+    }
+
+    public static void noReveal(Game g, Player p){
+        JDialog noRevealDialog = new JDialog(mainFrame, "ATTENTION " + p.getToken().getName());
+        noRevealDialog.setSize(350,200);
+        noRevealDialog.setLocationRelativeTo(null);
+        JPanel mainPanel = new JPanel();
+        JLabel text = new JLabel("No cards were revealed");
+        JPanel buttonPanel = new JPanel();
+        JButton end = new JButton("End Turn");
+        JButton acc = new JButton("Accusation");
+
+        ActionListener endTurn = e ->{
+            noRevealDialog.dispose();
+            flagNextTurn();
+        };
+        end.addActionListener(endTurn);
+
+        ActionListener accAction = e ->{
+            noRevealDialog.dispose();
+            createGuessDialog(g,p,false);
+        };
+        acc.addActionListener(accAction);
+
+        buttonPanel.add(acc);
+        buttonPanel.add(end);
+        mainPanel.add(text);
+        mainPanel.add(buttonPanel);
+        noRevealDialog.add(mainPanel);
+        mainPanel.setVisible(true);
+        noRevealDialog.setVisible(true);
     }
 
     public static void gameOver(Player p, CardTriplet s){
@@ -286,6 +319,33 @@ public class CluedoView {
         mainPanel.setVisible(true);
         gameOverDialog.add(mainPanel);
         gameOverDialog.setVisible(true);
+
+    }
+
+    public static void playerOut(Player p){
+        JDialog playerOutDialog = new JDialog(mainFrame, "ATTENTION " + p.getToken().getName());
+        playerOutDialog.setSize(350,200);
+        playerOutDialog.setLocationRelativeTo(null);
+
+        JPanel mainPanel = new JPanel();
+        JLabel playerLabel = new JLabel(p.getToken().getName());
+        JLabel text2 = new JLabel("Your accusation was incorrect, you are now out");
+
+        JButton button = new JButton("Close");
+        ActionListener closeFrame = e ->{
+            playerOutDialog.dispose();
+        };
+
+        button.addActionListener(closeFrame);
+
+        mainPanel.add(playerLabel);
+        mainPanel.add(text2);
+        mainPanel.add(button);
+
+        mainPanel.setVisible(true);
+        playerOutDialog.add(mainPanel);
+        playerOutDialog.setVisible(true);
+
 
     }
 

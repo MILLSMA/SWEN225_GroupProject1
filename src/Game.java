@@ -148,11 +148,8 @@ public class Game {
 					if (!won && !player.getExcluded()) doTurn(player);
 				}
 			}
-			if (allPlayersOut()) {
-				System.out.println("All Players are out!");
-				SwingUtilities.invokeLater(() -> CluedoView.gameOver(null, envelope));
+			if (allPlayersOut()) SwingUtilities.invokeLater(() -> CluedoView.gameOver(null, envelope));
 
-			}
 		}).start();
 	}
 
@@ -312,7 +309,6 @@ public class Game {
 	 * @param p player to check
 	 */
 	private Room findRoom(Player p) {
-		//System.out.println(p.getLocation().getRoom().getRoomSize());
 		if (p.getLocation().getRoom().isDoor()) {//in doorway
 			return board.checkSurroundingCells(p);
 		} else if (p.getLocation().getRoom().getRoomSize() > 1) {//inside room
@@ -339,17 +335,7 @@ public class Game {
 		boolean refuted = doRefutations(p, guess);
 		if (!refuted) {
 			System.out.println("\nNo cards were revealed this round");
-//			Scanner sc = new Scanner(System.in);
-//			String accusationChoice;
-//			do {
-//				System.out.print(" Make Accusation (Y/N): ");
-//				accusationChoice = sc.next();
-//			} while (!(accusationChoice.matches("(?i)y|n|yes|no")));
 
-//			if (accusationChoice.matches("(?i)y|yes")) {
-//				System.out.println("accusation following suggestion");
-//				//makeAccusation(p);
-//			}
 		}
 
 	}
@@ -398,7 +384,8 @@ public class Game {
 				return true;
 			}
 		}
-		CluedoView.flagNextTurn();
+		SwingUtilities.invokeLater(() -> CluedoView.noReveal(this, p));
+		//CluedoView.flagNextTurn();
 		return false;
 	}
 
@@ -425,7 +412,6 @@ public class Game {
 	 * @param p: player making accusation
 	 */
 	public void makeAccusation(Player p, String character, String weapon, String room) {
-		System.out.println("Making an accusation here");
 		CardTriplet guess = new CardTriplet(character, weapon, room);
 		System.out.println("Accusation is: " + guess);
 		if (guess.equals(envelope)) {
@@ -434,10 +420,8 @@ public class Game {
 			SwingUtilities.invokeLater(() -> CluedoView.gameOver(p, envelope));
 		} else {
 			//the player was incorrect and so is  now out
-			System.out.println("Incorrect solution");
-			System.out.println(p.getToken().getName() + " is out!");
-			System.out.println("You still need to make refutations");
 			p.setIsExcluded(true);
+			SwingUtilities.invokeLater(() -> CluedoView.playerOut(p));
 			CluedoView.flagNextTurn();
 		}
 
