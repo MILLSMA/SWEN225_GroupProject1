@@ -20,7 +20,6 @@ public class CluedoView {
 
     private static final JFrame mainFrame = new JFrame("Cluedo");
     private static Canvas boardCanvas;
-    private static final JPanel turnPanel = new JPanel();
     private static final JButton suggestionButton = new JButton("Suggest");
     private static final JButton accusationButton = new JButton("Accuse");
     private static final JLabel playerInfo = new JLabel();
@@ -40,12 +39,13 @@ public class CluedoView {
         mainFrame.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JPanel cardPanel = new JPanel();
+        JPanel turnPanel = new JPanel();
+        JPanel cards = new JPanel();
+        JScrollPane cardPanel = new JScrollPane(cards);
         Dimension smallPanelDimensions = new Dimension((int)(mainFrame.getWidth() * 0.5), (int)(mainFrame.getHeight()*0.2));
         boardCanvas = new Canvas();
-        turnPanel.add(new Button("turnPanel"));
-
         cardPanel.add(new Button("cardPanel"));
+       // turnPanel.add(new Button("turnPanel"));
 
         //creates the layout with the canvas taking up 80% of the height
         constraints.weightx = 1;
@@ -59,14 +59,14 @@ public class CluedoView {
         constraints.gridwidth = 1;
         constraints.gridx = 1;
         constraints.gridy = 1;
-        constraints.weightx = 0.5;
-        mainFrame.getContentPane().add(cardPanel, constraints);
+        constraints.weightx = 0.1;
+        mainFrame.getContentPane().add(turnPanel, constraints);
         constraints.gridx = 2;
         constraints.gridy = 1;
-        constraints.weightx = 0.5;
-        cardPanel.setMaximumSize(smallPanelDimensions);
+        constraints.weightx = 0.9;
         turnPanel.setMaximumSize(smallPanelDimensions);
-        mainFrame.getContentPane().add(turnPanel, constraints);
+        cardPanel.setMaximumSize(smallPanelDimensions);
+        mainFrame.getContentPane().add(cardPanel, constraints);
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -384,6 +384,8 @@ public class CluedoView {
         movePanel.setFont(displayFont);
         movePanel.add(playerInfo);
 
+        displayPlayerCards(p);
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
         buttonPanel.add(new JButton("Roll Dice"));
@@ -399,6 +401,22 @@ public class CluedoView {
         namePanel.repaint();
         turnPanel.setVisible(true);
         turnPanel.revalidate();
+    }
+
+    private static void displayPlayerCards(Player p){
+        JScrollPane cardPanel = (JScrollPane)mainFrame.getContentPane().getComponent(2);
+        JPanel cards = (JPanel)cardPanel.getViewport().getComponent(0);
+        cards.removeAll();
+
+        cardPanel.invalidate();
+        cardPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        cardPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        for (Card card : p.getCards()) {
+            System.out.println(card.getName());
+            cards.add(new JLabel(new ImageIcon(boardCanvas.playerImage(card.getName() + "_Card"))));
+        }
+        cardPanel.repaint();
+        cardPanel.revalidate();
     }
 
     public static void changePlayerInfo(String text) {
@@ -453,6 +471,7 @@ public class CluedoView {
         private BufferedImage playerImage(String playerName){
             BufferedImage image = null;
             String fileName = "Resources/" +  playerName.replace(' ', '_')+".png";
+            //System.out.println(fileName);
             try {
                 image = ImageIO.read(new File(fileName));
             }catch(IOException e){

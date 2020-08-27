@@ -298,7 +298,11 @@ public class Game {
 		Cell changedCell = cellToChange;
 		if(RoomCard.getRooms().contains(cellToChange.getRoom().getCard())){
 			for (Cell door : cellToChange.getRoom().getCard().getDoors()) {
-				if(getEstimate(measuringCell, door) < closest) changedCell = door;
+				double distanceEstimate = getEstimate(measuringCell, door);
+				if(distanceEstimate < closest){
+					closest = distanceEstimate;
+					changedCell = door;
+				}
 			}
 		}
 		return changedCell;
