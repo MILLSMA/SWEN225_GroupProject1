@@ -44,8 +44,9 @@ public class CluedoView {
         JScrollPane cardPanel = new JScrollPane(cards);
         Dimension smallPanelDimensions = new Dimension((int)(mainFrame.getWidth() * 0.5), (int)(mainFrame.getHeight()*0.2));
         boardCanvas = new Canvas();
+        turnPanel.add(new Button("turnPanel"));
+
         cardPanel.add(new Button("cardPanel"));
-       // turnPanel.add(new Button("turnPanel"));
 
         //creates the layout with the canvas taking up 80% of the height
         constraints.weightx = 1;
@@ -327,6 +328,95 @@ public class CluedoView {
 
     }
 
+    public static void noReveal(Game g, Player p){
+        JDialog noRevealDialog = new JDialog(mainFrame, "ATTENTION " + p.getToken().getName());
+        noRevealDialog.setSize(350,200);
+        noRevealDialog.setLocationRelativeTo(null);
+        JPanel mainPanel = new JPanel();
+        JLabel text = new JLabel("No cards were revealed");
+        JPanel buttonPanel = new JPanel();
+        JButton end = new JButton("End Turn");
+        JButton acc = new JButton("Accusation");
+
+        ActionListener endTurn = e ->{
+            noRevealDialog.dispose();
+            flagNextTurn();
+        };
+        end.addActionListener(endTurn);
+
+        ActionListener accAction = e ->{
+            noRevealDialog.dispose();
+            createGuessDialog(g,p,false);
+        };
+        acc.addActionListener(accAction);
+
+        buttonPanel.add(acc);
+        buttonPanel.add(end);
+        mainPanel.add(text);
+        mainPanel.add(buttonPanel);
+        noRevealDialog.add(mainPanel);
+        mainPanel.setVisible(true);
+        noRevealDialog.setVisible(true);
+    }
+
+    public static void gameOver(Player p, CardTriplet s){
+        JDialog gameOverDialog = new JDialog(mainFrame, "GAME OVER");
+        gameOverDialog.setSize(350,200);
+        gameOverDialog.setLocationRelativeTo(null);
+
+        JPanel mainPanel = new JPanel();
+        JLabel gameOver = new JLabel("The game is over");
+        JLabel text2 = new JLabel("All Players are out");
+        if(p != null){
+            text2.setText(p.getToken().getName() + " has won!");
+        }
+        JLabel solution = new JLabel("The Solution was :" + s.toString());
+
+        JButton button = new JButton("Close");
+        ActionListener endGame = e ->{
+            System.exit(0);
+        };
+
+        button.addActionListener(endGame);
+
+        mainPanel.add(gameOver);
+        mainPanel.add(text2);
+        mainPanel.add(solution);
+        mainPanel.add(button);
+
+        mainPanel.setVisible(true);
+        gameOverDialog.add(mainPanel);
+        gameOverDialog.setVisible(true);
+
+    }
+
+    public static void playerOut(Player p){
+        JDialog playerOutDialog = new JDialog(mainFrame, "ATTENTION " + p.getToken().getName());
+        playerOutDialog.setSize(350,200);
+        playerOutDialog.setLocationRelativeTo(null);
+
+        JPanel mainPanel = new JPanel();
+        JLabel playerLabel = new JLabel(p.getToken().getName());
+        JLabel text2 = new JLabel("Your accusation was incorrect, you are now out");
+
+        JButton button = new JButton("Close");
+        ActionListener closeFrame = e ->{
+            playerOutDialog.dispose();
+        };
+
+        button.addActionListener(closeFrame);
+
+        mainPanel.add(playerLabel);
+        mainPanel.add(text2);
+        mainPanel.add(button);
+
+        mainPanel.setVisible(true);
+        playerOutDialog.add(mainPanel);
+        playerOutDialog.setVisible(true);
+
+
+    }
+
     public static void createCanvas(Board board){
         boardCanvas.addMouseMotionListener(boardCanvas);
         boardCanvas.board = board;
@@ -543,7 +633,6 @@ public class CluedoView {
         private BufferedImage playerImage(String playerName){
             BufferedImage image = null;
             String fileName = "Resources/" +  playerName.replace(' ', '_')+".png";
-            //System.out.println(fileName);
             try {
                 image = ImageIO.read(new File(fileName));
             }catch(IOException e){
