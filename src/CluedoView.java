@@ -23,6 +23,8 @@ public class CluedoView {
     private static final JLabel playerInfo = new JLabel();
     private static JPanel dicePanel;
 
+    public static final JLabel toolTip = new JLabel();
+
     static boolean nextTurn = true;
 
 
@@ -33,17 +35,21 @@ public class CluedoView {
     private void init(Game g){
         mainFrame.setResizable(false);
         mainFrame.setSize(BOARD_WIDTH,BOARD_HEIGHT*5/4);
+
+
         createPlayerSelectionDialog(g, 1);
 
         mainFrame.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
+
+
+
 
         JPanel turnPanel = new JPanel();
         JPanel cards = new JPanel();
         JScrollPane cardPanel = new JScrollPane(cards);
         cardPanel.setBorder(BorderFactory.createEmptyBorder());
         Dimension smallPanelDimensions = new Dimension(mainFrame.getWidth()/2, mainFrame.getHeight()/5);
-
         boardCanvas = new Canvas();
         turnPanel.add(new Button("turnPanel"));
         cardPanel.add(new Button("cardPanel"));
@@ -70,6 +76,15 @@ public class CluedoView {
         constraints.ipadx = 0;
         cardPanel.setSize(smallPanelDimensions);
         mainFrame.getContentPane().add(cardPanel, constraints);
+
+
+
+        JPanel hover = new JPanel();
+        hover.add(toolTip);
+        toolTip.setVisible(true);
+        hover.setVisible(true);
+        //mainFrame.getContentPane().add(hover,constraints);
+        mainFrame.add(hover);
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -728,8 +743,12 @@ public class CluedoView {
                 heightCount += cellHeight;
                 widthCount = 0;
             }
+
+
             this.repaint();
         }
+
+
 
         /**
          * updates the board, only slightly more efficient than draw board
@@ -795,18 +814,32 @@ public class CluedoView {
 
         @Override
         public void mouseMoved(MouseEvent e) {
-            try {
-                if (lastColor != null && lastHoveredTile != null) lastHoveredTile.tileColor = lastColor;
+            if (lastColor != null && lastHoveredTile != null) lastHoveredTile.tileColor = lastColor;
+            Position pos = screenCoordinateToPos(e.getX(), e.getY());
+            drawTile hoverTile = tilesToDraw.get(pos.hashCode());
+            String label = "";
+            try{
+                label = label +tilesToDraw.get(pos.hashCode()).cell.getRoom().getName();
+            }catch(NullPointerException roomIgnored){
 
-                Position pos = screenCoordinateToPos(e.getX(), e.getY());
-                drawTile hoverTile = tilesToDraw.get(pos.hashCode());
+            }
+
+            try{
+                if(!label.equals("")) label = label + " : ";
+                label = label +tilesToDraw.get(pos.hashCode()).cell.getObject().getName();
+            }catch(NullPointerException ObjIgnored){
+                if(label.contains(":"))label = label.substring(0, label.length()-2);
+
+            }
+
+            try {
+                toolTip.setText(label);
+                toolTip.setVisible(true);
                 lastColor = hoverTile.tileColor;
                 hoverTile.tileColor = new Color(57, 255, 20, 75);
                 this.repaint();
                 this.lastHoveredTile = hoverTile;
-            }catch(NullPointerException ignored){
-
-            }
+            }catch(NullPointerException ignored){}
         }
     }
 
