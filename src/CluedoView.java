@@ -619,13 +619,9 @@ public class CluedoView {
 		public void paint(Graphics g) {
 			tilesToDraw.values().forEach(tile -> {
                 g.drawImage(tile.image, tile.xPosition, tile.yPosition, null);
-                if(tile.cell.getObject() instanceof CharacterCard) {
-                    String playerName = tile.cell.getObject().getName();
-                    g.drawImage(playerImage(playerName), tile.xPosition, tile.yPosition, null);
-                }
-                if(tile.cell.getObject() instanceof WeaponCard) {
-                    String weaponName = tile.cell.getObject().getName();
-                    g.drawImage(playerImage(weaponName), tile.xPosition, tile.yPosition, null);
+                if(tile.cell.getObject() instanceof CharacterCard || tile.cell.getObject() instanceof WeaponCard) {
+                    String CardName = tile.cell.getObject().getName();
+                    g.drawImage(playerImage(CardName), tile.xPosition, tile.yPosition, null);
                 }
 
             });
