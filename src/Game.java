@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.Timer;
 import java.util.*;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Game {
@@ -173,12 +174,18 @@ public class Game {
 	 *
 	 * @param p : the player making the turn
 	 */
+	CompletableFuture<Integer> diceRollPromise;
 	private void doTurn(Player p) {
 		CluedoView.resetNextTurn();
 		//place holder code
 		System.out.println("\n== " + p.getToken().getName() + "'s turn ==");
-		int diceRoll = rollDice();
-		SwingUtilities.invokeLater(() -> CluedoView.displayPlayerInformation(p, diceRoll));
+		int diceRoll = 0;
+		diceRollPromise = new CompletableFuture<>();
+		SwingUtilities.invokeLater(()-> diceRollPromise = CluedoView.displayPlayerInformation(p, 0, diceRollPromise));
+		try {
+			diceRoll = diceRollPromise.get();
+		}catch(Exception ignored){}
+
 		move(p, diceRoll);
 		p.clearCellsMovedTo();
 
@@ -270,7 +277,7 @@ public class Game {
 				}
 				if (roll > selectedCells.size() - 1 && p.getLocation().getRoom().isHallway()) {
 					int newRoll = roll - (selectedCells.size() - 1);
-					SwingUtilities.invokeLater(() -> CluedoView.displayPlayerInformation(p, newRoll));
+					SwingUtilities.invokeLater(() -> CluedoView.displayPlayerInformation(p, newRoll, new CompletableFuture<>()));
 					move(p, newRoll);
 				}
 			} else {

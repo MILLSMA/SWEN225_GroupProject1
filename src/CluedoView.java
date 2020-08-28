@@ -1,10 +1,14 @@
+import com.sun.xml.internal.ws.util.CompletedFuture;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+
 import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -20,6 +24,7 @@ public class CluedoView {
     private static final JButton accusationButton = new JButton("Accuse");
     private static final JButton endButton = new JButton("End Turn");
     private static final JLabel playerInfo = new JLabel();
+    private static JPanel dicePanel;
 
     static boolean nextTurn = true;
 
@@ -511,7 +516,7 @@ public class CluedoView {
         nextTurn = false;
     }
 
-    public static void displayPlayerInformation(Player p, int moves){
+    public static CompletableFuture<Integer> displayPlayerInformation(Player p, int moveNumber, CompletableFuture<Integer> diceRollPromise){
         JPanel turnPanel = (JPanel)mainFrame.getContentPane().getComponent(1);
         turnPanel.setLayout(new GridLayout(2,0));
         turnPanel.removeAll();
@@ -533,14 +538,20 @@ public class CluedoView {
         namePanel.add(nameLabel, gbc);
         gbc.gridx = 2;
         gbc.weighty = 0.75;
-        playerInfo.setText("You may move " + moves + " tiles");
         namePanel.add(playerInfo, gbc);
 
+        if(moveNumber == 0){
+            playerInfo.setText(" Click the dice to roll");
+            rollDice(playerInfo, diceRollPromise);
+        }else{
+            playerInfo.setText(" You can move " + moveNumber + " more tiles");
+            diceRollPromise.complete(moveNumber);
+        }
         displayPlayerCards(p);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(2,2,0,0));
-        buttonPanel.add(new JButton("Roll Dice"));
+        buttonPanel.add(dicePanel);
         suggestionButton.setEnabled(false);
         accusationButton.setEnabled(false);
         endButton.setEnabled(true);
@@ -561,6 +572,32 @@ public class CluedoView {
         namePanel.repaint();
         turnPanel.setVisible(true);
         turnPanel.revalidate();
+
+        return diceRollPromise;
+    }
+
+    private static CompletableFuture<Integer> rollDice(JLabel playerInfo, CompletableFuture<Integer> diceRollPromise){
+        dicePanel = new JPanel();
+        dicePanel.setLayout(new GridLayout(1,2));
+        JLabel firstDice = new JLabel(new ImageIcon(boardCanvas.playerImage("Dice_Blank")));
+        JLabel secondDice = new JLabel(new ImageIcon(boardCanvas.playerImage("Dice_Blank")));
+        dicePanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                int firstDiceRoll = new Random().nextInt(6) + 1;
+                int secondDiceRoll = new Random().nextInt(6) + 1;
+                int moveNumber = firstDiceRoll + secondDiceRoll;
+
+                firstDice.setIcon(new ImageIcon(boardCanvas.playerImage("Dice_" + firstDiceRoll)));
+                secondDice.setIcon(new ImageIcon(boardCanvas.playerImage("Dice_" + secondDiceRoll)));
+                playerInfo.setText("You can move " + moveNumber + " tiles");
+                diceRollPromise.complete(moveNumber);
+            }
+        });
+        dicePanel.add(firstDice);
+        dicePanel.add(secondDice);
+        return diceRollPromise;
     }
 
     private static void displayPlayerCards(Player p){
