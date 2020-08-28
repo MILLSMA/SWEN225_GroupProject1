@@ -28,7 +28,7 @@ public class Board
 			"/D D D D D D D ) _ _///////////_ _ _/B B B B ) B/\n" +
 			"/D D D D D D D D/_ _///////////_ _ _ _ _ _ _ _///\n" +
 			"/D D D D D D D D/_ _///////////_ _ _/I I ) I I///\n" +
-			"/D D D D D D D D/_ _///////////_ _/I I I I I I I/\n" +
+			"/D D D D D D ) D/_ _///////////_ _/I I I I I I I/\n" +
 			"///_ _ _ _ _ _ _ _ _///////////_ _ ) I I I I I I/\n" +
 			"/_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _/I I I I I I I/\n" +
 			"///_ _ _ _ _ _ _ _/H H ) ) H H/_ _ _/I I I I I///\n" +
@@ -191,40 +191,14 @@ public class Board
 	}
 
 	/**
-	 * moves the player on the board in which every direction is chosen
-	 * @param p - player to be moved
-	 * @param dir - relative direction for player to be moved
-	 * @return - the cell the player was moved into
-	 */
-	public Cell move(Player p, Cell.Direction dir) {
-		Position playerPos = p.getLocation().getPosition();
-		switch(dir){
-			case NORTH:
-				playerPos.setRow(playerPos.getRow() - 1);
-				break;
-			case SOUTH:
-				playerPos.setRow(playerPos.getRow() + 1);
-				break;
-			case EAST:
-				playerPos.setCol(playerPos.getCol() + 1);
-				break;
-			case WEST:
-				playerPos.setCol(playerPos.getCol() - 1);
-				break;
-		}
-		return board[playerPos.getRow()][playerPos.getCol()];
-	}
-
-	/**
 	 * Checks if the player has already used the Cell in the current round
-	 * @param p - Player
+	 * @param pos - position
 	 * @param dir - direction they chose to move
 	 * @return if move is illegal
 	 */
-	public boolean isCellUsed(Player p, Cell.Direction dir) {
-		Position playerPos = p.getLocation().getPosition();
-		int row = playerPos.getRow();
-		int col = playerPos.getCol();
+	public boolean isCellUsed(Position pos, Cell.Direction dir) {
+		int row = pos.getRow();
+		int col = pos.getCol();
 		switch(dir){
 			case NORTH:
 				row--;
@@ -239,7 +213,7 @@ public class Board
 				col--;
 				break;
 		}
-		if (row < 0 || col < 0 || row >= ROWS || col >= COLS) return false;
+		if (row < 0 || col < 0 || row >= ROWS || col >= COLS) return true;
 		return board[row][col].isUsedInRound() || board[row][col].getObject() != null;
 	}
 

@@ -14,34 +14,34 @@ public abstract class Locatable {
 		EAST,
 		WEST;
 
-		/**
-		 *  retrieves and validates direction input from user
-		 * @param p: player making move
-		 * @return direction enum to move the player
-		 */
-		public static Direction input(Player p, Board board){
-			Scanner input = new Scanner(System.in);
-			//Stores the directions that the player can legally move
-			ArrayList<Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
-			for (Direction direction : p.getLocation().directionsAvailable) {
-				if(!board.isCellUsed(p, direction)){
-					System.out.println(direction);
-				}else correctAnswers.remove(direction);
-
-			}
-			System.out.println("End Turn [X]");
-			while(true){
-				System.out.print("Move: ");
-				char answer = input.next().toUpperCase().charAt(0);
-				if (answer == 'X') return null;
-
-				for (Direction d : correctAnswers) {
-					if (answer == d.code()) return d;
-				}
-				System.out.println("Please use the given code in [ ].");
-				input.nextLine();
-			}
-		}
+//		/**
+//		 *  retrieves and validates direction input from user
+//		 * @param p: player making move
+//		 * @return direction enum to move the player
+//		 */
+//		public static Direction input(Player p, Board board){
+//			Scanner input = new Scanner(System.in);
+//			//Stores the directions that the player can legally move
+//			ArrayList<Direction> correctAnswers = new ArrayList<>(p.getLocation().directionsAvailable);
+//			for (Direction direction : p.getLocation().directionsAvailable) {
+//				if(!board.isCellUsed(p, direction)){
+//					System.out.println(direction);
+//				}else correctAnswers.remove(direction);
+//
+//			}
+//			System.out.println("End Turn [X]");
+//			while(true){
+//				System.out.print("Move: ");
+//				char answer = input.next().toUpperCase().charAt(0);
+//				if (answer == 'X') return null;
+//
+//				for (Direction d : correctAnswers) {
+//					if (answer == d.code()) return d;
+//				}
+//				System.out.println("Please use the given code in [ ].");
+//				input.nextLine();
+//			}
+//		}
 
 		public String toString() {
 			return "[" + name().substring(0, 1) + "]" + name().substring(1).toLowerCase();
@@ -57,7 +57,12 @@ public abstract class Locatable {
 		return position;
 	}
 	public abstract boolean setPosition(Position aNewPosition);
-	public Collection<Direction> getDirectionsAvailable(){
-		return directionsAvailable;
+
+	public Collection<Direction> getDirectionsAvailable(Board b){
+		List<Direction> ans = new ArrayList<>();
+		for (Direction d : directionsAvailable) {
+			if (!b.isCellUsed(position, d)) ans.add(d);
+		}
+		return ans;
 	}
 }

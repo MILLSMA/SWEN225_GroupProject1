@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.Timer;
 import java.util.*;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 
 public class Game {
@@ -178,11 +179,8 @@ public class Game {
 		System.out.println("\n== " + p.getToken().getName() + "'s turn ==");
 		int diceRoll = rollDice();
 		SwingUtilities.invokeLater(() -> CluedoView.displayPlayerInformation(p, diceRoll));
-		List<Cell> cellsMovedTo = new ArrayList<>();
-		move(p, diceRoll, cellsMovedTo);
-		for (Cell cell : cellsMovedTo) {
-			cell.setUsedInRound(false);
-		}
+		move(p, diceRoll);
+		p.clearCellsMovedTo();
 
 		if (p.getLocation().getRoom().isProperRoom()) {
 			CluedoView.changePlayerInfo("You've entered the " + p.getLocation().getRoom().getName());
@@ -244,7 +242,7 @@ public class Game {
 	 * new move method for testing the gui movement
 	 *
 	 */
-	private void move(Player p, int roll, List<Cell> cellsMovedTo) {
+	private void move(Player p, int roll) {
 		int amountOfMoves = roll;
 		System.out.println("You can move " + roll + " tiles.");
 		Cell goalCell;
@@ -256,32 +254,34 @@ public class Game {
 			goalCell = closestDoor(goalCell, playerCell);
 			playerCell = closestDoor(playerCell, goalCell);
 
-			if(goalCell.getRoom().isWall() || getEstimate(playerCell, goalCell) > roll) amountOfMoves = Integer.MIN_VALUE;
+			if (goalCell.getRoom().isWall() || getEstimate(playerCell, goalCell) > roll)
+				amountOfMoves = Integer.MIN_VALUE;
 			//finds the shortest path to the selected cell
 			ArrayList<Locatable> selectedCells = new ArrayList<>();
-			if(amountOfMoves > 0) selectedCells.addAll(pathfinder.findPath(playerCell, goalCell));
+			if (amountOfMoves > 0) selectedCells.addAll(pathfinder.findPath(playerCell, goalCell));
 			//if the path length is within the allowed amount of moves, move the player step by step
 			if (selectedCells.size() - 1 <= amountOfMoves) {
 				for (Locatable cell : selectedCells) {
 					Cell c = (Cell) cell;
 					p.setCell(c);
-					cellsMovedTo.add(c);
+					p.addCellsMovedTo(c);
 					c.setUsedInRound(true);
 					TimeUnit.MILLISECONDS.sleep(400);
 				}
-				if (roll > selectedCells.size()-1 && p.getLocation().getRoom().isHallway()) {
-					int newRoll = roll-(selectedCells.size()-1);
+				if (roll > selectedCells.size() - 1 && p.getLocation().getRoom().isHallway()) {
+					int newRoll = roll - (selectedCells.size() - 1);
 					SwingUtilities.invokeLater(() -> CluedoView.displayPlayerInformation(p, newRoll));
-					move(p, newRoll, cellsMovedTo);
+					move(p, newRoll);
 				}
 			} else {
 				CluedoView.showDialog("You cannot move here");
-				move(p, roll, cellsMovedTo);
+				move(p, roll);
 			}
+		} catch (CancellationException e) {
 
 		} catch (Exception e) {
 			CluedoView.showDialog("Move could not be made due to " + e.getMessage() + "\nPlease try again");
-			move(p, roll, cellsMovedTo);
+			move(p, roll);
 		}
 	}
 

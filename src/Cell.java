@@ -75,7 +75,6 @@ public class Cell extends Locatable
    }
 
 	public String toString() {
-		if(object != null) return object.toString();
-		return room.toString();
+		return position.toString();
 	}
 }

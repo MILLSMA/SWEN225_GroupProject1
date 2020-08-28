@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CluedoView {
     private static final int CELL_SIZE = 27;
@@ -22,6 +21,7 @@ public class CluedoView {
     private static Canvas boardCanvas;
     private static final JButton suggestionButton = new JButton("Suggest");
     private static final JButton accusationButton = new JButton("Accuse");
+    private static final JButton endButton = new JButton("End Turn");
     private static final JLabel playerInfo = new JLabel();
 
     static boolean nextTurn = true;
@@ -82,7 +82,7 @@ public class CluedoView {
     public static void enableRoomButtons(Game g, Player p){
         suggestionButton.setEnabled(true);
         accusationButton.setEnabled(true);
-
+        endButton.setEnabled(false);
 
         //AtomicBoolean turn = new AtomicBoolean(false);
 
@@ -261,8 +261,8 @@ public class CluedoView {
         refDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
-    public static void displayCard(Card cardChosen, String playername){
-        JDialog cardDisplayDialog = new JDialog(mainFrame, "ATTENTION " + playername.toUpperCase());
+    public static void displayCard(Card cardChosen, String playerName){
+        JDialog cardDisplayDialog = new JDialog(mainFrame, "ATTENTION " + playerName.toUpperCase());
         cardDisplayDialog.setSize(300,200);
         cardDisplayDialog.setLocationRelativeTo(null);
 
@@ -271,7 +271,7 @@ public class CluedoView {
         mainPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.weighty = 0.1;
-        JLabel label = new JLabel(playername + " click the blank card to reveal it");
+        JLabel label = new JLabel(playerName + " click the blank card to reveal it");
         mainPanel.add(label, gbc);
 
         gbc.gridy = 1;
@@ -303,22 +303,6 @@ public class CluedoView {
             }
         });
         mainPanel.add(blankCard, gbc);
-        //JButton button = new JButton(playername + ": push to see card");
-
-
-//        ActionListener closeDialog = e -> cardDisplayDialog.dispose();
-//
-//        ActionListener display = e ->{
-//            button.setText("Push again to close");
-//            button.addActionListener(closeDialog);
-//            card.setVisible(true);
-//        };
-//
-//        button.addActionListener(display);
-//
-//        mainPanel.add(button);
-//        button.setVisible(true);
-
         mainPanel.add(card);
         card.setVisible(false);
 
@@ -338,7 +322,7 @@ public class CluedoView {
         JLabel text = new JLabel("No cards were revealed");
         JPanel buttonPanel = new JPanel();
         JButton end = new JButton("End Turn");
-        JButton acc = new JButton("Accusation");
+        JButton acc = new JButton("Accuse");
 
         ActionListener endTurn = e ->{
             noRevealDialog.dispose();
@@ -367,24 +351,36 @@ public class CluedoView {
         gameOverDialog.setLocationRelativeTo(null);
 
         JPanel mainPanel = new JPanel();
-        JLabel gameOver = new JLabel("The game is over");
-        JLabel text2 = new JLabel("All Players are out");
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createTitledBorder("Game over."));
+        GridBagConstraints gbc = new GridBagConstraints();
+        JLabel gameOver = new JLabel("All players are out. The solution was: ");
         if(p != null){
-            text2.setText(p.getToken().getName() + " has won!");
+            gameOver.setText(p.getName() + " has won! The solution was: ");
         }
-        JLabel solution = new JLabel("The Solution was :" + s.toString());
+
+        JPanel cardDisplay = new JPanel();
+        cardDisplay.setLayout(new GridLayout(1, 3,0,0));
+        for (Card card : s.getSet()) {
+            BufferedImage image = boardCanvas.playerImage(card.getName() + "_Card");
+            cardDisplay.add(new JLabel(new ImageIcon(image)));
+        }
 
         JButton button = new JButton("Close");
-        ActionListener endGame = e ->{
-            System.exit(0);
-        };
+        ActionListener endGame = e -> System.exit(0);
 
         button.addActionListener(endGame);
 
-        mainPanel.add(gameOver);
-        mainPanel.add(text2);
-        mainPanel.add(solution);
-        mainPanel.add(button);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        mainPanel.add(gameOver, gbc);
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        mainPanel.add(cardDisplay, gbc);
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        mainPanel.add(button, gbc);
 
         mainPanel.setVisible(true);
         gameOverDialog.add(mainPanel);
@@ -510,11 +506,6 @@ public class CluedoView {
         });
     }
 
-    public static void gameOver(boolean won){
-
-
-    }
-
     public static void flagNextTurn(){
         nextTurn = true;
     }
@@ -523,44 +514,52 @@ public class CluedoView {
         nextTurn = false;
     }
 
-    public static boolean getNextTurn(){
-        return nextTurn;
-    }
-
     public static void displayPlayerInformation(Player p, int moves){
-        Font displayFont = new Font("Serif", Font.PLAIN, 14);
         JPanel turnPanel = (JPanel)mainFrame.getContentPane().getComponent(1);
-        turnPanel.setLayout(new GridLayout(3,0));
+        turnPanel.setLayout(new GridLayout(2,0));
         turnPanel.removeAll();
         turnPanel.invalidate();
 
         JPanel namePanel = new JPanel();
-        namePanel.setLayout(new FlowLayout());
-        JLabel imageLabel = new JLabel(new ImageIcon(boardCanvas.playerImage(p.getToken().getName())));
-        namePanel.add(imageLabel);
+        namePanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 0.05;
+        ImageIcon image = new ImageIcon(boardCanvas.playerImage(p.getToken().getName()));
+        JLabel imageLabel = new JLabel(image);
+        namePanel.add(imageLabel, gbc);
+        gbc.gridx = 1;
+        gbc.weighty = 0.2;
         JLabel nameLabel = new JLabel(p.getToken().getName());
-        nameLabel.setFont(displayFont);
-        namePanel.add(nameLabel);
-
-        JPanel movePanel = new JPanel();
-        movePanel.setLayout(new FlowLayout());
+        namePanel.add(nameLabel, gbc);
+        gbc.gridx = 2;
+        gbc.weighty = 0.75;
         playerInfo.setText("You may move " + moves + " tiles");
-        movePanel.setFont(displayFont);
-        movePanel.add(playerInfo);
+        namePanel.add(playerInfo, gbc);
 
         displayPlayerCards(p);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.setLayout(new GridLayout(2,2,0,0));
         buttonPanel.add(new JButton("Roll Dice"));
-        suggestionButton.setVisible(true);
-        accusationButton.setVisible(true);
         suggestionButton.setEnabled(false);
         accusationButton.setEnabled(false);
+        endButton.setEnabled(true);
         buttonPanel.add(suggestionButton);
         buttonPanel.add(accusationButton);
+
+        endButton.addActionListener(e -> {
+            try {
+                boardCanvas.cancelPromise();
+            } catch (Exception ignored) {
+
+            }
+        });
+        buttonPanel.add(endButton);
+
         turnPanel.add(namePanel);
-        turnPanel.add(movePanel);
         turnPanel.add(buttonPanel);
         namePanel.repaint();
         turnPanel.setVisible(true);
@@ -588,7 +587,7 @@ public class CluedoView {
     }
 
     /**
-     * displays a dialog box with the message in the paramater
+     * displays a dialog box with the message in the parameter
      * @param message - string, message you want to display
      */
     public static void showDialog(String message){
@@ -602,6 +601,8 @@ public class CluedoView {
     public static Cell getCell() {
         try {
             return boardCanvas.getCell().get();
+        } catch (CancellationException e) {
+            throw new CancellationException(e.getMessage());
         } catch (Exception e) {
             CluedoView.showDialog(e.getMessage());
             e.printStackTrace();
@@ -615,14 +616,15 @@ public class CluedoView {
         private drawTile lastHoveredTile;
         private Color lastColor;
         private HashMap<Integer, drawTile> tilesToDraw = new HashMap<>();
+        private CompletableFuture<Cell> promisedCell;
 
 		//paints the board (not overly efficient)
 		public void paint(Graphics g) {
 			tilesToDraw.values().forEach(tile -> {
                 g.drawImage(tile.image, tile.xPosition, tile.yPosition, null);
                 if(tile.cell.getObject() instanceof CharacterCard) {
-                    String playername = tile.cell.getObject().getName();
-                    g.drawImage(playerImage(playername), tile.xPosition, tile.yPosition, null);
+                    String playerName = tile.cell.getObject().getName();
+                    g.drawImage(playerImage(playerName), tile.xPosition, tile.yPosition, null);
                 }
             });
 		}
@@ -658,7 +660,7 @@ public class CluedoView {
         }
 
         /**
-         * gets the direction the door is supposed to faceing, for viewing purposes
+         * gets the direction the door is supposed to facing, for viewing purposes
          * @param door - cell that is a door
          * @return
          */
@@ -727,25 +729,32 @@ public class CluedoView {
          * @return - A promise of the cell the player clicks on
          */
         public CompletableFuture<Cell> getCell(){
-            CompletableFuture<Cell> futureReturn = new CompletableFuture<>();
+            promisedCell = new CompletableFuture<>();
             this.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     super.mouseClicked(e);
                     for (drawTile tile : tilesToDraw.values()) {
                         if (tile.getRect().contains(e.getPoint())) {
-                            futureReturn.complete(tile.cell);
+                            promisedCell.complete(tile.cell);
                         }
                     }
                 }
             });
-            return futureReturn;
+            return promisedCell;
+        }
+
+        public void cancelPromise() {
+            try {
+                promisedCell.cancel(true);
+            } catch (Exception ignored) {
+            }
         }
 
         private Position screenCoordToPos(int x, int y){
-            int xpos = x / cellWidth;
-            int ypos = y / cellHeight;
-            return new Position(ypos, xpos);
+            int xPos = x / cellWidth;
+            int yPos = y / cellHeight;
+            return new Position(yPos, xPos);
         }
 
 

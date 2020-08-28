@@ -14,6 +14,7 @@ public class Player
 
 	//Player Associations
 	private final List<Card> cards;
+	private final List<Cell> cellsMovedTo = new ArrayList<>();
 
 	//------------------------
 	// CONSTRUCTOR
@@ -62,6 +63,17 @@ public class Player
 	 */
 	public void setCell(Cell cell){
 		token.setCell(cell);
+	}
+
+	public void clearCellsMovedTo() {
+		for (Cell c : cellsMovedTo) {
+			c.setUsedInRound(false);
+		}
+		cellsMovedTo.clear();
+	}
+
+	public void addCellsMovedTo(Cell c) {
+		cellsMovedTo.add(c);
 	}
 
 	/**

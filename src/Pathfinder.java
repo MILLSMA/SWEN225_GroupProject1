@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
  * @param <K> object
  */
 public class Pathfinder<K extends Locatable> {
-	private Node start;
 	private K goal;
 	private ArrayList<Node> pathway;
 	private ArrayList<K> objectPath;
@@ -24,8 +23,8 @@ public class Pathfinder<K extends Locatable> {
 	 */
 	public ArrayList<K> findPath(K start, K goal){
 		this.goal = goal;
-		this.start = new Node(start, getEstimate(start), 0);
-		Collection<Node> visited = new HashSet<>();
+		Node start1 = new Node(start, getEstimate(start), 0);
+		Collection<K> visited = new HashSet<>();
 		pathway = new ArrayList<>();
 
 		//creates a priority queue bases on the distance of each locatable objects
@@ -33,27 +32,28 @@ public class Pathfinder<K extends Locatable> {
 		PriorityQueue<Node> fringe = new PriorityQueue<>((node1, node2) -> {
 			if (node2.getF() + node2.getG() > node1.getF() + node1.getG()) {
 				return -1;
-			} else {
+			} else if (node2.getF() + node2.getG() < node1.getF() + node1.getG()) {
 				return 1;
 			}
+			return 0;
 		});
 
 		//basic A* search algorithm
-		fringe.add(this.start);
+		fringe.add(start1);
 		while(!fringe.isEmpty()){
 			Node currentNode = fringe.poll();
-			if(!visited.contains(currentNode)) {
-				visited.add(currentNode);
+			if(!visited.contains(currentNode.object)) {
+				visited.add(currentNode.object);
 				if (currentNode.equals(goal)) {
 					pathway.add(currentNode);
 					break;
 				}
 
-				for (Cell.Direction direction : currentNode.getObject().getDirectionsAvailable()) {
+				for (Cell.Direction direction : currentNode.getObject().getDirectionsAvailable(board)) {
 					K neighbourObject = (K) board.getNeighbourCell((Cell) currentNode.object, direction);
 					Node neighbourNode = new Node(neighbourObject, currentNode.getF() + getEstimate(neighbourObject), currentNode.getG() + 1);
 					neighbourNode.setPreviousNode(currentNode);
-					if (!visited.contains(neighbourNode)) fringe.add(neighbourNode);
+					if (!visited.contains(neighbourNode.object)) fringe.add(neighbourNode);
 				}
 				pathway.add(currentNode);
 			}
