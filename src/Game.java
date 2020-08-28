@@ -178,7 +178,6 @@ public class Game {
 	private void doTurn(Player p) {
 		CluedoView.resetNextTurn();
 		//place holder code
-		System.out.println("\n== " + p.getToken().getName() + "'s turn ==");
 		int diceRoll = 0;
 		diceRollPromise = new CompletableFuture<>();
 		SwingUtilities.invokeLater(()-> diceRollPromise = CluedoView.displayPlayerInformation(p, 0, diceRollPromise));
@@ -201,57 +200,11 @@ public class Game {
 		}
 	}
 
-//	/**
-//	 * Rolls the dice, controls a player's moves
-//	 *
-//	 * @param p : the player moving
-//	 */
-//	private void move(Player p) {
-//		if (p.getLocation().getRoom().isProperRoom()) {
-//			System.out.println("You are currently in the " + p.getLocation().getRoom().getName());
-//			System.out.println("You may move anywhere in your current room, " +
-//					"your turn will start once you exit.");
-//			while (true) {
-//				//prints the board to the screen
-//				System.out.println(board);
-//				Cell.Direction chosenDirection = Cell.Direction.input(p, board);
-//				if (chosenDirection == null) return;
-//				Cell oldPlayerCell = p.getLocation();
-//				Cell newPlayerCell = board.move(p, chosenDirection);
-//				p.setCell(newPlayerCell);
-//				if (newPlayerCell.getRoom().getCard() != oldPlayerCell.getRoom().getCard()) break;
-//			}
-//		}
-//		ArrayList<Cell> cellsMovedTo = new ArrayList<>();
-//		int numberOfMoves = rollDice();
-//		System.out.println("You rolled " + numberOfMoves + ". You may move " + numberOfMoves + " spaces");
-//		for (int moveNumber = 0; moveNumber < numberOfMoves; moveNumber++) {
-//			//prints the board to the screen
-//			System.out.println(board);
-//			//displays whose turn it is and how many moves they have left
-//			System.out.println(p.getToken().getName() + " you have " + (numberOfMoves - moveNumber) + " moves left");
-//			System.out.println("You may move in these directions: ");
-//			Cell.Direction chosenDirection = Cell.Direction.input(p, board);
-//			if (chosenDirection == null) break;
-//			//moves the player on the board based on their answer
-//			Cell newPlayerCell = board.move(p, chosenDirection);
-//			p.setCell(newPlayerCell);
-//			cellsMovedTo.add(newPlayerCell);
-//			newPlayerCell.setUsedInRound(true);
-//			if (p.getLocation().getRoom().isProperRoom()) break;
-//		}
-//		for (Cell cell : cellsMovedTo) {
-//			cell.setUsedInRound(false);
-//		}
-//	}
-
 	/**
 	 * new move method for testing the gui movement
 	 *
 	 */
 	private void move(Player p, int roll) {
-		int amountOfMoves = roll;
-		System.out.println("You can move " + roll + " tiles.");
 		Cell goalCell;
 		try {
 			//waits for the player to click on a cell and the gets it
@@ -262,12 +215,12 @@ public class Game {
 			playerCell = closestDoor(playerCell, goalCell);
 
 			if (goalCell.getRoom().isWall() || getEstimate(playerCell, goalCell) > roll)
-				amountOfMoves = Integer.MIN_VALUE;
+				roll = Integer.MIN_VALUE;
 			//finds the shortest path to the selected cell
 			ArrayList<Locatable> selectedCells = new ArrayList<>();
-			if (amountOfMoves > 0) selectedCells.addAll(pathfinder.findPath(playerCell, goalCell));
+			if (roll > 0) selectedCells.addAll(pathfinder.findPath(playerCell, goalCell));
 			//if the path length is within the allowed amount of moves, move the player step by step
-			if (selectedCells.size() - 1 <= amountOfMoves) {
+			if (selectedCells.size() - 1 <= roll) {
 				for (Locatable cell : selectedCells) {
 					Cell c = (Cell) cell;
 					p.setCell(c);
@@ -343,12 +296,7 @@ public class Game {
 		currentRoom.addCard(guess.getWeapon());
 		moveSuggestedPlayer(guess.getCharacter(), newCell);
 
-		boolean refuted = doRefutations(p, guess);
-		if (!refuted) {
-			System.out.println("\nNo cards were revealed this round");
-
-		}
-
+		doRefutations(p, guess);
 	}
 
 	/**
@@ -372,7 +320,7 @@ public class Game {
 	 * @param guess: guess to refute
 	 * @return boolean: true if a card is shown
 	 */
-	private boolean doRefutations(Player p, CardTriplet guess) {
+	private void doRefutations(Player p, CardTriplet guess) {
 		int asked = 0;
 		while (asked < players.size() - 1) {
 			Player asking;
@@ -392,28 +340,11 @@ public class Game {
 			}
 			if (!possibleCards.isEmpty()) {
 				SwingUtilities.invokeLater(() -> CluedoView.createRefutationDialog(this, asking, possibleCards, guess, p));
-				return true;
+				return;
 			}
 		}
 		SwingUtilities.invokeLater(() -> CluedoView.noReveal(this, p));
 		//CluedoView.flagNextTurn();
-		return false;
-	}
-
-
-
-
-	/**
-	 * precedes sensitive information intended for a single player to view
-	 * waits to display output after input from player
-	 *
-	 * @param p: player who is performing action
-	 */
-	private void waitForPlayer(Player p) {
-		System.out.println("=== SENSITIVE INFORMATION FOR PLAYER " + (players.indexOf(p) + 1) + " (" + p.getToken().getName() + ") ===");
-		Scanner sc = new Scanner(System.in);
-		System.out.print("Push a character and enter key to continue");
-		sc.next();
 	}
 
 	/**

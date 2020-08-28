@@ -44,10 +44,11 @@ public class CluedoView {
         JPanel turnPanel = new JPanel();
         JPanel cards = new JPanel();
         JScrollPane cardPanel = new JScrollPane(cards);
-        Dimension smallPanelDimensions = new Dimension((int)(mainFrame.getWidth() * 0.5), (int)(mainFrame.getHeight()*0.2));
+        cardPanel.setBorder(BorderFactory.createEmptyBorder());
+        Dimension smallPanelDimensions = new Dimension(mainFrame.getWidth()/2, mainFrame.getHeight()/5);
+
         boardCanvas = new Canvas();
         turnPanel.add(new Button("turnPanel"));
-
         cardPanel.add(new Button("cardPanel"));
 
         //creates the layout with the canvas taking up 80% of the height
@@ -56,18 +57,20 @@ public class CluedoView {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.gridwidth = 3;
+        constraints.gridwidth = 2;
         mainFrame.getContentPane().add(boardCanvas, constraints);
-        constraints.weighty = 0;
+
         constraints.gridwidth = 1;
-        constraints.gridx = 1;
+        constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.weightx = 0.1;
+        constraints.weightx = 1;
+        constraints.weighty = 0;
+        turnPanel.setMinimumSize(smallPanelDimensions);
         mainFrame.getContentPane().add(turnPanel, constraints);
-        constraints.gridx = 2;
-        constraints.gridy = 1;
-        constraints.weightx = 0.9;
-        turnPanel.setMaximumSize(smallPanelDimensions);
+
+        constraints.gridx = 1;
+        constraints.weightx = 0;
+        constraints.ipadx = 0;
         cardPanel.setMaximumSize(smallPanelDimensions);
         mainFrame.getContentPane().add(cardPanel, constraints);
 
@@ -182,13 +185,14 @@ public class CluedoView {
     }
 
     public static void createRefutationDialog(Game g, Player toReveal, ArrayList<Card> cards, CardTriplet suggestion, Player toReceive){
-        JDialog refDialog = new JDialog(mainFrame, "ATTENTION " + toReveal.getToken().getName().toUpperCase());
+        JDialog refDialog = new JDialog(mainFrame, "Refutations");
         refDialog.setSize(250,300);
         refDialog.setLocationRelativeTo(null);
 
         int columns = cards.size();
 
         JPanel mainPanel = new JPanel();
+        mainPanel.setBorder(BorderFactory.createTitledBorder("ATTENTION " + toReveal.getToken().getName().toUpperCase()));
         mainPanel.setLayout(new GridLayout(5,1,0, 0));
         mainPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -196,7 +200,7 @@ public class CluedoView {
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weighty = 0.1;
-        mainPanel.add(new JLabel(toReceive.getName() + " suggested this:"), gbc);
+        mainPanel.add(new JLabel(toReceive.getName() + " suggested:"), gbc);
 
         JPanel suggestionCardDisplay = new JPanel();
         suggestionCardDisplay.setLayout(new GridLayout(1, 3,0,0));
@@ -264,16 +268,17 @@ public class CluedoView {
     }
 
     public static void displayCard(Card cardChosen, String playerName){
-        JDialog cardDisplayDialog = new JDialog(mainFrame, "ATTENTION " + playerName.toUpperCase());
+        JDialog cardDisplayDialog = new JDialog(mainFrame, "Refutation Result");
         cardDisplayDialog.setSize(300,200);
         cardDisplayDialog.setLocationRelativeTo(null);
 
         JPanel mainPanel = new JPanel();
+        mainPanel.setBorder(BorderFactory.createTitledBorder("ATTENTION " + playerName.toUpperCase()));
         mainPanel.setLayout(new GridLayout(2,1,0, 0));
         mainPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.weighty = 0.1;
-        JLabel label = new JLabel(playerName + " click the blank card to reveal it");
+        JLabel label = new JLabel("Click the blank card to reveal it");
         mainPanel.add(label, gbc);
 
         gbc.gridy = 1;
@@ -286,7 +291,7 @@ public class CluedoView {
             }
         });
 
-        JLabel blankCard = new JLabel(new ImageIcon(boardCanvas.playerImage( "Blank_Card")));
+        JLabel blankCard = new JLabel(new ImageIcon(boardCanvas.playerImage("Blank_Card")));
         blankCard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -317,10 +322,11 @@ public class CluedoView {
     }
 
     public static void noReveal(Game g, Player p){
-        JDialog noRevealDialog = new JDialog(mainFrame, "ATTENTION " + p.getToken().getName());
+        JDialog noRevealDialog = new JDialog(mainFrame, "Unsuccessful Suggestion");
         noRevealDialog.setSize(350,200);
         noRevealDialog.setLocationRelativeTo(null);
         JPanel mainPanel = new JPanel();
+        mainPanel.setBorder(BorderFactory.createTitledBorder("ATTENTION " + p.getToken().getName()));
         JLabel text = new JLabel("No cards were revealed");
         JPanel buttonPanel = new JPanel();
         JButton end = new JButton("End Turn");
@@ -528,20 +534,20 @@ public class CluedoView {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.weighty = 0.05;
+        gbc.gridheight = 2;
+        gbc.insets = new Insets(5,5,5,5); // padding
         ImageIcon image = new ImageIcon(boardCanvas.playerImage(p.getToken().getName()));
         JLabel imageLabel = new JLabel(image);
         namePanel.add(imageLabel, gbc);
         gbc.gridx = 1;
-        gbc.weighty = 0.2;
+        gbc.gridheight = 1;
         JLabel nameLabel = new JLabel(p.getToken().getName());
         namePanel.add(nameLabel, gbc);
-        gbc.gridx = 2;
-        gbc.weighty = 0.75;
+        gbc.gridy = 1;
         namePanel.add(playerInfo, gbc);
 
         if(moveNumber == 0){
-            playerInfo.setText(" Click the dice to roll");
+            playerInfo.setText("Click the dice to roll");
             rollDice(playerInfo, diceRollPromise);
         }else{
             playerInfo.setText(" You can move " + moveNumber + " more tiles");
@@ -722,7 +728,7 @@ public class CluedoView {
          */
         public void drawBoard(){
             tilesToDraw.clear();
-            cellWidth = this.getWidth() / Board.COLS + 1;
+            cellWidth = this.getWidth() / Board.COLS;
             cellHeight = this.getHeight() / Board.ROWS -3;
             int widthCount = 0;
             int heightCount = 0;
@@ -765,6 +771,10 @@ public class CluedoView {
          */
         public CompletableFuture<Cell> getCell(){
             promisedCell = new CompletableFuture<>();
+            // remove all action listeners
+            for (MouseListener m : this.getMouseListeners()) {
+                this.removeMouseListener(m);
+            }
             this.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
