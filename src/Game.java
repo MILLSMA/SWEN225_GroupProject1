@@ -107,18 +107,6 @@ public class Game {
 		return new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
 	}
 
-	/**
-	 * Roll two six-sided die
-	 *
-	 * @return int : sum of die
-	 */
-	private int rollDice() {
-		Random rand = new Random();
-		int firstDice = rand.nextInt(6) + 1;
-		int secondDice = rand.nextInt(6) + 1;
-		return firstDice + secondDice;
-	}
-
 	private void runGame() {
 		CluedoView.createCanvas(board);
 		new Thread(() -> {
