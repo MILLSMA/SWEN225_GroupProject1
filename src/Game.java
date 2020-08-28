@@ -140,12 +140,12 @@ public class Game {
 		return true;
 	}
 
+	CompletableFuture<Integer> diceRollPromise;
 	/**
 	 * main method for a single turn
 	 *
 	 * @param p : the player making the turn
 	 */
-	CompletableFuture<Integer> diceRollPromise;
 	private void doTurn(Player p) {
 		CluedoView.resetNextTurn();
 		//place holder code

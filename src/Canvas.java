@@ -30,25 +30,6 @@ public class Canvas extends JPanel implements MouseMotionListener {
 	}
 
 	/**
-	 * @param b
-	 */
-	public void linkToModel(Board b) {
-		board = b;
-		this.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-				if (promisedCell == null) return;
-				for (DrawingTile tile : tilesToDraw.values()) {
-					if (tile.getRect().contains(e.getPoint())) {
-						promisedCell.complete(tile.cell);
-					}
-				}
-			}
-		});
-	}
-
-	/**
 	 * gets the image that corresponds to the name given
 	 * @param playerName - name of image excluding extension
 	 * @return - buffered image
@@ -103,8 +84,10 @@ public class Canvas extends JPanel implements MouseMotionListener {
 
 	/**
 	 * updates all the data structures needed to paint the board
+	 * @param b
 	 */
-	public void drawBoard(){
+	public void drawBoard(Board b){
+		board = b;
 		tilesToDraw.clear();
 		cellWidth = this.getWidth() / Board.COLS;
 		cellHeight = this.getHeight() / Board.ROWS -3;
@@ -123,6 +106,18 @@ public class Canvas extends JPanel implements MouseMotionListener {
 			widthCount = 0;
 		}
 
+		this.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+				if (promisedCell == null) return;
+				for (DrawingTile tile : tilesToDraw.values()) {
+					if (tile.getRect().contains(e.getPoint())) {
+						promisedCell.complete(tile.cell);
+					}
+				}
+			}
+		});
 
 		this.repaint();
 	}

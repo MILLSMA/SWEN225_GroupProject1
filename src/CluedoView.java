@@ -22,59 +22,55 @@ public class CluedoView {
 
     static boolean nextTurn = true;
 
-
     public CluedoView(Game g){
-        SwingUtilities.invokeLater(() -> init(g));
-    }
+        SwingUtilities.invokeLater(() -> {
+            mainFrame.setResizable(false);
+            mainFrame.setSize(BOARD_WIDTH,BOARD_HEIGHT*5/4);
 
-    private void init(Game g){
-        mainFrame.setResizable(false);
-        mainFrame.setSize(BOARD_WIDTH,BOARD_HEIGHT*5/4);
+            createPlayerSelectionDialog(g, 1);
 
+            mainFrame.setLayout(new GridBagLayout());
+            GridBagConstraints constraints = new GridBagConstraints();
 
-        createPlayerSelectionDialog(g, 1);
+            JPanel turnPanel = new JPanel();
+            JPanel cards = new JPanel();
+            JScrollPane cardPanel = new JScrollPane(cards);
+            cardPanel.setBorder(BorderFactory.createEmptyBorder());
+            Dimension smallPanelDimensions = new Dimension(mainFrame.getWidth()/2, mainFrame.getHeight()/5);
+            boardCanvas = new Canvas();
+            // make tooltip quicker to show
+            ToolTipManager.sharedInstance().setInitialDelay(50);
+            ToolTipManager.sharedInstance().setDismissDelay(4000);
+            turnPanel.add(new Button("turnPanel"));
+            cardPanel.add(new Button("cardPanel"));
 
-        mainFrame.setLayout(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
+            //creates the layout with the canvas taking up 80% of the height
+            constraints.weightx = 1;
+            constraints.weighty = 0.7;
+            constraints.fill = GridBagConstraints.BOTH;
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.gridwidth = 2;
+            mainFrame.getContentPane().add(boardCanvas, constraints);
 
-        JPanel turnPanel = new JPanel();
-        JPanel cards = new JPanel();
-        JScrollPane cardPanel = new JScrollPane(cards);
-        cardPanel.setBorder(BorderFactory.createEmptyBorder());
-        Dimension smallPanelDimensions = new Dimension(mainFrame.getWidth()/2, mainFrame.getHeight()/5);
-        boardCanvas = new Canvas();
-        // make tooltip quicker to show
-        ToolTipManager.sharedInstance().setInitialDelay(50);
-        ToolTipManager.sharedInstance().setDismissDelay(4000);
-        turnPanel.add(new Button("turnPanel"));
-        cardPanel.add(new Button("cardPanel"));
+            constraints.gridwidth = 1;
+            constraints.gridx = 0;
+            constraints.gridy = 1;
+            constraints.weightx = 1;
+            constraints.weighty = 0;
+            turnPanel.setSize(smallPanelDimensions);
+            mainFrame.getContentPane().add(turnPanel, constraints);
 
-        //creates the layout with the canvas taking up 80% of the height
-        constraints.weightx = 1;
-        constraints.weighty = 0.7;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 2;
-        mainFrame.getContentPane().add(boardCanvas, constraints);
+            constraints.gridx = 1;
+            constraints.weightx = 0;
+            constraints.ipadx = 0;
+            cardPanel.setSize(smallPanelDimensions);
+            mainFrame.getContentPane().add(cardPanel, constraints);
 
-        constraints.gridwidth = 1;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0;
-        turnPanel.setSize(smallPanelDimensions);
-        mainFrame.getContentPane().add(turnPanel, constraints);
+            mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        constraints.gridx = 1;
-        constraints.weightx = 0;
-        constraints.ipadx = 0;
-        cardPanel.setSize(smallPanelDimensions);
-        mainFrame.getContentPane().add(cardPanel, constraints);
-
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        boardCanvas.setVisible(true);
+            boardCanvas.setVisible(true);
+        });
     }
 
     /**
@@ -406,14 +402,11 @@ public class CluedoView {
         mainPanel.setVisible(true);
         playerOutDialog.add(mainPanel);
         playerOutDialog.setVisible(true);
-
-
     }
 
     public static void createCanvas(Board board){
         boardCanvas.addMouseMotionListener(boardCanvas);
-        boardCanvas.linkToModel(board);
-        boardCanvas.drawBoard();
+        boardCanvas.drawBoard(board);
 
     }
 
@@ -548,19 +541,19 @@ public class CluedoView {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(2,2,0,0));
         buttonPanel.add(dicePanel);
-        suggestionButton.setEnabled(false);
-        accusationButton.setEnabled(false);
-        buttonPanel.add(suggestionButton);
-        buttonPanel.add(accusationButton);
 
         endButton.addActionListener(e -> {
             try {
                 boardCanvas.cancelPromise();
             } catch (Exception ignored) {
-
             }
         });
         buttonPanel.add(endButton);
+
+        suggestionButton.setEnabled(false);
+        accusationButton.setEnabled(false);
+        buttonPanel.add(suggestionButton);
+        buttonPanel.add(accusationButton);
 
         turnPanel.add(namePanel);
         turnPanel.add(buttonPanel);
@@ -588,6 +581,7 @@ public class CluedoView {
                 secondDice.setIcon(new ImageIcon(boardCanvas.playerImage("Dice_" + secondDiceRoll)));
                 playerInfo.setText("You can move " + moveNumber + " tiles");
                 endButton.setEnabled(true);
+                dicePanel.removeMouseListener(this);
                 diceRollPromise.complete(moveNumber);
             }
         });
