@@ -14,7 +14,7 @@ public class Game {
 	//Game Attributes
 	private boolean won;
 	//Game Associations
-	private List<Player> players = new ArrayList<>();
+	private final List<Player> players = new ArrayList<>();
 	private Board board;
 	private CardTriplet envelope;
 	private Pathfinder<Cell> pathfinder;
@@ -31,18 +31,6 @@ public class Game {
 
 
 	}
-
-	public Board getBoard() {
-		return this.board;
-	}
-
-	//------------------------
-	// CONSTRUCTOR
-	//------------------------
-
-	//private Game() {
-
-	//}
 
 	/**
 	 * set up a new game with given number of players
@@ -142,7 +130,7 @@ public class Game {
 				});
 
 				for (Player player : players) {
-					if (!won && !player.getExcluded()) doTurn(player);
+					if (!won && player.isStillIn()) doTurn(player);
 				}
 			}
 			if (allPlayersOut()) SwingUtilities.invokeLater(() -> CluedoView.gameOver(null, envelope));
@@ -157,7 +145,7 @@ public class Game {
 	 */
 	private boolean allPlayersOut() {
 		for (Player p : players) {
-			if (!p.getExcluded()) {
+			if (p.isStillIn()) {
 				return false;
 			}
 		}
@@ -232,7 +220,7 @@ public class Game {
 				CluedoView.showDialog("You cannot move here");
 				move(p, roll);
 			}
-		} catch (CancellationException e) {
+		} catch (CancellationException ignored) {
 
 		} catch (Exception e) {
 			CluedoView.showDialog("Move could not be made due to " + e.getMessage() + "\nPlease try again");
@@ -333,7 +321,7 @@ public class Game {
 					possibleCards.add(c);
 			}
 			if (!possibleCards.isEmpty()) {
-				SwingUtilities.invokeLater(() -> CluedoView.createRefutationDialog(this, asking, possibleCards, guess, p));
+				SwingUtilities.invokeLater(() -> CluedoView.createRefutationDialog(asking, possibleCards, guess, p));
 				return;
 			}
 		}

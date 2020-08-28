@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Room {
 	private RoomCard card;
-	private String type;
+	private final String type;
 	Room(RoomCard roomCard) {
 		card = roomCard;
 		type = roomCard.getName();

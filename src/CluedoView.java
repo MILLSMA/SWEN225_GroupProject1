@@ -171,7 +171,7 @@ public class CluedoView {
         guessFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
-    public static void createRefutationDialog(Game g, Player toReveal, ArrayList<Card> cards, CardTriplet suggestion, Player toReceive){
+    public static void createRefutationDialog(Player toReveal, ArrayList<Card> cards, CardTriplet suggestion, Player toReceive){
         JDialog refDialog = new JDialog(mainFrame, "Refutations");
         refDialog.setSize(250,300);
         refDialog.setLocationRelativeTo(null);
@@ -393,9 +393,7 @@ public class CluedoView {
         JLabel text2 = new JLabel("Your accusation was incorrect, you are now out");
 
         JButton button = new JButton("Close");
-        ActionListener closeFrame = e ->{
-            playerOutDialog.dispose();
-        };
+        ActionListener closeFrame = e -> playerOutDialog.dispose();
 
         button.addActionListener(closeFrame);
 
@@ -535,7 +533,7 @@ public class CluedoView {
 
         if(moveNumber == 0){
             playerInfo.setText("Click the dice to roll");
-            rollDice(playerInfo, diceRollPromise);
+            rollDice(diceRollPromise);
         }else{
             playerInfo.setText(" You can move " + moveNumber + " more tiles");
             diceRollPromise.complete(moveNumber);
@@ -569,7 +567,7 @@ public class CluedoView {
         return diceRollPromise;
     }
 
-    private static CompletableFuture<Integer> rollDice(JLabel playerInfo, CompletableFuture<Integer> diceRollPromise){
+    private static CompletableFuture<Integer> rollDice(CompletableFuture<Integer> diceRollPromise){
         dicePanel = new JPanel();
         dicePanel.setLayout(new GridLayout(1,2));
         JLabel firstDice = new JLabel(new ImageIcon(boardCanvas.playerImage("Dice_Blank")));
@@ -641,7 +639,7 @@ public class CluedoView {
         protected int cellWidth, cellHeight;
         private drawTile lastHoveredTile;
         private Color lastColor;
-        private HashMap<Integer, drawTile> tilesToDraw = new HashMap<>();
+        private final HashMap<Integer, drawTile> tilesToDraw = new HashMap<>();
         private CompletableFuture<Cell> promisedCell;
 
 		//paints the board (not overly efficient)
@@ -782,7 +780,7 @@ public class CluedoView {
             }
         }
 
-        private Position screenCoordToPos(int x, int y){
+        private Position screenCoordinateToPos(int x, int y){
             int xPos = x / cellWidth;
             int yPos = y / cellHeight;
             return new Position(yPos, xPos);
@@ -800,13 +798,13 @@ public class CluedoView {
             try {
                 if (lastColor != null && lastHoveredTile != null) lastHoveredTile.tileColor = lastColor;
 
-                Position pos = screenCoordToPos(e.getX(), e.getY());
+                Position pos = screenCoordinateToPos(e.getX(), e.getY());
                 drawTile hoverTile = tilesToDraw.get(pos.hashCode());
                 lastColor = hoverTile.tileColor;
                 hoverTile.tileColor = new Color(57, 255, 20, 75);
                 this.repaint();
                 this.lastHoveredTile = hoverTile;
-            }catch(NullPointerException exception){
+            }catch(NullPointerException ignored){
 
             }
         }
@@ -819,9 +817,10 @@ public class CluedoView {
 	private class drawTile {
 		Color tileColor;
 		BufferedImage image;
-		int xPosition, yPosition;
-		Rectangle rect;
-		Cell cell;
+		final int xPosition;
+        final int yPosition;
+		final Rectangle rect;
+		final Cell cell;
 
 		drawTile(Color tc, int x, int y, Cell c) {
 			this.tileColor = tc;

@@ -49,8 +49,8 @@ public class Player
 		return token.getCell();
 	}
 
-	public boolean getExcluded(){
-		return isExcluded;
+	public boolean isStillIn(){
+		return !isExcluded;
 	}
 
 	public List<Card> getCards(){

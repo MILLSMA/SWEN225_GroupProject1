@@ -1,7 +1,5 @@
-import java.awt.*;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Scanner;
 
 public enum CharacterCard implements Card {
 	MISS_SCARLETT,
@@ -23,7 +21,6 @@ public enum CharacterCard implements Card {
 
 	private Cell cell;
 	private static final String[] stringColours = {ANSI_RED, ANSI_YELLOW, ANSI_WHITE, ANSI_GREEN, ANSI_CYAN, ANSI_PURPLE};
-	private static final Color[] colours = {Color.RED, Color.YELLOW, Color.LIGHT_GRAY, Color.GREEN, Color.CYAN, Color.MAGENTA};
 	private static final String[] codes = {"s", "c", "w", "g", "k", "p"};
 
 	public static Collection<CharacterCard> getCharacters(){
@@ -63,29 +60,6 @@ public enum CharacterCard implements Card {
 	}
 
 	/**
-	 * Get valid Character
-	 * Match given string with characterCard enum
-	 * @return enum CharacterCard value
-	 */
-	public static CharacterCard input(){
-		Scanner sc = new Scanner(System.in);
-		System.out.println("== Characters, enter code in [ ] ==");
-		for (int i=0; i<size(); i++) {
-			System.out.println(values()[i].getName() + " [" + stringColours[i] + codes[i] + ANSI_RESET +"]");
-		}
-		while(true) {
-			System.out.print("Enter character: ");
-			String guess = sc.next();
-			for (int i=0; i<size(); i++) {
-				if(codes[i].equalsIgnoreCase(guess)){
-					return values()[i];
-				}
-			}
-			System.out.println("Please use a given code in [ ].");
-		}
-	}
-
-	/**
 	 * Set a characters position give a preset value
 	 * @param character: character to be set
 	 * @return position of character
@@ -117,10 +91,6 @@ public enum CharacterCard implements Card {
 		if(cell != null) cell.setObject(null);
 		cell = c;
 		if (cell != null) c.setObject(this);
-	}
-
-	public Color getColour(){
-		return colours[ordinal()];
 	}
 
 	@Override
