@@ -52,10 +52,6 @@ public class Game {
 		board = new Board(players);
 		pathfinder = new Pathfinder<>(board);
 		won = false;
-		System.out.println("== Players in this Game == ");
-		for (int i = 0; i < players.size(); i++) {
-			System.out.println("Player " + (i + 1) + ": " + players.get(i).getToken().getName());
-		}
 		//collect all the cards for dealing
 		List<Card> allCards = new ArrayList<>();
 		allCards.addAll(CharacterCard.getCharacters());
@@ -86,7 +82,6 @@ public class Game {
 	private void dealCards(Collection<Card> cards) {
 		Random rand = new Random();
 		ArrayList<Card> tempCardBag = new ArrayList<>(cards);
-		//decideSolution(tempCardBag);
 		System.out.println("The solution is: " + envelope);
 		tempCardBag.removeAll(envelope.getSet());
 
@@ -189,7 +184,7 @@ public class Game {
 		p.clearCellsMovedTo();
 
 		if (p.getLocation().getRoom().isProperRoom()) {
-			CluedoView.changePlayerInfo("You've entered the " + p.getLocation().getRoom().getName());
+			CluedoView.changePlayerInfo("You're in the " + p.getLocation().getRoom().getName());
 
 			Room currentRoom = findRoom(p);
 			p.setCell(currentRoom.findEmptyCell());
@@ -288,7 +283,6 @@ public class Game {
 	 */
 	public void makeSuggestion(Player p, String character, String weapon) {
 		CardTriplet guess = new CardTriplet( character, weapon, p.getLocation().getRoom().getCard());
-		System.out.println("Suggestion is: " + guess);
 
 		//character and weapon tokens move to room
 		Room currentRoom = findRoom(p);
@@ -355,7 +349,6 @@ public class Game {
 	 */
 	public void makeAccusation(Player p, String character, String weapon, String room) {
 		CardTriplet guess = new CardTriplet(character, weapon, room);
-		System.out.println("Accusation is: " + guess);
 		if (guess.equals(envelope)) {
 			//correct, game won
 			won = true;

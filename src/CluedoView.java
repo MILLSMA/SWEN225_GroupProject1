@@ -1,8 +1,5 @@
-import com.sun.xml.internal.ws.util.CompletedFuture;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -65,13 +62,13 @@ public class CluedoView {
         constraints.gridy = 1;
         constraints.weightx = 1;
         constraints.weighty = 0;
-        turnPanel.setMinimumSize(smallPanelDimensions);
+        turnPanel.setSize(smallPanelDimensions);
         mainFrame.getContentPane().add(turnPanel, constraints);
 
         constraints.gridx = 1;
         constraints.weightx = 0;
         constraints.ipadx = 0;
-        cardPanel.setMaximumSize(smallPanelDimensions);
+        cardPanel.setSize(smallPanelDimensions);
         mainFrame.getContentPane().add(cardPanel, constraints);
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -95,23 +92,13 @@ public class CluedoView {
         for (ActionListener a : suggestionButton.getActionListeners()) {
             suggestionButton.removeActionListener(a);
         }
-        suggestionButton.addActionListener(e -> {
-            createGuessDialog(g, p, true);
-            //g.makeSuggestion(p);
-            //System.out.println(p.getToken().getName() + " is making a suggestion");
-            //turn.set(true);
-        });
+        suggestionButton.addActionListener(e -> createGuessDialog(g, p, true));
 
         // remove all action listeners
         for (ActionListener a : accusationButton.getActionListeners()) {
             accusationButton.removeActionListener(a);
         }
-        accusationButton.addActionListener(e -> {
-            //g.makeAccusation(p);
-            createGuessDialog(g, p, false);
-            System.out.println(p.getToken().getName() + " is making an accusation");
-
-        });
+        accusationButton.addActionListener(e -> createGuessDialog(g, p, false));
 
         while(!nextTurn){
             try {
@@ -615,7 +602,6 @@ public class CluedoView {
         cardPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         cardPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
         for (Card card : p.getCards()) {
-            System.out.println(card.getName());
             cards.add(new JLabel(new ImageIcon(boardCanvas.playerImage(card.getName() + "_Card"))));
         }
         cardPanel.repaint();
