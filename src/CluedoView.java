@@ -5,10 +5,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 
@@ -626,6 +623,11 @@ public class CluedoView {
                     String playerName = tile.cell.getObject().getName();
                     g.drawImage(playerImage(playerName), tile.xPosition, tile.yPosition, null);
                 }
+                if(tile.cell.getObject() instanceof WeaponCard) {
+                    String weaponName = tile.cell.getObject().getName();
+                    g.drawImage(playerImage(weaponName), tile.xPosition, tile.yPosition, null);
+                }
+
             });
 		}
 
