@@ -171,25 +171,27 @@ public class Canvas extends JPanel implements MouseMotionListener {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		if (lastColor != null && lastHoveredTile != null) lastHoveredTile.tileColor = lastColor;
-		Position pos = mouseCoordinatesToPos(e.getX(), e.getY());
-		DrawingTile hoverTile = tilesToDraw.get(pos.hashCode());
-		Cell c = hoverTile.cell;
-		String label = "";
+		try {
+			if (lastColor != null && lastHoveredTile != null) lastHoveredTile.tileColor = lastColor;
+			Position pos = mouseCoordinatesToPos(e.getX(), e.getY());
+			DrawingTile hoverTile = tilesToDraw.get(pos.hashCode());
+			Cell c = hoverTile.cell;
+			String label = "";
 
-		if (c.getRoom() != null && c.getRoom().getCard() != null) {
-			label = label + c.getRoom().getName();
-		}
-		if (c.getObject() != null) {
-			if(!label.equals("")) label = label + " : ";
-			label = label + c.getObject().getName();
-		}
+			if (c.getRoom() != null && c.getRoom().getCard() != null) {
+				label = label + c.getRoom().getName();
+			}
+			if (c.getObject() != null) {
+				if (!label.equals("")) label = label + " : ";
+				label = label + c.getObject().getName();
+			}
 
-		this.setToolTipText(label);
-		lastColor = hoverTile.tileColor;
-		hoverTile.tileColor = new Color(57, 255, 20, 75);
-		this.repaint();
-		this.lastHoveredTile = hoverTile;
+			this.setToolTipText(label);
+			lastColor = hoverTile.tileColor;
+			hoverTile.tileColor = new Color(57, 255, 20, 75);
+			this.repaint();
+			this.lastHoveredTile = hoverTile;
+		}catch(NullPointerException ex){}
 	}
 	/**
 	 * Class for drawing tiles on the canvas
