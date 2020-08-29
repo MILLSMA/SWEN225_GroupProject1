@@ -34,27 +34,6 @@ public class CardTriplet {
 		room = RoomCard.valueOf(replaceSpace(r));
 	}
 
-	/**
-	 * Construct card triplet during suggestion
-	 * room must be room player is in
-	 * @param r : room card player is in
-	 */
-	public CardTriplet(RoomCard r){
-		character = CharacterCard.input();
-		weapon = WeaponCard.input();
-		room = r;
-	}
-
-	/**
-	 * Construct card triplet using user input
-	 */
-	public CardTriplet(){
-		character = CharacterCard.input();
-		weapon = WeaponCard.input();
-		room = RoomCard.input();
-	}
-
-
 	//------------------------
 	// INTERFACE
 	//------------------------

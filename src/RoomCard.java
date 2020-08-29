@@ -14,7 +14,7 @@ public enum RoomCard implements Card {
 	LIBRARY,
 	STUDY;
 
-	private ArrayList<Cell> doors = new ArrayList<>();
+	private final ArrayList<Cell> doors = new ArrayList<>();
 	private static final String[] codes = {"K", "O", "C", "B", "D", "L", "H", "I", "S"};
 
 	public static Collection<RoomCard> getRooms(){

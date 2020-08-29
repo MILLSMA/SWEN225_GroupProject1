@@ -77,7 +77,7 @@ public class Pathfinder<K extends Locatable> {
 			currentNode = currentNode.previousNode;
 		}
 		newPath.add(currentNode);
-		objectPath = new ArrayList(newPath.stream().distinct().map(node -> node.object).collect(Collectors.toList()));
+		objectPath = newPath.stream().distinct().map(node -> node.object).collect(Collectors.toCollection(ArrayList::new));
 		Collections.reverse(objectPath);
 	}
 
@@ -97,9 +97,10 @@ public class Pathfinder<K extends Locatable> {
 	 * Helper node class for A* search
 	 */
 	private class Node{
-		private K object;
+		private final K object;
 		private Node previousNode = null;
-		private double f, g;
+		private final double f;
+		private final double g;
 
 		Node(K c, double f, double g){
 			this.object = c;
