@@ -17,7 +17,7 @@ public class Game {
 	//Game Attributes
 	private boolean won;
 	//Game Associations
-	private final List<Player> players = new ArrayList<>();
+	private List<Player> players = new ArrayList<>();
 	private Board board;
 	private CardTriplet envelope;
 	private Pathfinder<Cell> pathfinder;
@@ -299,7 +299,7 @@ public class Game {
 		currentRoom.addCard(guess.getWeapon());
 		moveSuggestedPlayer(guess.getCharacter(), newCell);
 
-		doRefutations(p, guess);
+		doRefutations(p, guess, null);
 	}
 
 	/**
@@ -323,8 +323,9 @@ public class Game {
 	 * @param p:     player who made suggestion
 	 * @param guess: guess to refute
 	 */
-	private void doRefutations(Player p, CardTriplet guess) {
+	public ArrayList<Card> doRefutations(Player p, CardTriplet guess, List<Player> forTesting) {
 		int asked = 0;
+		if(forTesting != null) players = forTesting;
 		while (asked < players.size() - 1) {
 			Player asking;
 			if (players.indexOf(p) + asked + 1 >= players.size()) {
@@ -343,11 +344,14 @@ public class Game {
 			}
 			if (!possibleCards.isEmpty()) {
 				SwingUtilities.invokeLater(() -> CluedoView.createRefutationDialog(asking, possibleCards, guess, p));
-				return;
+				return possibleCards;
 			}
 		}
 		SwingUtilities.invokeLater(() -> CluedoView.noRefutation(this, p));
+		return null;
 	}
+
+
 
 	/**
 	 * Gets a player's accusation from view and checks if it is correct
@@ -358,17 +362,22 @@ public class Game {
 	 * @param weapon : accused weapon
 	 * @param room : accused room
 	 */
-	public void makeAccusation(Player p, String character, String weapon, String room) {
+	public boolean makeAccusation(Player p, String character, String weapon, String room, CardTriplet testAnswer) {
+		if(testAnswer != null) envelope = testAnswer;
 		CardTriplet guess = new CardTriplet(character, weapon, room);
 		if (guess.equals(envelope)) {
 			//correct, game won
 			won = true;
 			SwingUtilities.invokeLater(() -> CluedoView.gameOver(p, envelope));
+			return true;
 		} else {
 			//the player was incorrect and so is  now out
-			p.setIsExcluded(true);
-			SwingUtilities.invokeLater(() -> CluedoView.playerOut(p));
-			CluedoView.flagNextTurn();
+			if(testAnswer == null) {
+				p.setIsExcluded(true);
+				SwingUtilities.invokeLater(() -> CluedoView.playerOut(p));
+				CluedoView.flagNextTurn();
+			}
+			return false;
 		}
 
 

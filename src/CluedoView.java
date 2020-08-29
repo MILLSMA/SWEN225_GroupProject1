@@ -265,7 +265,7 @@ public class CluedoView {
             //do not need error for blank entry as default value always set
             guessFrame.dispose();
             if(isSuggestion) g.makeSuggestion(p,(String) characterSelect.getSelectedItem(), (String)weaponSelect.getSelectedItem());
-            else g.makeAccusation(p, (String) characterSelect.getSelectedItem(), (String)weaponSelect.getSelectedItem(), (String)roomSelect.getSelectedItem() );
+            else g.makeAccusation(p, (String) characterSelect.getSelectedItem(), (String)weaponSelect.getSelectedItem(), (String)roomSelect.getSelectedItem(), null );
         };
 
         add.addActionListener(startAction);
