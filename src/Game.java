@@ -5,6 +5,9 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The "model" component of the MVC model. Stores the current state of the game and underlying mechanics.
+ */
 public class Game {
 
 	//------------------------
@@ -23,18 +26,19 @@ public class Game {
 	// STATIC INITIALISATION METHODS
 	//------------------------
 
+	/**
+	 * Initialise game model and create view
+	 * @param args ignored
+	 */
 	public static void main(String... args) {
 		Game currentGame = new Game();
 		SwingUtilities.invokeLater(() -> {
 			final CluedoView GUI = new CluedoView(currentGame);
 		});
-
-
 	}
 
 	/**
-	 * set up a new game with given number of players
-	 *
+	 * Set up the game model based on added players
 	 */
 	public void startGame() {
 		board = new Board(players);
@@ -50,11 +54,22 @@ public class Game {
 		runGame();
 	}
 
+	/**
+	 * Create player based on information from view
+	 * @param name inputted name
+	 * @param token character chosen
+	 * @param more if they requested to add another player
+	 */
 	public void createPlayer(String name, CharacterCard token, boolean more) {
 		players.add(new Player(token, null, name));
 		if (more) CluedoView.createPlayerSelectionDialog(this, players.size()+1);
 	}
 
+	/**
+	 * Checks if a certain character is taken
+	 * @param c certain character
+	 * @return if they're taken
+	 */
 	public boolean isTokenTaken(CharacterCard c) {
 		for (Player p : players) {
 			if (p.getToken().equals(c)) return true;
@@ -64,7 +79,6 @@ public class Game {
 
 	/**
 	 * Deals deck of cards to players
-	 *
 	 * @param cards collection of all cards that aren't the solution
 	 */
 	private void dealCards(Collection<Card> cards) {
@@ -86,8 +100,8 @@ public class Game {
 
 	/**
 	 * Selects a random room, weapon and character card from deck to set as solution
-	 *
 	 * @param cards : all the possible cards
+	 * @return solution
 	 */
 	private CardTriplet decideSolution(Collection<Card> cards) {
 		if (envelope != null) throw new RuntimeException("Solution already decided.");
@@ -107,8 +121,11 @@ public class Game {
 		return new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
 	}
 
+	/**
+	 * Runs the thread that the game is executed in
+	 */
 	private void runGame() {
-		CluedoView.createCanvas(board);
+		CluedoView.setBoard(board);
 		new Thread(() -> {
 			while (!won && !allPlayersOut()) {
 
@@ -156,7 +173,7 @@ public class Game {
 			diceRoll = diceRollPromise.get();
 		}catch(Exception ignored){}
 
-		move(p, diceRoll);
+		waitForMove(p, diceRoll);
 		p.clearCellsMovedTo();
 
 		if (p.getLocation().getRoom().isProperRoom()) {
@@ -165,17 +182,17 @@ public class Game {
 			Room currentRoom = findRoom(p);
 			p.setCell(currentRoom.findEmptyCell());
 			CluedoView.enableRoomButtons(this, p);
-			//turnEntry(p);
 		}else{
 			CluedoView.flagNextTurn();
 		}
 	}
 
 	/**
-	 * new move method for testing the gui movement
-	 *
+	 * Wait for a player move player in the view
+	 * @param p player whose turn it is
+	 * @param roll how many moves they have
 	 */
-	private void move(Player p, int roll) {
+	private void waitForMove(Player p, int roll) {
 		Cell goalCell;
 		try {
 			//waits for the player to click on a cell and the gets it
@@ -202,20 +219,26 @@ public class Game {
 				if (roll > selectedCells.size() - 1 && p.getLocation().getRoom().isHallway()) {
 					int newRoll = roll - (selectedCells.size() - 1);
 					SwingUtilities.invokeLater(() -> CluedoView.displayPlayerInformation(p, newRoll, new CompletableFuture<>()));
-					move(p, newRoll);
+					waitForMove(p, newRoll);
 				}
 			} else {
 				CluedoView.showDialog("You cannot move here");
-				move(p, roll);
+				waitForMove(p, roll);
 			}
 		} catch (CancellationException ignored) {
 
 		} catch (Exception e) {
 			CluedoView.showDialog("Move could not be made due to " + e.getMessage() + "\nPlease try again");
-			move(p, roll);
+			waitForMove(p, roll);
 		}
 	}
 
+	/**
+	 * Calculates Euclidean distance from one cell to another
+	 * @param first starting node
+	 * @param second ending node
+	 * @return Euclidean distance between given nodes
+	 */
 	private double getEstimate(Cell first, Cell second){
 		Position firstPosition = first.getPosition();
 		Position secondPosition = second.getPosition();
@@ -223,6 +246,13 @@ public class Game {
 				(secondPosition.getCol()-firstPosition.getCol())*((secondPosition.getCol()-firstPosition.getCol())));
 	}
 
+	/**
+	 * TODO: do I understand this?
+	 * Find cell that has the closest door
+	 * @param cellToChange originating cell
+	 * @param measuringCell goal cell
+	 * @return cell with closest door
+	 */
 	private Cell closestDoor(Cell cellToChange, Cell measuringCell){
 		double closest = Double.MAX_VALUE;
 		Cell changedCell = cellToChange;
@@ -242,6 +272,7 @@ public class Game {
 	 * checks for adjacent rooms cells if player is in doorway.
 	 *
 	 * @param p player to check
+	 * @return room the player is now in
 	 */
 	private Room findRoom(Player p) {
 		if (p.getLocation().getRoom().isDoor()) {//in doorway
@@ -253,9 +284,11 @@ public class Game {
 	}
 
 	/**
-	 * controls suggestion input
+	 * Accepts suggestion from view
 	 *
 	 * @param p: player whose turn it is
+	 * @param character : character suggested
+	 * @param weapon : weapon suggested
 	 */
 	public void makeSuggestion(Player p, String character, String weapon) {
 		CardTriplet guess = new CardTriplet( character, weapon, p.getLocation().getRoom().getCard());
@@ -270,9 +303,10 @@ public class Game {
 	}
 
 	/**
-	 * change a players position if they're character is used in a suggesting
+	 * change a players position if their character is used in a suggestion
 	 *
 	 * @param ch: characterCard used
+	 * @param newCell : cell to move character to
 	 */
 	private void moveSuggestedPlayer(CharacterCard ch, Cell newCell) {
 		for (Player p : players) {
@@ -288,7 +322,6 @@ public class Game {
 	 *
 	 * @param p:     player who made suggestion
 	 * @param guess: guess to refute
-	 * @return boolean: true if a card is shown
 	 */
 	private void doRefutations(Player p, CardTriplet guess) {
 		int asked = 0;
@@ -313,15 +346,17 @@ public class Game {
 				return;
 			}
 		}
-		SwingUtilities.invokeLater(() -> CluedoView.noReveal(this, p));
-		//CluedoView.flagNextTurn();
+		SwingUtilities.invokeLater(() -> CluedoView.noRefutation(this, p));
 	}
 
 	/**
-	 * Gets a player's accusation and checks if it is correct
+	 * Gets a player's accusation from view and checks if it is correct
 	 * the player wins if correct, else is out
 	 *
 	 * @param p: player making accusation
+	 * @param character : accused character
+	 * @param weapon : accused weapon
+	 * @param room : accused room
 	 */
 	public void makeAccusation(Player p, String character, String weapon, String room) {
 		CardTriplet guess = new CardTriplet(character, weapon, room);
