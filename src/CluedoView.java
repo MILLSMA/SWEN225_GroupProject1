@@ -542,7 +542,7 @@ public class CluedoView {
 
         if(moveNumber == 0){
             playerInfo.setText(" Click the dice to roll");
-            rollDice(playerInfo, diceRollPromise);
+            rollDice(diceRollPromise);
         }else{
             playerInfo.setText(" You can move " + moveNumber + " more tiles");
             diceRollPromise.complete(moveNumber);
@@ -576,7 +576,7 @@ public class CluedoView {
         return diceRollPromise;
     }
 
-    private static CompletableFuture<Integer> rollDice(JLabel playerInfo, CompletableFuture<Integer> diceRollPromise){
+    private static CompletableFuture<Integer> rollDice(CompletableFuture<Integer> diceRollPromise){
         dicePanel = new JPanel();
         dicePanel.setLayout(new GridLayout(1,2));
         JLabel firstDice = new JLabel(new ImageIcon(boardCanvas.playerImage("Dice_Blank")));
