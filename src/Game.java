@@ -42,6 +42,7 @@ public class Game {
 		SwingUtilities.invokeLater(() -> gui = new CluedoView(this));
 	}
 
+
 	/**
 	 * Set up the game model based on added players
 	 */
@@ -80,6 +81,14 @@ public class Game {
 			if (p.getToken().equals(c)) return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Gets set of players in game
+	 * used for testing
+	 */
+	public List<Player> getPlayers(){
+		return players;
 	}
 
 	/**

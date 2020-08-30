@@ -113,6 +113,19 @@ public class CluedoTests {
         assertFalse(g.makeAccusation(p1, "MISS_SCARLETT", "LEAD_PIPE", "BALLROOM", answer));
     }
 
+    /**
+     * Adding players - happens at start of new game
+     */
+    @Test
+    public void createPlayers(){
+        Game g = new Game();
+        g.createPlayer("Player1", CharacterCard.MR_GREEN, false);
+        g.createPlayer("Player2", CharacterCard.COLONEL_MUSTARD, false);
+        assert (g.getPlayers().size() == 2);
+        assert (g.getPlayers().get(0).toString().equals("\u001B[32mg\u001B[0m"));
+        assert (g.getPlayers().get(1).toString().equals("\u001B[33mc\u001B[0m"));
+    }
+
     private int checkRefute(CardTriplet guess, Card[] hand, Player p, List<Player> players){
         Game g = new Game();
 
