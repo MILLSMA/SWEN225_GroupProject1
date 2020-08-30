@@ -120,12 +120,12 @@ public class Pathfinder<K extends Locatable> {
 		}
 
 		/**
-		 * Return equality based on if they encapsulate the same object
+		 * Return equality based on if they are in the same position
 		 * @param object object to compare
 		 * @return if both same
 		 */
 		public boolean equals(K object){
-			return (this.object == object);
+			return this.object.getPosition().equals(object.getPosition());
 		}
 
 		/**
