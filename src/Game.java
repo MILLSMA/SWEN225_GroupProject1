@@ -61,7 +61,7 @@ public class Game {
 	 * @param more if they requested to add another player
 	 */
 	public void createPlayer(String name, CharacterCard token, boolean more) {
-		players.add(new Player(token, null, name));
+		players.add(new Player(token, name));
 		if (more) CluedoView.createPlayerSelectionDialog(this, players.size()+1);
 	}
 
@@ -85,7 +85,7 @@ public class Game {
 		Random rand = new Random();
 		ArrayList<Card> tempCardBag = new ArrayList<>(cards);
 		System.out.println("The solution is: " + envelope);
-		tempCardBag.removeAll(envelope.getSet());
+		tempCardBag.removeAll(envelope.getList());
 
 		//deal rest of the cards to the players
 		while (!tempCardBag.isEmpty()) {
@@ -320,8 +320,10 @@ public class Game {
 	/**
 	 * Iterate players in search of cards matching suggestion
 	 *
-	 * @param p:     player who made suggestion
-	 * @param guess: guess to refute
+	 * @param p : player who made suggestion
+	 * @param guess : guess to refute
+	 * @param forTesting : players to test via JUnit, should be null if in game
+	 * @return cards that a player could refute with
 	 */
 	public ArrayList<Card> doRefutations(Player p, CardTriplet guess, List<Player> forTesting) {
 		int asked = 0;
@@ -338,7 +340,7 @@ public class Game {
 			asked++;
 			//Does the next player have any possible cards to show
 			ArrayList<Card> possibleCards = new ArrayList<>();
-			for (Card c : guess.getSet()) {
+			for (Card c : guess.getList()) {
 				if (asking.getCards().contains(c))
 					possibleCards.add(c);
 			}
@@ -361,6 +363,8 @@ public class Game {
 	 * @param character : accused character
 	 * @param weapon : accused weapon
 	 * @param room : accused room
+	 * @param testAnswer : answer to test via JUnit, should be null if in game
+	 * @return true if accusation is correct
 	 */
 	public boolean makeAccusation(Player p, String character, String weapon, String room, CardTriplet testAnswer) {
 		if(testAnswer != null) envelope = testAnswer;
@@ -373,7 +377,7 @@ public class Game {
 		} else {
 			//the player was incorrect and so is  now out
 			if(testAnswer == null) {
-				p.setIsExcluded(true);
+				p.setPlayerOut();
 				SwingUtilities.invokeLater(() -> CluedoView.playerOut(p));
 				CluedoView.flagNextTurn();
 			}

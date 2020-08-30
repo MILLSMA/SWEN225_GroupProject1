@@ -1,8 +1,8 @@
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
+/**
+ * Tuple of statically typed cards guaranteeing one of each type
+ */
 public class CardTriplet {
 	//------------------------
 	// MEMBER VARIABLES
@@ -16,18 +16,37 @@ public class CardTriplet {
 	// CONSTRUCTOR
 	//------------------------
 
+	/**
+	 * Create card triplet when we know all 3 card objects
+	 * @param c character
+	 * @param w weapon
+	 * @param r room
+	 */
 	public CardTriplet(CharacterCard c, WeaponCard w, RoomCard r) {
 		character = c;
 		weapon = w;
 		room = r;
 	}
 
+	/**
+	 * Create card triplet when we know the Room object
+	 * and the names of the other 2, e.g. from an input dialog
+	 * @param c character name
+	 * @param w weapon name
+	 * @param r room
+	 */
 	public CardTriplet(String c, String w, RoomCard r){
 		character = CharacterCard.valueOf(replaceSpace(c));
 		weapon = WeaponCard.valueOf(replaceSpace(w));
 		room = r;
 	}
 
+	/**
+	 * Create card triplet when we know only their names, e.g. from an input dialog
+	 * @param c character name
+	 * @param w weapon name
+	 * @param r room name
+	 */
 	public CardTriplet(String c, String w, String r){
 		character = CharacterCard.valueOf(replaceSpace(c));
 		weapon = WeaponCard.valueOf(replaceSpace(w));
@@ -38,18 +57,31 @@ public class CardTriplet {
 	// INTERFACE
 	//------------------------
 
-	public Collection<Card> getSet() {
-		return new HashSet<>(Arrays.asList(
+	/**
+	 * Convert tuple to unmodifiable collection
+	 * @return collection of 3 cards
+	 */
+	public Collection<Card> getList() {
+		return Collections.unmodifiableCollection(Arrays.asList(
 				weapon,
 				character,
 				room
 		));
 	}
 
+	/**
+	 * Return character of this triplet
+	 * @return character
+	 */
 	public CharacterCard getCharacter()
 	{
 		return character;
 	}
+
+	/**
+	 * Return weapon of this triplet
+	 * @return weapon
+	 */
 	public WeaponCard getWeapon()
 	{
 		return weapon;
@@ -65,8 +97,12 @@ public class CardTriplet {
 				room == that.room;
 	}
 
+	/**
+	 * Helper method that replaces underscore with space
+	 * @param s string to format
+	 * @return formatted string
+	 */
 	public String replaceSpace(String s){
-
 		return s.replace(' ', '_').toUpperCase();
 	}
 

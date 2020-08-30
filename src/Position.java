@@ -1,5 +1,8 @@
 import java.util.Objects;
 
+/**
+ * Represents a cell's Position on the board
+ */
 public class Position
 {
 
@@ -8,13 +11,14 @@ public class Position
 	//------------------------
 
 	//Position Attributes
-	private int row;
-	private int col;
+	private final int row;
+	private final int col;
 
-	//------------------------
-	// CONSTRUCTOR
-	//------------------------
-
+	/**
+	 * Construct a position
+	 * @param aRow row on Board
+	 * @param aCol column on Board
+	 */
 	public Position(int aRow, int aCol){
 		row = aRow;
 		col = aCol;
@@ -24,25 +28,31 @@ public class Position
 	// INTERFACE
 	//------------------------
 
-	public void setRow(int aRow){
-		row = aRow;
-	}
-
-	public void setCol(int aCol){
-		col = aCol;
-	}
-
+	/**
+	 * Get position's row
+	 * @return row of position
+	 */
 	public int getRow(){
 		return row;
 	}
 
+	/**
+	 * Get position's column
+	 * @return column of position
+	 */
 	public int getCol(){
 		return col;
 	}
 
-	public boolean equals(Position pos){
-		return (this.row == pos.getRow() && this.col == pos.getCol());
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Position position = (Position) o;
+		return row == position.row &&
+				col == position.col;
 	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(row, col);

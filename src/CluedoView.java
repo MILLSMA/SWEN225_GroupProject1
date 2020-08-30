@@ -16,7 +16,7 @@ public class CluedoView {
     private static final int BOARD_WIDTH = CELL_SIZE*Board.COLS;
 
     private static final JFrame mainFrame = new JFrame("Cluedo");
-    private static Canvas boardCanvas;
+    private static BoardView boardView;
     private static final JButton suggestionButton = new JButton("Suggest");
     private static final JButton accusationButton = new JButton("Accuse");
     private static final JButton endButton = new JButton("End Turn");
@@ -39,7 +39,7 @@ public class CluedoView {
             mainFrame.setLayout(new GridBagLayout());
             GridBagConstraints constraints = new GridBagConstraints();
 
-            boardCanvas = new Canvas();
+            boardView = new BoardView();
             // make tooltip quicker to show
             ToolTipManager.sharedInstance().setInitialDelay(50);
             ToolTipManager.sharedInstance().setDismissDelay(4000);
@@ -58,7 +58,7 @@ public class CluedoView {
             constraints.gridx = 0;
             constraints.gridy = 0;
             constraints.gridwidth = 2;
-            mainFrame.getContentPane().add(boardCanvas, constraints);
+            mainFrame.getContentPane().add(boardView, constraints);
 
             constraints.gridwidth = 1;
             constraints.gridx = 0;
@@ -76,8 +76,8 @@ public class CluedoView {
 
             mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            boardCanvas.addMouseMotionListener(boardCanvas);
-            boardCanvas.setVisible(true);
+            boardView.addMouseMotionListener(boardView);
+            boardView.setVisible(true);
         });
     }
 
@@ -86,7 +86,7 @@ public class CluedoView {
      * @param board board model
      */
     public static void setBoard(Board board){
-        boardCanvas.drawBoard(board);
+        boardView.drawBoard(board);
     }
 
     /**
@@ -304,8 +304,8 @@ public class CluedoView {
 
         JPanel suggestionCardDisplay = new JPanel();
         suggestionCardDisplay.setLayout(new GridLayout(1, 3,0,0));
-        for (Card card : suggestion.getSet()) {
-            suggestionCardDisplay.add(new JLabel(new ImageIcon(boardCanvas.playerImage(card.getName() + "_Card"))));
+        for (Card card : suggestion.getList()) {
+            suggestionCardDisplay.add(new JLabel(new ImageIcon(boardView.playerImage(card.getName() + "_Card"))));
         }
         gbc.gridy = 1;
         gbc.weighty = 0.4;
@@ -317,7 +317,7 @@ public class CluedoView {
         JPanel refuteCardDisplay = new JPanel();
         refuteCardDisplay.setLayout(new GridLayout(1,columns,0,0));
         for (Card card : cards) {
-            JLabel cardLabel = new JLabel(new ImageIcon(boardCanvas.playerImage(card.getName() + "_Card")));
+            JLabel cardLabel = new JLabel(new ImageIcon(boardView.playerImage(card.getName() + "_Card")));
             cardLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseReleased(MouseEvent e) {
@@ -358,7 +358,7 @@ public class CluedoView {
         mainPanel.add(label, gbc);
 
         gbc.gridy = 1;
-        JLabel card = new JLabel(new ImageIcon(boardCanvas.playerImage(cardChosen.getName() + "_Card")));
+        JLabel card = new JLabel(new ImageIcon(boardView.playerImage(cardChosen.getName() + "_Card")));
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -367,12 +367,12 @@ public class CluedoView {
             }
         });
 
-        JLabel blankCard = new JLabel(new ImageIcon(boardCanvas.playerImage("Blank_Card")));
+        JLabel blankCard = new JLabel(new ImageIcon(boardView.playerImage("Blank_Card")));
         blankCard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
-                blankCard.setIcon(new ImageIcon(boardCanvas.playerImage(cardChosen.getName() + "_Card")));
+                blankCard.setIcon(new ImageIcon(boardView.playerImage(cardChosen.getName() + "_Card")));
                 blankCard.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseReleased(MouseEvent e) {
@@ -457,8 +457,8 @@ public class CluedoView {
 
         JPanel cardDisplay = new JPanel();
         cardDisplay.setLayout(new GridLayout(1, 3,0,0));
-        for (Card card : s.getSet()) {
-            BufferedImage image = boardCanvas.playerImage(card.getName() + "_Card");
+        for (Card card : s.getList()) {
+            BufferedImage image = boardView.playerImage(card.getName() + "_Card");
             cardDisplay.add(new JLabel(new ImageIcon(image)));
         }
 
@@ -550,7 +550,7 @@ public class CluedoView {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridheight = 2;
         gbc.insets = new Insets(5,5,5,5); // padding
-        ImageIcon image = new ImageIcon(boardCanvas.playerImage(p.getToken().getName()));
+        ImageIcon image = new ImageIcon(boardView.playerImage(p.getToken().getName()));
         JLabel imageLabel = new JLabel(image);
         namePanel.add(imageLabel, gbc);
         gbc.gridx = 1;
@@ -577,7 +577,7 @@ public class CluedoView {
 
         endButton.addActionListener(e -> {
             try {
-                boardCanvas.cancelPromise();
+                boardView.cancelPromise();
             } catch (Exception ignored) {
             }
         });
@@ -600,13 +600,12 @@ public class CluedoView {
     /**
      * Wait for a dice roll and fill the diceRollPromise container.
      * @param diceRollPromise async container filled when dice is rolled
-     * @return async container filled when dice is rolled
      */
-    private static CompletableFuture<Integer> rollDice(CompletableFuture<Integer> diceRollPromise){
+    private static void rollDice(CompletableFuture<Integer> diceRollPromise){
         dicePanel = new JPanel();
         dicePanel.setLayout(new GridLayout(1,2));
-        JLabel firstDice = new JLabel(new ImageIcon(boardCanvas.playerImage("Dice_Blank")));
-        JLabel secondDice = new JLabel(new ImageIcon(boardCanvas.playerImage("Dice_Blank")));
+        JLabel firstDice = new JLabel(new ImageIcon(boardView.playerImage("Dice_Blank")));
+        JLabel secondDice = new JLabel(new ImageIcon(boardView.playerImage("Dice_Blank")));
         dicePanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -615,8 +614,8 @@ public class CluedoView {
                 int secondDiceRoll = new Random().nextInt(6) + 1;
                 int moveNumber = firstDiceRoll + secondDiceRoll;
 
-                firstDice.setIcon(new ImageIcon(boardCanvas.playerImage("Dice_" + firstDiceRoll)));
-                secondDice.setIcon(new ImageIcon(boardCanvas.playerImage("Dice_" + secondDiceRoll)));
+                firstDice.setIcon(new ImageIcon(boardView.playerImage("Dice_" + firstDiceRoll)));
+                secondDice.setIcon(new ImageIcon(boardView.playerImage("Dice_" + secondDiceRoll)));
                 playerInfo.setText("You can move " + moveNumber + " tiles");
                 endButton.setEnabled(true);
                 dicePanel.removeMouseListener(this);
@@ -625,7 +624,6 @@ public class CluedoView {
         });
         dicePanel.add(firstDice);
         dicePanel.add(secondDice);
-        return diceRollPromise;
     }
 
     /**
@@ -641,7 +639,7 @@ public class CluedoView {
         cardPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         cardPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
         for (Card card : p.getCards()) {
-            cards.add(new JLabel(new ImageIcon(boardCanvas.playerImage(card.getName() + "_Card"))));
+            cards.add(new JLabel(new ImageIcon(boardView.playerImage(card.getName() + "_Card"))));
         }
         cardPanel.repaint();
         cardPanel.revalidate();
@@ -667,7 +665,7 @@ public class CluedoView {
      * Redraws board canvas
      */
     public static void updateBoard() {
-        boardCanvas.updateBoard();
+        boardView.updateBoard();
     }
 
     /**
@@ -676,7 +674,7 @@ public class CluedoView {
      */
     public static Cell getCell() {
         try {
-            return boardCanvas.getCell().get();
+            return boardView.getCell().get();
         } catch (CancellationException e) {
             throw new CancellationException(e.getMessage());
         } catch (Exception e) {

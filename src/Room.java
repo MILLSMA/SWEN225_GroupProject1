@@ -1,49 +1,88 @@
 import java.util.*;
 
+/**
+ * This Room class contains more information than the enumeration,
+ * encapsulating extra information like cells and cards belonging to the room.
+ */
 public class Room {
 	private RoomCard card;
 	private final String type;
+
+	/**
+	 * Create room based on a RoomCard
+	 * @param roomCard RoomCard
+	 */
 	Room(RoomCard roomCard) {
 		card = roomCard;
 		type = roomCard.getName();
 	}
+
+	/**
+	 * Create room based on string, e.g. Door, Wall...
+	 * @param str room type
+	 */
 	Room(String str){
 		type = str;
 	}
 
+	/**
+	 * Return RoomCard belonging to room
+	 * @return card belonging to room
+	 */
 	public RoomCard getCard(){
 		return card;
 	}
 
 	/**
 	 * Assign a room card to the current room object
-	 * @param card: to assign
+	 * @param c : card to assign
 	 */
-	public void setCard(RoomCard card) {
-		if(this.card == null){
-			this.card = card;
+	public void setCard(RoomCard c) {
+		if(card == null){
+			card = c;
 		}
-
 	}
 
 	//Room Associations
 	private final List<Cell> cells = new ArrayList<>();
 	private final List<Card> cards = new ArrayList<>();
 
+	/**
+	 * Return if room contains a card
+	 * @return if room is actually a room
+	 */
 	public boolean isProperRoom(){
 		return card != null;
 	}
 
+	/**
+	 * Return if room is a door
+	 * @return if room is door
+	 */
 	public boolean isDoor() { return type.equals("Door"); }
+
+	/**
+	 * Return if room is a hallway
+	 * @return if room is hallway
+	 */
 	public boolean isHallway() { return type.equals("Hallway"); }
+
+	/**
+	 * Return if room is a wall
+	 * @return if room is wall
+	 */
 	public boolean isWall() { return type.equals("Wall"); }
 
+	/**
+	 * Return collection of objects inside room
+	 * @return list of cards/objects in room
+	 */
 	public List<Card> getCards(){
 		return cards;
 	}
 
 	/**
-	 * add a cell to the room
+	 * Add a cell to the room
 	 * @param aCell: cell to add
 	 */
 	public void addCell(Cell aCell){
@@ -82,6 +121,10 @@ public class Room {
 		throw new RuntimeException("The room should always have at least one empty cell");
 	}
 
+	/**
+	 * Get how many cells are in the room
+	 * @return size of
+	 */
 	public int getRoomSize(){
 		return this.cells.size();
 	}
@@ -94,7 +137,12 @@ public class Room {
 		else return "/";
 	}
 
+	/**
+	 * Return room name
+	 * @return room's name
+	 */
 	public String getName(){
+		if (card == null) return type;
 		return card.getName();
 	}
 }

@@ -1,29 +1,20 @@
 import org.junit.Test;
-
 import java.util.*;
+import static org.junit.Assert.*;
 
-import static  org.junit.Assert.*;
-public class tests {
-
-    /**
-     * just ensuring Junit is correctly set up
-     */
-    @Test
-    public void sampleTest(){
-        int num = 6;
-        assert (num == 6);
-
-    }
-
+/**
+ * Test suite for game mechanics
+ */
+public class CluedoTests {
     /**
      * the first player refuted (first after player making suggestion) has cards used
      */
     @Test
     public void possibleRefutesFirstPlayer(){
         List<Player> players = new ArrayList<>();
-        Player p1 = new Player(CharacterCard.MISS_SCARLETT, null, "PLayer 1");
+        Player p1 = new Player(CharacterCard.MISS_SCARLETT,  "PLayer 1");
         players.add(p1);
-        Player p2 = new Player(CharacterCard.COLONEL_MUSTARD, null, "PLayer 2");
+        Player p2 = new Player(CharacterCard.COLONEL_MUSTARD,  "PLayer 2");
         players.add(p2);
         p2.addCard(WeaponCard.SPANNER);
         p2.addCard(WeaponCard.CANDLESTICK);
@@ -42,9 +33,9 @@ public class tests {
     @Test
     public void incorrectRefutesFirstPlayer(){
         List<Player> players = new ArrayList<>();
-        Player p1 = new Player(CharacterCard.MISS_SCARLETT, null, "PLayer 1");
+        Player p1 = new Player(CharacterCard.MISS_SCARLETT, "PLayer 1");
         players.add(p1);
-        Player p2 = new Player(CharacterCard.COLONEL_MUSTARD, null, "PLayer 2");
+        Player p2 = new Player(CharacterCard.COLONEL_MUSTARD, "PLayer 2");
         players.add(p2);
         p2.addCard(WeaponCard.SPANNER);
         p2.addCard(WeaponCard.CANDLESTICK);
@@ -53,7 +44,7 @@ public class tests {
 
         CardTriplet guess = new CardTriplet(CharacterCard.MISS_SCARLETT, WeaponCard.SPANNER, RoomCard.LOUNGE);
         Card[] expected = {WeaponCard.SPANNER};
-        assertFalse(checkRefute(guess, expected, p1, players) == 0);
+        assertNotEquals(0, checkRefute(guess, expected, p1, players));
         assert(checkRefute(guess, expected, p1, players) == 1);
     }
     /**
@@ -62,9 +53,9 @@ public class tests {
     @Test
     public void noPossibleRefute(){
         List<Player> players = new ArrayList<>();
-        Player p1 = new Player(CharacterCard.MISS_SCARLETT, null, "PLayer 1");
+        Player p1 = new Player(CharacterCard.MISS_SCARLETT,  "PLayer 1");
         players.add(p1);
-        Player p2 = new Player(CharacterCard.COLONEL_MUSTARD, null, "PLayer 2");
+        Player p2 = new Player(CharacterCard.COLONEL_MUSTARD, "PLayer 2");
         players.add(p2);
         p2.addCard(WeaponCard.SPANNER);
         p2.addCard(WeaponCard.CANDLESTICK);
@@ -82,11 +73,11 @@ public class tests {
     @Test
     public void possibleRefutesSecondPlayer(){
         List<Player> players = new ArrayList<>();
-        Player p1 = new Player(CharacterCard.MISS_SCARLETT, null, "PLayer 1");
+        Player p1 = new Player(CharacterCard.MISS_SCARLETT, "PLayer 1");
         players.add(p1);
-        Player p2 = new Player(CharacterCard.COLONEL_MUSTARD, null, "PLayer 2");
+        Player p2 = new Player(CharacterCard.COLONEL_MUSTARD, "PLayer 2");
         players.add(p2);
-        Player p3 = new Player(CharacterCard.MR_GREEN, null, "PLayer 3");
+        Player p3 = new Player(CharacterCard.MR_GREEN, "PLayer 3");
         players.add(p3);
         p2.addCard(WeaponCard.SPANNER);
         p2.addCard(WeaponCard.CANDLESTICK);
@@ -106,7 +97,7 @@ public class tests {
     @Test
     public void correctAssumption(){
         Game g = new Game();
-        Player p1 = new Player(CharacterCard.MISS_SCARLETT, null, "PLayer 1");
+        Player p1 = new Player(CharacterCard.MISS_SCARLETT, "PLayer 1");
         CardTriplet answer = new CardTriplet(CharacterCard.COLONEL_MUSTARD, WeaponCard.LEAD_PIPE, RoomCard.BALLROOM);
         assert(g.makeAccusation(p1, "COLONEL_MUSTARD", "LEAD_PIPE", "BALLROOM", answer));
     }
@@ -117,7 +108,7 @@ public class tests {
     @Test
     public void incorrectAssumption(){
         Game g = new Game();
-        Player p1 = new Player(CharacterCard.MISS_SCARLETT, null, "PLayer 1");
+        Player p1 = new Player(CharacterCard.MISS_SCARLETT, "PLayer 1");
         CardTriplet answer = new CardTriplet(CharacterCard.COLONEL_MUSTARD, WeaponCard.LEAD_PIPE, RoomCard.BALLROOM);
         assertFalse(g.makeAccusation(p1, "MISS_SCARLETT", "LEAD_PIPE", "BALLROOM", answer));
     }
@@ -127,8 +118,8 @@ public class tests {
 
         List<Card> retrieved = g.doRefutations(p,guess,players);
         if(retrieved == null) return 0;
-        for(int i = 0; i < hand.length; i ++){
-            if(retrieved.contains(hand[i])) retrieved.remove(hand[i]);
+        for (Card card : hand) {
+            if (retrieved.contains(card)) retrieved.remove(card);
         }
         return retrieved.size();
 

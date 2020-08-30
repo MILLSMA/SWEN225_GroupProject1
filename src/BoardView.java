@@ -10,7 +10,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
-public class Canvas extends JPanel implements MouseMotionListener {
+/**
+ * Class that displays the Cluedo board visually
+ */
+public class BoardView extends JPanel implements MouseMotionListener {
 	private Board board;
 	protected int cellWidth, cellHeight;
 	private DrawingTile lastHoveredTile;
@@ -18,7 +21,9 @@ public class Canvas extends JPanel implements MouseMotionListener {
 	private final HashMap<Integer, DrawingTile> tilesToDraw = new HashMap<>();
 	private CompletableFuture<Cell> promisedCell;
 
-	//paints the board (not overly efficient)
+	/**
+	 * Paints the board
+	 */
 	public void paint(Graphics g) {
 		tilesToDraw.values().forEach(tile -> {
 			g.drawImage(tile.image, tile.xPosition, tile.yPosition, null);
@@ -30,7 +35,7 @@ public class Canvas extends JPanel implements MouseMotionListener {
 	}
 
 	/**
-	 * gets the image that corresponds to the name given
+	 * Gets the image that corresponds to the given name
 	 * @param playerName - name of image excluding extension
 	 * @return - buffered image
 	 */
@@ -46,7 +51,7 @@ public class Canvas extends JPanel implements MouseMotionListener {
 	}
 
 	/**
-	 * returns to the image that belongs to the given cell
+	 * Returns the image that belongs to the given cell
 	 * @param cell - Cell of image you want to receive
 	 * @return - image of the cell to display
 	 */
@@ -60,31 +65,27 @@ public class Canvas extends JPanel implements MouseMotionListener {
 	}
 
 	/**
-	 * gets the direction the door is supposed to facing, for viewing purposes
+	 * Returns the direction the door is supposed to facing, for image purposes
 	 * @param door - cell that is a door
-	 * @return
+	 * @return string representing door's direction
 	 */
 	private String doorDirection(Cell door){
-		Cell above, left, right, below;
-		above = board.getNeighbourCell(door, Locatable.Direction.NORTH);
-		below = board.getNeighbourCell(door, Locatable.Direction.SOUTH);
-		left = board.getNeighbourCell(door, Locatable.Direction.WEST);
-		right = board.getNeighbourCell(door, Locatable.Direction.EAST);
+		boolean northIsRoom = board.getNeighbourCell(door, Locatable.Direction.NORTH).getRoom().isProperRoom();
+		boolean southIsRoom = board.getNeighbourCell(door, Locatable.Direction.SOUTH).getRoom().isProperRoom();
+		boolean westIsRoom = board.getNeighbourCell(door, Locatable.Direction.WEST).getRoom().isProperRoom();
+		boolean eastIsRoom = board.getNeighbourCell(door, Locatable.Direction.EAST).getRoom().isProperRoom();
 
-		if(RoomCard.isProperRoom(above.getRoom()) && RoomCard.isProperRoom(below.getRoom())){
-			if(RoomCard.isProperRoom(left.getRoom())) return "right";
-			if(RoomCard.isProperRoom(right.getRoom())) return "left";
-		}else if(RoomCard.isProperRoom(left.getRoom()) && RoomCard.isProperRoom(right.getRoom())){
-			if(RoomCard.isProperRoom(above.getRoom())) return "down";
-			if(RoomCard.isProperRoom(below.getRoom())) return "up";
-		} else if(RoomCard.isProperRoom(below.getRoom())) return "up";
-		return "down";
-
+		if(northIsRoom && southIsRoom){
+			if(westIsRoom) return "right";
+			if(eastIsRoom) return "left";
+		}
+		if(northIsRoom) return "down";
+		return "up";
 	}
 
 	/**
-	 * updates all the data structures needed to paint the board
-	 * @param b
+	 * Sets all the data structures needed to paint the board based on current board
+	 * @param b board model
 	 */
 	public void drawBoard(Board b){
 		board = b;
@@ -97,8 +98,7 @@ public class Canvas extends JPanel implements MouseMotionListener {
 			for (int yIndex = 0; yIndex < Board.COLS; yIndex++) {
 				if (board.board[xIndex][yIndex] == null) continue;
 				Cell cellToDraw = board.board[xIndex][yIndex];
-				DrawingTile newTile = new DrawingTile(cellToDraw.getColor(), widthCount, heightCount, cellToDraw);
-				newTile.setImage(cellImage(cellToDraw));
+				DrawingTile newTile = new DrawingTile(cellToDraw.getColor(), widthCount, heightCount, cellToDraw, cellImage(cellToDraw));
 				tilesToDraw.put(cellToDraw.position.hashCode(), newTile);
 				widthCount += cellWidth;
 			}
@@ -151,6 +151,9 @@ public class Canvas extends JPanel implements MouseMotionListener {
 		return promisedCell;
 	}
 
+	/**
+	 * Interrupt blocking waiting for a mouse click
+	 */
 	public void cancelPromise() {
 		try {
 			promisedCell.cancel(true);
@@ -158,6 +161,12 @@ public class Canvas extends JPanel implements MouseMotionListener {
 		}
 	}
 
+	/**
+	 * Convert mouse click coords into a board Position
+	 * @param x click x-coordinate on BoardView
+	 * @param y click y-coordinate on BoardView
+	 * @return Position on Board
+	 */
 	private Position mouseCoordinatesToPos(int x, int y){
 		int xPos = x / cellWidth;
 		int yPos = y / cellHeight;
@@ -178,7 +187,7 @@ public class Canvas extends JPanel implements MouseMotionListener {
 			Cell c = hoverTile.cell;
 			String label = "";
 
-			if (c.getRoom() != null && c.getRoom().getCard() != null) {
+			if (c.getRoom() != null && c.getRoom().isProperRoom()) {
 				label = label + c.getRoom().getName();
 			}
 			if (c.getObject() != null) {
@@ -191,31 +200,40 @@ public class Canvas extends JPanel implements MouseMotionListener {
 			hoverTile.tileColor = new Color(57, 255, 20, 75);
 			this.repaint();
 			this.lastHoveredTile = hoverTile;
-		}catch(NullPointerException ex){}
+		}catch(NullPointerException ignored){}
 	}
 	/**
 	 * Class for drawing tiles on the canvas
 	 */
 	private class DrawingTile {
 		Color tileColor;
-		BufferedImage image;
+		final BufferedImage image;
 		final int xPosition;
 		final int yPosition;
 		final Rectangle rect;
 		final Cell cell;
 
-		DrawingTile(Color tc, int x, int y, Cell c) {
+		/**
+		 * Create a new DrawingTile
+		 * @param tc colour of tile
+		 * @param x x-coordinate on BoardView
+		 * @param y y-coordinate on BoardView
+		 * @param c cell this tile represents
+		 * @param image image to draw on tile
+		 */
+		DrawingTile(Color tc, int x, int y, Cell c, BufferedImage image) {
 			this.tileColor = tc;
 			this.xPosition = x;
 			this.yPosition = y;
 			this.cell = c;
+			this.image = image;
 			rect = new Rectangle(xPosition, yPosition, cellWidth, cellHeight);
 		}
 
-		public void setImage(BufferedImage image) {
-			this.image = image;
-		}
-
+		/**
+		 * Return rectangle drawn by DrawingTile
+		 * @return rectangle Shape
+		 */
 		public Rectangle getRect() {
 			return this.rect;
 		}
