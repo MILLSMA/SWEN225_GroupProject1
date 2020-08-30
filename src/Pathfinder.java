@@ -27,6 +27,9 @@ public class Pathfinder<K extends Locatable> {
 	 */
 	public ArrayList<K> findPath(K start, K goal){
 		this.goal = goal;
+		Room targetRoom = null;
+		if (goal instanceof Cell) targetRoom = ((Cell) goal).getRoom();
+
 		Node start1 = new Node(start, getEstimate(start), 0, null);
 		Collection<K> visited = new HashSet<>();
 		pathway = new ArrayList<>();
@@ -54,8 +57,13 @@ public class Pathfinder<K extends Locatable> {
 				}
 
 				for (Cell.Direction direction : currentNode.getObject().getDirectionsAvailable(board)) {
-					K neighbourObject = (K) board.getNeighbourCell((Cell) currentNode.object, direction);
-					Node neighbourNode = new Node(neighbourObject, currentNode.getF() + getEstimate(neighbourObject), currentNode.getG() + 1, currentNode);
+					Cell neighbour = board.getNeighbourCell((Cell) currentNode.object, direction);
+
+					if (targetRoom != null) {
+						if (neighbour.getRoom().isProperRoom() && !targetRoom.equals(neighbour.getRoom())) continue;
+					}
+
+					Node neighbourNode = new Node((K)neighbour, currentNode.getF() + getEstimate((K)neighbour), currentNode.getG() + 1, currentNode);
 					if (!visited.contains(neighbourNode.object)) fringe.add(neighbourNode);
 				}
 				pathway.add(currentNode);
