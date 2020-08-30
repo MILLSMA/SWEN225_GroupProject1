@@ -21,6 +21,7 @@ public class Game {
 	private Board board;
 	private CardTriplet envelope;
 	private Pathfinder<Cell> pathfinder;
+	private CluedoView gui;
 
 	//------------------------
 	// STATIC INITIALISATION METHODS
@@ -31,10 +32,14 @@ public class Game {
 	 * @param args ignored
 	 */
 	public static void main(String... args) {
-		Game currentGame = new Game();
-		SwingUtilities.invokeLater(() -> {
-			final CluedoView GUI = new CluedoView(currentGame);
-		});
+		new Game();
+	}
+
+	/**
+	 * Initialise the game by setting up a new GUI
+	 */
+	public Game() {
+		SwingUtilities.invokeLater(() -> gui = new CluedoView(this));
 	}
 
 	/**
@@ -62,7 +67,7 @@ public class Game {
 	 */
 	public void createPlayer(String name, CharacterCard token, boolean more) {
 		players.add(new Player(token, name));
-		if (more) CluedoView.createPlayerSelectionDialog(this, players.size()+1);
+		if (more) gui.createPlayerSelectionDialog(this, players.size()+1);
 	}
 
 	/**
@@ -125,12 +130,12 @@ public class Game {
 	 * Runs the thread that the game is executed in
 	 */
 	private void runGame() {
-		CluedoView.setBoard(board);
+		gui.setBoard(board);
 		new Thread(() -> {
 			while (!won && !allPlayersOut()) {
 
 				SwingUtilities.invokeLater(() -> {
-					Timer t = new Timer(400, e -> CluedoView.updateBoard());
+					Timer t = new Timer(400, e -> gui.updateBoard());
 					t.start();
 				});
 
@@ -138,7 +143,7 @@ public class Game {
 					if (!won && player.isStillIn()) doTurn(player);
 				}
 			}
-			if (allPlayersOut()) SwingUtilities.invokeLater(() -> CluedoView.gameOver(null, envelope));
+			if (allPlayersOut()) SwingUtilities.invokeLater(() -> gui.gameOver(null, envelope));
 
 		}).start();
 	}
@@ -164,11 +169,11 @@ public class Game {
 	 * @param p : the player making the turn
 	 */
 	private void doTurn(Player p) {
-		CluedoView.resetNextTurn();
+		gui.resetNextTurn();
 		//place holder code
 		int diceRoll = 0;
 		diceRollPromise = new CompletableFuture<>();
-		SwingUtilities.invokeLater(()-> diceRollPromise = CluedoView.displayPlayerInformation(p, 0, diceRollPromise));
+		SwingUtilities.invokeLater(()-> diceRollPromise = gui.displayPlayerInformation(p, 0, diceRollPromise));
 		try {
 			diceRoll = diceRollPromise.get();
 		}catch(Exception ignored){}
@@ -177,13 +182,13 @@ public class Game {
 		p.clearCellsMovedTo();
 
 		if (p.getLocation().getRoom().isProperRoom()) {
-			CluedoView.changePlayerInfo("You're in the " + p.getLocation().getRoom().getName());
+			gui.changePlayerInfo("You're in the " + p.getLocation().getRoom().getName());
 
 			Room currentRoom = findRoom(p);
 			p.setCell(currentRoom.findEmptyCell());
-			CluedoView.enableRoomButtons(this, p);
+			gui.enableRoomButtons(this, p);
 		}else{
-			CluedoView.flagNextTurn();
+			gui.flagNextTurn();
 		}
 	}
 
@@ -196,7 +201,7 @@ public class Game {
 		Cell goalCell;
 		try {
 			//waits for the player to click on a cell and the gets it
-			goalCell = CluedoView.getCell();
+			goalCell = gui.getCell();
 			Cell playerCell = p.getLocation();
 
 			goalCell = closestDoor(goalCell, playerCell);
@@ -218,17 +223,17 @@ public class Game {
 				}
 				if (roll > selectedCells.size() - 1 && p.getLocation().getRoom().isHallway()) {
 					int newRoll = roll - (selectedCells.size() - 1);
-					SwingUtilities.invokeLater(() -> CluedoView.displayPlayerInformation(p, newRoll, new CompletableFuture<>()));
+					SwingUtilities.invokeLater(() -> gui.displayPlayerInformation(p, newRoll, new CompletableFuture<>()));
 					waitForMove(p, newRoll);
 				}
 			} else {
-				CluedoView.showDialog("You cannot move here");
+				gui.showDialog("You cannot move here");
 				waitForMove(p, roll);
 			}
 		} catch (CancellationException ignored) {
 
 		} catch (Exception e) {
-			CluedoView.showDialog("Move could not be made due to " + e.getMessage() + "\nPlease try again");
+			gui.showDialog("Move could not be made due to " + e.getMessage() + "\nPlease try again");
 			waitForMove(p, roll);
 		}
 	}
@@ -345,11 +350,11 @@ public class Game {
 					possibleCards.add(c);
 			}
 			if (!possibleCards.isEmpty()) {
-				SwingUtilities.invokeLater(() -> CluedoView.createRefutationDialog(asking, possibleCards, guess, p));
+				SwingUtilities.invokeLater(() -> gui.createRefutationDialog(asking, possibleCards, guess, p));
 				return possibleCards;
 			}
 		}
-		SwingUtilities.invokeLater(() -> CluedoView.noRefutation(this, p));
+		SwingUtilities.invokeLater(() -> gui.noRefutation(this, p));
 		return null;
 	}
 
@@ -372,14 +377,14 @@ public class Game {
 		if (guess.equals(envelope)) {
 			//correct, game won
 			won = true;
-			SwingUtilities.invokeLater(() -> CluedoView.gameOver(p, envelope));
+			SwingUtilities.invokeLater(() -> gui.gameOver(p, envelope));
 			return true;
 		} else {
 			//the player was incorrect and so is  now out
 			if(testAnswer == null) {
 				p.setPlayerOut();
-				SwingUtilities.invokeLater(() -> CluedoView.playerOut(p));
-				CluedoView.flagNextTurn();
+				SwingUtilities.invokeLater(() -> gui.playerOut(p));
+				gui.flagNextTurn();
 			}
 			return false;
 		}

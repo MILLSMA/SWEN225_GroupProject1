@@ -45,7 +45,7 @@ public class BoardView extends JPanel implements MouseMotionListener {
 		try {
 			image = ImageIO.read(new File(fileName));
 		}catch(IOException e){
-			CluedoView.showDialog(e.getMessage());
+			System.out.println(e.getMessage());
 		}
 		return image;
 	}
@@ -181,6 +181,7 @@ public class BoardView extends JPanel implements MouseMotionListener {
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		try {
+			if (board == null) return;
 			if (lastColor != null && lastHoveredTile != null) lastHoveredTile.tileColor = lastColor;
 			Position pos = mouseCoordinatesToPos(e.getX(), e.getY());
 			DrawingTile hoverTile = tilesToDraw.get(pos.hashCode());

@@ -15,14 +15,14 @@ public class CluedoView {
     private static final int BOARD_HEIGHT = CELL_SIZE*Board.ROWS;
     private static final int BOARD_WIDTH = CELL_SIZE*Board.COLS;
 
-    private static final JFrame mainFrame = new JFrame("Cluedo");
-    private static BoardView boardView;
-    private static final JButton suggestionButton = new JButton("Suggest");
-    private static final JButton accusationButton = new JButton("Accuse");
-    private static final JButton endButton = new JButton("End Turn");
-    private static final JLabel playerInfo = new JLabel();
-    private static JPanel dicePanel;
-    private static boolean nextTurn = true;
+    private final JFrame mainFrame = new JFrame("Cluedo");
+    private BoardView boardView;
+    private final JButton suggestionButton = new JButton("Suggest");
+    private final JButton accusationButton = new JButton("Accuse");
+    private final JButton endButton = new JButton("End Turn");
+    private final JLabel playerInfo = new JLabel();
+    private JPanel dicePanel;
+    private boolean nextTurn = true;
 
     /**
      * Constructor sets up main components of the main window (mainFrame):
@@ -74,18 +74,62 @@ public class CluedoView {
             cardPanel.setSize(smallPanelDimensions);
             mainFrame.getContentPane().add(cardPanel, constraints);
 
-            mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            WindowAdapter quitHandler = new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    confirmQuit();
+                }
+            };
+            mainFrame.addWindowListener(quitHandler);
 
             boardView.addMouseMotionListener(boardView);
             boardView.setVisible(true);
+
+            JMenuBar mb = new JMenuBar();
+            JMenu file = new JMenu("File");
+            file.setMnemonic(KeyEvent.VK_F);
+            mb.add(file);
+
+            JMenuItem newGame = new JMenuItem("New Game");
+            newGame.setMnemonic(KeyEvent.VK_N);
+            newGame.addActionListener(e -> {
+                mainFrame.dispose();
+                new Game();
+            });
+            file.add(newGame);
+
+            JMenuItem quit = new JMenuItem("Quit Game");
+            quit.setMnemonic(KeyEvent.VK_Q);
+            quit.addActionListener(e -> confirmQuit());
+            file.add(quit);
+
+            JMenu game = new JMenu("Game");
+            game.setMnemonic(KeyEvent.VK_F);
+            mb.add(game);
+
+            mainFrame.setJMenuBar(mb);
         });
+    }
+
+    /**
+     * Prompt the user to confirm that they want to quit
+     */
+    public void confirmQuit() {
+        int confirm = JOptionPane.showOptionDialog(
+                null, "Are you sure you want to quit the game?",
+                "Quit Game", JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, null, null);
+        if (confirm == 0) {
+            System.exit(0);
+        }
     }
 
     /**
      * Connects board model to view
      * @param board board model
      */
-    public static void setBoard(Board board){
+    public void setBoard(Board board){
         boardView.drawBoard(board);
     }
 
@@ -94,7 +138,7 @@ public class CluedoView {
      * @param g game model
      * @param number how many players there will be after this dialog completes
      */
-    public static void createPlayerSelectionDialog(Game g, int number) {
+    public void createPlayerSelectionDialog(Game g, int number) {
         // Setup for number of players
         JDialog dialog = new JDialog(mainFrame, "Add Player");
         dialog.setSize(350,200);
@@ -174,7 +218,7 @@ public class CluedoView {
         dialog.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent we) {
-                System.exit(0);
+                confirmQuit();
             }
         });
     }
@@ -185,7 +229,7 @@ public class CluedoView {
      * @param g Game model
      * @param p Player that entered room
      */
-    public static void enableRoomButtons(Game g, Player p){
+    public void enableRoomButtons(Game g, Player p){
         suggestionButton.setEnabled(true);
         accusationButton.setEnabled(true);
         endButton.setEnabled(false);
@@ -217,7 +261,7 @@ public class CluedoView {
      * @param p player doing the guess
      * @param isSuggestion true if a suggestion
      */
-    public static void createGuessDialog(Game g, Player p, boolean isSuggestion) {
+    public void createGuessDialog(Game g, Player p, boolean isSuggestion) {
         suggestionButton.setEnabled(false);
         accusationButton.setEnabled(false);
 
@@ -284,7 +328,7 @@ public class CluedoView {
      * @param suggestion card triplet of what was suggested
      * @param toReceive player suggesting
      */
-    public static void createRefutationDialog(Player toReveal, ArrayList<Card> cards, CardTriplet suggestion, Player toReceive){
+    public void createRefutationDialog(Player toReveal, ArrayList<Card> cards, CardTriplet suggestion, Player toReceive){
         JDialog refDialog = new JDialog(mainFrame, "Refutations");
         refDialog.setSize(250,300);
         refDialog.setLocationRelativeTo(null);
@@ -343,7 +387,7 @@ public class CluedoView {
      * @param cardChosen refuted card
      * @param playerName suggesting player's name
      */
-    public static void revealRefutation(Card cardChosen, String playerName){
+    public void revealRefutation(Card cardChosen, String playerName){
         JDialog cardDisplayDialog = new JDialog(mainFrame, "Refutation Result");
         cardDisplayDialog.setSize(300,200);
         cardDisplayDialog.setLocationRelativeTo(null);
@@ -403,7 +447,7 @@ public class CluedoView {
      * @param g Game model
      * @param p suggesting player
      */
-    public static void noRefutation(Game g, Player p){
+    public void noRefutation(Game g, Player p){
         JDialog noRevealDialog = new JDialog(mainFrame, "Unsuccessful Suggestion");
         noRevealDialog.setSize(350,200);
         noRevealDialog.setLocationRelativeTo(null);
@@ -441,7 +485,7 @@ public class CluedoView {
      * @param p winning player, should be null if lost
      * @param s solution from Game.envelope
      */
-    public static void gameOver(Player p, CardTriplet s){
+    public void gameOver(Player p, CardTriplet s){
         JDialog gameOverDialog = new JDialog(mainFrame, "GAME OVER");
         gameOverDialog.setSize(350,200);
         gameOverDialog.setLocationRelativeTo(null);
@@ -489,7 +533,7 @@ public class CluedoView {
      * Set up and show dialog conveying to player that an incorrectly accusing player is now out.
      * @param p player now out
      */
-    public static void playerOut(Player p){
+    public void playerOut(Player p){
         JDialog playerOutDialog = new JDialog(mainFrame, "ATTENTION " + p.getToken().getName());
         playerOutDialog.setSize(350,200);
         playerOutDialog.setLocationRelativeTo(null);
@@ -515,14 +559,14 @@ public class CluedoView {
     /**
      * Sends signal to view that current player's turn is over
      */
-    public static void flagNextTurn(){
+    public void flagNextTurn(){
         nextTurn = true;
     }
 
     /**
      * Clears nextTurn signal
      */
-    public static void resetNextTurn(){
+    public void resetNextTurn(){
         nextTurn = false;
     }
 
@@ -536,7 +580,7 @@ public class CluedoView {
      * @param diceRollPromise async container filled when dice is rolled
      * @return filled container with dice roll
      */
-    public static CompletableFuture<Integer> displayPlayerInformation(Player p, int moveNumber, CompletableFuture<Integer> diceRollPromise){
+    public CompletableFuture<Integer> displayPlayerInformation(Player p, int moveNumber, CompletableFuture<Integer> diceRollPromise){
         JPanel turnPanel = (JPanel)mainFrame.getContentPane().getComponent(1);
         turnPanel.setLayout(new GridLayout(2,0));
         turnPanel.removeAll();
@@ -601,7 +645,7 @@ public class CluedoView {
      * Wait for a dice roll and fill the diceRollPromise container.
      * @param diceRollPromise async container filled when dice is rolled
      */
-    private static void rollDice(CompletableFuture<Integer> diceRollPromise){
+    private void rollDice(CompletableFuture<Integer> diceRollPromise){
         dicePanel = new JPanel();
         dicePanel.setLayout(new GridLayout(1,2));
         JLabel firstDice = new JLabel(new ImageIcon(boardView.playerImage("Dice_Blank")));
@@ -630,7 +674,7 @@ public class CluedoView {
      * Displays player's hand in card panel.
      * @param p player whose turn it currently is
      */
-    private static void displayPlayerCards(Player p){
+    private void displayPlayerCards(Player p){
         JScrollPane cardPanel = (JScrollPane)mainFrame.getContentPane().getComponent(2);
         JPanel cards = (JPanel)cardPanel.getViewport().getComponent(0);
         cards.removeAll();
@@ -649,7 +693,7 @@ public class CluedoView {
      * Modify text shown in player information. For use outside of the view.
      * @param text message to show
      */
-    public static void changePlayerInfo(String text) {
+    public void changePlayerInfo(String text) {
         playerInfo.setText(text);
     }
 
@@ -657,14 +701,14 @@ public class CluedoView {
      * Displays a dialog box with the message in the parameter
      * @param message - string, message you want to display
      */
-    public static void showDialog(String message){
+    public void showDialog(String message){
         SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(mainFrame, message));
     }
 
     /**
      * Redraws board canvas
      */
-    public static void updateBoard() {
+    public void updateBoard() {
         boardView.updateBoard();
     }
 
@@ -672,13 +716,13 @@ public class CluedoView {
      * Retrieves cell based on mouse click
      * @return clicked cell
      */
-    public static Cell getCell() {
+    public Cell getCell() {
         try {
             return boardView.getCell().get();
         } catch (CancellationException e) {
             throw new CancellationException(e.getMessage());
         } catch (Exception e) {
-            CluedoView.showDialog(e.getMessage());
+            this.showDialog(e.getMessage());
             e.printStackTrace();
         }
         return null;
