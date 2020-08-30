@@ -278,7 +278,6 @@ public class Game {
 	}
 
 	/**
-	 * TODO: do I understand this?
 	 * Find cell that has the closest door
 	 * @param cellToChange originating cell
 	 * @param measuringCell goal cell

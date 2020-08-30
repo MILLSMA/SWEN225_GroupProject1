@@ -97,7 +97,6 @@ public class Player
 
 	/**
 	 * Reset the cells that the Player has moved to, should be done at end of round
-	 * TODO: do a test on this
 	 */
 	public void clearCellsMovedTo() {
 		for (Cell c : cellsMovedTo) {

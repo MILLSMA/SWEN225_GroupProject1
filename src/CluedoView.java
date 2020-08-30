@@ -1,8 +1,11 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -33,6 +36,12 @@ public class CluedoView {
      */
     public CluedoView(Game g){
         SwingUtilities.invokeLater(() -> {
+            try {
+                ImageIO.read(new File("Resources/wall.png"));
+            } catch (IOException e) {
+                showDialog("Unzip jar file and place Resources folder in the same directory.");
+                return;
+            }
             mainFrame.setResizable(false);
             mainFrame.setSize(BOARD_WIDTH,BOARD_HEIGHT*5/4);
             createPlayerSelectionDialog(g, 1);
@@ -103,10 +112,6 @@ public class CluedoView {
             quit.setMnemonic(KeyEvent.VK_Q);
             quit.addActionListener(e -> confirmQuit());
             file.add(quit);
-
-            JMenu game = new JMenu("Game");
-            game.setMnemonic(KeyEvent.VK_F);
-            mb.add(game);
 
             mainFrame.setJMenuBar(mb);
         });
