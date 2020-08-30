@@ -526,7 +526,6 @@ public class CluedoView {
         mainPanel.setVisible(true);
         gameOverDialog.add(mainPanel);
         gameOverDialog.setVisible(true);
-
     }
 
     /**
@@ -622,6 +621,7 @@ public class CluedoView {
         endButton.addActionListener(e -> {
             try {
                 boardView.cancelPromise();
+                flagNextTurn();
             } catch (Exception ignored) {
             }
         });

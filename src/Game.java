@@ -204,6 +204,23 @@ public class Game {
 			goalCell = gui.getCell();
 			Cell playerCell = p.getLocation();
 
+			if (goalCell.getRoom().isProperRoom() && playerCell.getRoom().equals(goalCell.getRoom())) {
+				ArrayList<Cell> path = pathfinder.findPath(playerCell, goalCell);
+				if (!path.get(path.size()-1).equals(goalCell)) {
+					gui.showDialog("You cannot move here");
+					waitForMove(p, roll);
+					return;
+				}
+
+				for (Locatable cell : path) {
+					Cell c = (Cell) cell;
+					p.setCell(c);
+					TimeUnit.MILLISECONDS.sleep(400);
+				}
+				waitForMove(p, roll);
+				return;
+			}
+
 			goalCell = closestDoor(goalCell, playerCell);
 			playerCell = closestDoor(playerCell, goalCell);
 
@@ -263,6 +280,7 @@ public class Game {
 		Cell changedCell = cellToChange;
 		if(RoomCard.getRooms().contains(cellToChange.getRoom().getCard())){
 			for (Cell door : cellToChange.getRoom().getCard().getDoors()) {
+				if (door.isUsedInRound()) continue;
 				double distanceEstimate = getEstimate(measuringCell, door);
 				if(distanceEstimate < closest){
 					closest = distanceEstimate;

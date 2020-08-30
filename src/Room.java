@@ -145,4 +145,17 @@ public class Room {
 		if (card == null) return type;
 		return card.getName();
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Room room = (Room) o;
+		return card == room.card;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(card);
+	}
 }
