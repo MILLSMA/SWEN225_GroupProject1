@@ -7,16 +7,33 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 public class Canvas extends JPanel implements MouseMotionListener {
+
+	public static final HashMap<String, Integer> roomLabels = new HashMap<String, Integer>(){
+		{
+			put("Ballroom", new Position(3, 10).hashCode());
+			put("Dining Room", new Position(12, 2).hashCode());
+			put("Study", new Position(22, 19).hashCode());
+			put("Hall", new Position(20, 10).hashCode());
+			put("Library", new Position(15, 19).hashCode());
+			put("Billiard Room", new Position(9, 19).hashCode());
+			put("Lounge", new Position(21, 1).hashCode());
+			put("Conservatory", new Position(2, 19).hashCode());
+			put("Kitchen", new Position(3, 1).hashCode());
+		}
+	};
 	private Board board;
 	protected int cellWidth, cellHeight;
 	private DrawingTile lastHoveredTile;
 	private Color lastColor;
 	private final HashMap<Integer, DrawingTile> tilesToDraw = new HashMap<>();
 	private CompletableFuture<Cell> promisedCell;
+	private ArrayList<DrawingTile> labelTiles = new ArrayList<>();
+
 
 	//paints the board (not overly efficient)
 	public void paint(Graphics g) {
@@ -105,6 +122,7 @@ public class Canvas extends JPanel implements MouseMotionListener {
 			heightCount += cellHeight;
 			widthCount = 0;
 		}
+		//addLabels();
 
 		this.addMouseListener(new MouseAdapter() {
 			@Override
@@ -118,10 +136,33 @@ public class Canvas extends JPanel implements MouseMotionListener {
 				}
 			}
 		});
-
+		addLabels();
 		this.repaint();
 	}
 
+	private BufferedImage getLabelPart(String room, int index){
+		BufferedImage image;
+		String roomName = room.replace(' ', '_');
+		String fileName = "Resources/Room_Labels/" + roomName + "/" + roomName + "_"+ index + ".png";
+		try {
+			image = ImageIO.read(new File(fileName));
+		}catch(IOException ignore){
+			//CluedoView.showDialog(e.getMessage() + "\n" + fileName);
+			return getLabelPart("Ballroom", index);
+		}
+		return image;
+	}
+
+	private void addLabels(){
+		for (Integer position : roomLabels.values()) {
+			DrawingTile updateTile = tilesToDraw.get(position);
+			for (int index = 1; index < 9; index++) {
+				updateTile.setImage(getLabelPart(updateTile.cell.getRoom().getName(), index));
+				updateTile = tilesToDraw.get(new Position(updateTile.cell.position.getRow(), updateTile.cell.position.getCol() + 1).hashCode());
+				if(index == 4)  updateTile =  tilesToDraw.get(new Position(updateTile.cell.position.getRow() + 1, updateTile.cell.position.getCol() - 4).hashCode()); ;
+			}
+		}
+	}
 
 
 	/**

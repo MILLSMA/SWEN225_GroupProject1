@@ -180,6 +180,7 @@ public class Game {
 		try {
 			//waits for the player to click on a cell and the gets it
 			goalCell = CluedoView.getCell();
+			System.out.println(goalCell.position);
 			Cell playerCell = p.getLocation();
 
 			goalCell = closestDoor(goalCell, playerCell);
