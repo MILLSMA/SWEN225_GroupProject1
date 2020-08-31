@@ -35,7 +35,7 @@ public class CluedoView {
      * - player hand (cardPanel)
      * @param g Game model, needed for player creation
      */
-    static boolean nextTurn = true;
+    //static boolean nextTurn = true;
 
 
     public CluedoView(Game g){
@@ -378,7 +378,7 @@ public class CluedoView {
                 public void mouseReleased(MouseEvent e) {
                     super.mouseReleased(e);
                     refDialog.dispose();
-                    displayCard(card, toReceive.getName());
+                    revealRefutation(card, toReceive.getName());
                 }
             });
             refuteCardDisplay.add(cardLabel);
