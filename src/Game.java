@@ -5,6 +5,9 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The "model" component of the MVC model. Stores the current state of the game and underlying mechanics.
+ */
 public class Game {
 
 	//------------------------
@@ -14,27 +17,34 @@ public class Game {
 	//Game Attributes
 	private boolean won;
 	//Game Associations
-	private final List<Player> players = new ArrayList<>();
+	private List<Player> players = new ArrayList<>();
 	private Board board;
 	private CardTriplet envelope;
 	private Pathfinder<Cell> pathfinder;
+	private CluedoView gui;
 
 	//------------------------
 	// STATIC INITIALISATION METHODS
 	//------------------------
 
+	/**
+	 * Initialise game model and create view
+	 * @param args ignored
+	 */
 	public static void main(String... args) {
-		Game currentGame = new Game();
-		SwingUtilities.invokeLater(() -> {
-			final CluedoView GUI = new CluedoView(currentGame);
-		});
-
-
+		new Game();
 	}
 
 	/**
-	 * set up a new game with given number of players
-	 *
+	 * Initialise the game by setting up a new GUI
+	 */
+	public Game() {
+		SwingUtilities.invokeLater(() -> gui = new CluedoView(this));
+	}
+
+
+	/**
+	 * Set up the game model based on added players
 	 */
 	public void startGame() {
 		board = new Board(players);
@@ -50,11 +60,22 @@ public class Game {
 		runGame();
 	}
 
+	/**
+	 * Create player based on information from view
+	 * @param name inputted name
+	 * @param token character chosen
+	 * @param more if they requested to add another player
+	 */
 	public void createPlayer(String name, CharacterCard token, boolean more) {
-		players.add(new Player(token, null, name));
-		if (more) CluedoView.createPlayerSelectionDialog(this, players.size()+1);
+		players.add(new Player(token, name));
+		if (more) gui.createPlayerSelectionDialog(this, players.size()+1);
 	}
 
+	/**
+	 * Checks if a certain character is taken
+	 * @param c certain character
+	 * @return if they're taken
+	 */
 	public boolean isTokenTaken(CharacterCard c) {
 		for (Player p : players) {
 			if (p.getToken().equals(c)) return true;
@@ -63,15 +84,22 @@ public class Game {
 	}
 
 	/**
+	 * Gets set of players in game
+	 * used for testing
+	 */
+	public List<Player> getPlayers(){
+		return players;
+	}
+
+	/**
 	 * Deals deck of cards to players
-	 *
 	 * @param cards collection of all cards that aren't the solution
 	 */
 	private void dealCards(Collection<Card> cards) {
 		Random rand = new Random();
 		ArrayList<Card> tempCardBag = new ArrayList<>(cards);
 		System.out.println("The solution is: " + envelope);
-		tempCardBag.removeAll(envelope.getSet());
+		tempCardBag.removeAll(envelope.getList());
 
 		//deal rest of the cards to the players
 		while (!tempCardBag.isEmpty()) {
@@ -86,8 +114,8 @@ public class Game {
 
 	/**
 	 * Selects a random room, weapon and character card from deck to set as solution
-	 *
 	 * @param cards : all the possible cards
+	 * @return solution
 	 */
 	private CardTriplet decideSolution(Collection<Card> cards) {
 		if (envelope != null) throw new RuntimeException("Solution already decided.");
@@ -107,13 +135,16 @@ public class Game {
 		return new CardTriplet(envelopeCharacter, envelopeWeapon, envelopeRoom);
 	}
 
+	/**
+	 * Runs the thread that the game is executed in
+	 */
 	private void runGame() {
-		CluedoView.createCanvas(board);
+		gui.setBoard(board);
 		new Thread(() -> {
 			while (!won && !allPlayersOut()) {
 
 				SwingUtilities.invokeLater(() -> {
-					Timer t = new Timer(400, e -> CluedoView.updateBoard());
+					Timer t = new Timer(400, e -> gui.updateBoard());
 					t.start();
 				});
 
@@ -121,7 +152,7 @@ public class Game {
 					if (!won && player.isStillIn()) doTurn(player);
 				}
 			}
-			if (allPlayersOut()) SwingUtilities.invokeLater(() -> CluedoView.gameOver(null, envelope));
+			if (allPlayersOut()) SwingUtilities.invokeLater(() -> gui.gameOver(null, envelope));
 
 		}).start();
 	}
@@ -147,41 +178,57 @@ public class Game {
 	 * @param p : the player making the turn
 	 */
 	private void doTurn(Player p) {
-		CluedoView.resetNextTurn();
+		gui.resetNextTurn();
 		//place holder code
 		int diceRoll = 0;
 		diceRollPromise = new CompletableFuture<>();
-		SwingUtilities.invokeLater(()-> diceRollPromise = CluedoView.displayPlayerInformation(p, 0, diceRollPromise));
+		SwingUtilities.invokeLater(()-> diceRollPromise = gui.displayPlayerInformation(p, 0, diceRollPromise));
 		try {
 			diceRoll = diceRollPromise.get();
 		}catch(Exception ignored){}
 
-		move(p, diceRoll);
+		waitForMove(p, diceRoll);
 		p.clearCellsMovedTo();
 
 		if (p.getLocation().getRoom().isProperRoom()) {
-			CluedoView.changePlayerInfo("You're in the " + p.getLocation().getRoom().getName());
+			gui.changePlayerInfo("You're in the " + p.getLocation().getRoom().getName());
 
 			Room currentRoom = findRoom(p);
 			p.setCell(currentRoom.findEmptyCell());
-			CluedoView.enableRoomButtons(this, p);
-			//turnEntry(p);
+			gui.enableRoomButtons(this, p);
 		}else{
-			CluedoView.flagNextTurn();
+			gui.flagNextTurn();
 		}
 	}
 
 	/**
-	 * new move method for testing the gui movement
-	 *
+	 * Wait for a player move player in the view
+	 * @param p player whose turn it is
+	 * @param roll how many moves they have
 	 */
-	private void move(Player p, int roll) {
+	private void waitForMove(Player p, int roll) {
 		Cell goalCell;
 		try {
 			//waits for the player to click on a cell and the gets it
-			goalCell = CluedoView.getCell();
-			System.out.println(goalCell.position);
+			goalCell = gui.getCell();
 			Cell playerCell = p.getLocation();
+
+			if (goalCell.getRoom().isProperRoom() && playerCell.getRoom().equals(goalCell.getRoom())) {
+				ArrayList<Cell> path = pathfinder.findPath(playerCell, goalCell);
+				if (!path.get(path.size()-1).equals(goalCell)) {
+					gui.showDialog("You cannot move here");
+					waitForMove(p, roll);
+					return;
+				}
+
+				for (Locatable cell : path) {
+					Cell c = (Cell) cell;
+					p.setCell(c);
+					TimeUnit.MILLISECONDS.sleep(400);
+				}
+				waitForMove(p, roll);
+				return;
+			}
 
 			goalCell = closestDoor(goalCell, playerCell);
 			playerCell = closestDoor(playerCell, goalCell);
@@ -202,21 +249,27 @@ public class Game {
 				}
 				if (roll > selectedCells.size() - 1 && p.getLocation().getRoom().isHallway()) {
 					int newRoll = roll - (selectedCells.size() - 1);
-					SwingUtilities.invokeLater(() -> CluedoView.displayPlayerInformation(p, newRoll, new CompletableFuture<>()));
-					move(p, newRoll);
+					SwingUtilities.invokeLater(() -> gui.displayPlayerInformation(p, newRoll, new CompletableFuture<>()));
+					waitForMove(p, newRoll);
 				}
 			} else {
-				CluedoView.showDialog("You cannot move here");
-				move(p, roll);
+				gui.showDialog("You cannot move here");
+				waitForMove(p, roll);
 			}
 		} catch (CancellationException ignored) {
 
 		} catch (Exception e) {
-			CluedoView.showDialog("Move could not be made due to " + e.getMessage() + "\nPlease try again");
-			move(p, roll);
+			gui.showDialog("Move could not be made due to " + e.getMessage() + "\nPlease try again");
+			waitForMove(p, roll);
 		}
 	}
 
+	/**
+	 * Calculates Euclidean distance from one cell to another
+	 * @param first starting node
+	 * @param second ending node
+	 * @return Euclidean distance between given nodes
+	 */
 	private double getEstimate(Cell first, Cell second){
 		Position firstPosition = first.getPosition();
 		Position secondPosition = second.getPosition();
@@ -224,11 +277,18 @@ public class Game {
 				(secondPosition.getCol()-firstPosition.getCol())*((secondPosition.getCol()-firstPosition.getCol())));
 	}
 
+	/**
+	 * Find cell that has the closest door
+	 * @param cellToChange originating cell
+	 * @param measuringCell goal cell
+	 * @return cell with closest door
+	 */
 	private Cell closestDoor(Cell cellToChange, Cell measuringCell){
 		double closest = Double.MAX_VALUE;
 		Cell changedCell = cellToChange;
 		if(RoomCard.getRooms().contains(cellToChange.getRoom().getCard())){
 			for (Cell door : cellToChange.getRoom().getCard().getDoors()) {
+				if (door.isUsedInRound()) continue;
 				double distanceEstimate = getEstimate(measuringCell, door);
 				if(distanceEstimate < closest){
 					closest = distanceEstimate;
@@ -243,6 +303,7 @@ public class Game {
 	 * checks for adjacent rooms cells if player is in doorway.
 	 *
 	 * @param p player to check
+	 * @return room the player is now in
 	 */
 	private Room findRoom(Player p) {
 		if (p.getLocation().getRoom().isDoor()) {//in doorway
@@ -254,9 +315,11 @@ public class Game {
 	}
 
 	/**
-	 * controls suggestion input
+	 * Accepts suggestion from view
 	 *
 	 * @param p: player whose turn it is
+	 * @param character : character suggested
+	 * @param weapon : weapon suggested
 	 */
 	public void makeSuggestion(Player p, String character, String weapon) {
 		CardTriplet guess = new CardTriplet( character, weapon, p.getLocation().getRoom().getCard());
@@ -267,13 +330,14 @@ public class Game {
 		currentRoom.addCard(guess.getWeapon());
 		moveSuggestedPlayer(guess.getCharacter(), newCell);
 
-		doRefutations(p, guess);
+		doRefutations(p, guess, null);
 	}
 
 	/**
-	 * change a players position if they're character is used in a suggesting
+	 * change a players position if their character is used in a suggestion
 	 *
 	 * @param ch: characterCard used
+	 * @param newCell : cell to move character to
 	 */
 	private void moveSuggestedPlayer(CharacterCard ch, Cell newCell) {
 		for (Player p : players) {
@@ -287,12 +351,14 @@ public class Game {
 	/**
 	 * Iterate players in search of cards matching suggestion
 	 *
-	 * @param p:     player who made suggestion
-	 * @param guess: guess to refute
-	 * @return boolean: true if a card is shown
+	 * @param p : player who made suggestion
+	 * @param guess : guess to refute
+	 * @param forTesting : players to test via JUnit, should be null if in game
+	 * @return cards that a player could refute with
 	 */
-	private void doRefutations(Player p, CardTriplet guess) {
+	public ArrayList<Card> doRefutations(Player p, CardTriplet guess, List<Player> forTesting) {
 		int asked = 0;
+		if(forTesting != null) players = forTesting;
 		while (asked < players.size() - 1) {
 			Player asking;
 			if (players.indexOf(p) + asked + 1 >= players.size()) {
@@ -305,36 +371,48 @@ public class Game {
 			asked++;
 			//Does the next player have any possible cards to show
 			ArrayList<Card> possibleCards = new ArrayList<>();
-			for (Card c : guess.getSet()) {
+			for (Card c : guess.getList()) {
 				if (asking.getCards().contains(c))
 					possibleCards.add(c);
 			}
 			if (!possibleCards.isEmpty()) {
-				SwingUtilities.invokeLater(() -> CluedoView.createRefutationDialog(asking, possibleCards, guess, p));
-				return;
+				SwingUtilities.invokeLater(() -> gui.createRefutationDialog(asking, possibleCards, guess, p));
+				return possibleCards;
 			}
 		}
-		SwingUtilities.invokeLater(() -> CluedoView.noReveal(this, p));
-		//CluedoView.flagNextTurn();
+		SwingUtilities.invokeLater(() -> gui.noRefutation(this, p));
+		return null;
 	}
 
+
+
 	/**
-	 * Gets a player's accusation and checks if it is correct
+	 * Gets a player's accusation from view and checks if it is correct
 	 * the player wins if correct, else is out
 	 *
 	 * @param p: player making accusation
+	 * @param character : accused character
+	 * @param weapon : accused weapon
+	 * @param room : accused room
+	 * @param testAnswer : answer to test via JUnit, should be null if in game
+	 * @return true if accusation is correct
 	 */
-	public void makeAccusation(Player p, String character, String weapon, String room) {
+	public boolean makeAccusation(Player p, String character, String weapon, String room, CardTriplet testAnswer) {
+		if(testAnswer != null) envelope = testAnswer;
 		CardTriplet guess = new CardTriplet(character, weapon, room);
 		if (guess.equals(envelope)) {
 			//correct, game won
 			won = true;
-			SwingUtilities.invokeLater(() -> CluedoView.gameOver(p, envelope));
+			SwingUtilities.invokeLater(() -> gui.gameOver(p, envelope));
+			return true;
 		} else {
 			//the player was incorrect and so is  now out
-			p.setIsExcluded(true);
-			SwingUtilities.invokeLater(() -> CluedoView.playerOut(p));
-			CluedoView.flagNextTurn();
+			if(testAnswer == null) {
+				p.setPlayerOut();
+				SwingUtilities.invokeLater(() -> gui.playerOut(p));
+				gui.flagNextTurn();
+			}
+			return false;
 		}
 
 

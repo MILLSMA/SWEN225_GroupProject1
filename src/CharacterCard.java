@@ -1,6 +1,10 @@
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
+/**
+ * Enumeration of possible characters in Cluedo
+ */
 public enum CharacterCard implements Card {
 	MISS_SCARLETT,
 	COLONEL_MUSTARD,
@@ -23,20 +27,42 @@ public enum CharacterCard implements Card {
 	private static final String[] stringColours = {ANSI_RED, ANSI_YELLOW, ANSI_WHITE, ANSI_GREEN, ANSI_CYAN, ANSI_PURPLE};
 	private static final String[] codes = {"s", "c", "w", "g", "k", "p"};
 
+	/**
+	 * Convert enum to unmodifiable collection
+	 * @return collection of all character cards
+	 */
 	public static Collection<CharacterCard> getCharacters(){
-		return Arrays.asList(values());
+		return Collections.unmodifiableCollection(Arrays.asList(values()));
 	}
 
+	/**
+	 * Get number of possible characters
+	 * @return number of characters
+	 */
 	public static int size() {
 		return values().length;
 	}
 
+	/**
+	 * Get cell containing this character
+	 * @return cell with this character
+	 */
 	public Cell getCell(){
 		return cell;
 	}
 
 	/**
-	 * prints the name of a character with correct spacing can in title case
+	 * Change the cell a character is in
+	 * @param c: cell to move to
+	 */
+	public void setCell(Cell c){
+		if(cell != null) cell.setObject(null);
+		cell = c;
+		if (cell != null) c.setObject(this);
+	}
+
+	/**
+	 * Prints the name of a character with correct spacing and in title case
 	 * @return String of character name
 	 */
 	public String getName() {
@@ -52,6 +78,11 @@ public enum CharacterCard implements Card {
 		return sb.toString();
 	}
 
+	/**
+	 * Get CharacterCard corresponding to given string
+	 * @param s string that should match a card's getName()
+	 * @return corresponding CharacterCard
+	 */
 	public static CharacterCard getToken(String s) {
 		for (CharacterCard c : values()) {
 			if (s.equals(c.getName())) return c;
@@ -60,7 +91,7 @@ public enum CharacterCard implements Card {
 	}
 
 	/**
-	 * Set a characters position give a preset value
+	 * Set a characters position to a preset value
 	 * @param character: character to be set
 	 * @return position of character
 	 */
@@ -81,16 +112,6 @@ public enum CharacterCard implements Card {
 			 default:
 			 	return new Position(1, 1);
 		}
-	}
-
-	/**
-	 * change the call a character is in
-	 * @param c: c to move to
-	 */
-	public void setCell(Cell c){
-		if(cell != null) cell.setObject(null);
-		cell = c;
-		if (cell != null) c.setObject(this);
 	}
 
 	@Override

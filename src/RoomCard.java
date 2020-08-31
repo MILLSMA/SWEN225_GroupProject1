@@ -1,8 +1,11 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Scanner;
+import java.util.Collections;
 
+/**
+ * Enumeration of possible rooms in Cluedo
+ */
 public enum RoomCard implements Card {
 	KITCHEN,
 	BALLROOM,
@@ -17,46 +20,36 @@ public enum RoomCard implements Card {
 	private final ArrayList<Cell> doors = new ArrayList<>();
 	private static final String[] codes = {"K", "O", "C", "B", "D", "L", "H", "I", "S"};
 
+	/**
+	 * Convert enum to unmodifiable collection
+	 * @return collection of all room cards
+	 */
 	public static Collection<RoomCard> getRooms(){
-		return Arrays.asList(values());
-	}
-	public static boolean isProperRoom(Room room){
-		return getRooms().contains(room.getCard());
+		return Collections.unmodifiableCollection(Arrays.asList(values()));
 	}
 
+	/**
+	 * Get number of possible rooms
+	 * @return number of rooms
+	 */
 	public static int size(){
 		return values().length;
 	}
 
+	/**
+	 * Get all doors belonging to this room
+	 * @return doors in room
+	 */
 	public ArrayList<Cell> getDoors() {
 		return doors;
 	}
-	public void addDoor(Cell door) {
-		this.doors.add(door);
-	}
 
 	/**
-	 * Get Valid room
-	 * Match given string with RoomCard enum
-	 * should only be called when accusation made
-	 * @return enum RoomCard value
+	 * Add a door cell to this room
+	 * @param door door cell
 	 */
-	public static RoomCard input(){
-		while(true) {
-			Scanner sc = new Scanner(System.in);
-			System.out.println("== Rooms, enter code in [ ] ==");
-			for (int i=0; i<size(); i++) {
-				System.out.println(values()[i].getName() + "[" + codes[i] + "]");
-			}
-			System.out.print("Enter room: ");
-			String guess = sc.next();
-			for (int i=0; i<size(); i++) {
-				if(codes[i].equalsIgnoreCase(guess)){
-					return values()[i];
-				}
-			}
-			System.out.println("Please use the given code in [ ].\n");
-		}
+	public void addDoor(Cell door) {
+		this.doors.add(door);
 	}
 
 	@Override

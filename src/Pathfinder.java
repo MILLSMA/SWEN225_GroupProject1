@@ -10,7 +10,11 @@ public class Pathfinder<K extends Locatable> {
 	private ArrayList<Node> pathway;
 	private ArrayList<K> objectPath;
 	private final Board board;
-	
+
+	/**
+	 * Constructs pathfinder and connects it to board model
+	 * @param board board model
+	 */
 	Pathfinder(Board board){
 		this.board = board;
 	}
@@ -23,7 +27,10 @@ public class Pathfinder<K extends Locatable> {
 	 */
 	public ArrayList<K> findPath(K start, K goal){
 		this.goal = goal;
-		Node start1 = new Node(start, getEstimate(start), 0);
+		Room targetRoom = null;
+		if (goal instanceof Cell) targetRoom = ((Cell) goal).getRoom();
+
+		Node start1 = new Node(start, getEstimate(start), 0, null);
 		Collection<K> visited = new HashSet<>();
 		pathway = new ArrayList<>();
 
@@ -50,9 +57,13 @@ public class Pathfinder<K extends Locatable> {
 				}
 
 				for (Cell.Direction direction : currentNode.getObject().getDirectionsAvailable(board)) {
-					K neighbourObject = (K) board.getNeighbourCell((Cell) currentNode.object, direction);
-					Node neighbourNode = new Node(neighbourObject, currentNode.getF() + getEstimate(neighbourObject), currentNode.getG() + 1);
-					neighbourNode.setPreviousNode(currentNode);
+					Cell neighbour = board.getNeighbourCell((Cell) currentNode.object, direction);
+
+					if (targetRoom != null) {
+						if (neighbour.getRoom().isProperRoom() && !targetRoom.equals(neighbour.getRoom())) continue;
+					}
+
+					Node neighbourNode = new Node((K)neighbour, currentNode.getF() + getEstimate((K)neighbour), currentNode.getG() + 1, currentNode);
 					if (!visited.contains(neighbourNode.object)) fringe.add(neighbourNode);
 				}
 				pathway.add(currentNode);
@@ -83,8 +94,8 @@ public class Pathfinder<K extends Locatable> {
 
 	/**
 	 * Estimates the manhattan distance to the goal node
-	 * @param node
-	 * @return
+	 * @param node node to start at
+	 * @return Manhattan distance from node to goal
 	 */
 	private double getEstimate(K node){
 		Position nodePosition = node.getPosition();
@@ -98,32 +109,53 @@ public class Pathfinder<K extends Locatable> {
 	 */
 	private class Node{
 		private final K object;
-		private Node previousNode = null;
+		private final Node previousNode;
 		private final double f;
 		private final double g;
 
-		Node(K c, double f, double g){
+		/**
+		 * Construct A* node
+		 * @param c Locatable object
+		 * @param f current estimate
+		 * @param g cost from start
+		 * @param prev previous node
+		 */
+		Node(K c, double f, double g, Node prev){
 			this.object = c;
 			this.f = f;
 			this.g = g;
+			this.previousNode = prev;
 		}
 
-		public void setPreviousNode(Node previousNode) {
-			this.previousNode = previousNode;
-		}
-
+		/**
+		 * Return equality based on if they are in the same position
+		 * @param object object to compare
+		 * @return if both same
+		 */
 		public boolean equals(K object){
-			return (this.object == object);
+			return this.object.getPosition().equals(object.getPosition());
 		}
 
+		/**
+		 * Return encapsulated object
+		 * @return object
+		 */
 		public K getObject() {
 			return object;
 		}
 
+		/**
+		 * F is the current estimate to goal
+		 * @return current estimate to goal
+		 */
 		public double getF() {
 			return f;
 		}
 
+		/**
+		 * G is the current cost from start
+		 * @return current cost from start
+		 */
 		public double getG() {
 			return g;
 		}

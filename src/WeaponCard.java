@@ -1,7 +1,10 @@
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Scanner;
+import java.util.Collections;
 
+/**
+ * Enumeration of possible weapons in Cluedo
+ */
 public enum WeaponCard implements Card{
 	CANDLESTICK,
 	DAGGER,
@@ -13,34 +16,20 @@ public enum WeaponCard implements Card{
 	private Cell location;
 	private static final String[] codes = {"+", "#", "|", "%", "@", "?"};
 
+	/**
+	 * Convert enum to unmodifiable collection
+	 * @return collection of all weapon cards
+	 */
 	public static Collection<WeaponCard> getWeapons(){
-		return Arrays.asList(values());
-	}
-
-	public static int size(){
-		return values().length;
+		return Collections.unmodifiableCollection(Arrays.asList(values()));
 	}
 
 	/**
-	 * Check for valid weapon entry, match with weaponCard enum
-	 * @return enum WeaponCard value
+	 * Get number of possible weapons
+	 * @return number of weapons
 	 */
-	public static WeaponCard input(){
-		while(true) {
-			Scanner sc = new Scanner(System.in);
-			System.out.println("== Weapons, enter code in [ ] ==");
-			for (int i=0; i<size(); i++) {
-				System.out.println(values()[i].getName() + " [" + codes[i] + "]");
-			}
-			System.out.print("Enter weapon: ");
-			String guess = sc.next();
-			for (int i=0; i<size(); i++) {
-				if(codes[i].equalsIgnoreCase(guess)){
-					return values()[i];
-				}
-			}
-			System.out.println("Please use the given code in [ ].\n");
-		}
+	public static int size(){
+		return values().length;
 	}
 
 	/**

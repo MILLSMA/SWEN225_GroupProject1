@@ -2,6 +2,9 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Board model storing where the
+ */
 public class Board
 {
 	public static final int ROWS = 25, COLS = 24;
@@ -42,6 +45,10 @@ public class Board
 	// CONSTRUCTOR
 	//------------------------
 
+	/**
+	 * Construct board based on given players
+	 * @param allPlayers players to add to board
+	 */
 	public Board(Collection<Player> allPlayers)
 	{
 		rooms = new HashMap<>();
@@ -71,6 +78,11 @@ public class Board
 	// INTERFACE
 	//------------------------
 
+	/**
+	 * Return a Room based on a given RoomCard
+	 * @param card RoomCard to find
+	 * @return corresponding room
+	 */
 	public Room getRoom(RoomCard card){
 		return rooms.get(card.getName());
 	}
@@ -91,6 +103,11 @@ public class Board
 		return null;
 	}
 
+	/**
+	 * Return a given room's colour (based on its type) on board
+	 * @param room room to display
+	 * @return given room's colour
+	 */
 	private Color getRoomColor(Room room){
 		if (room.isProperRoom()) return Color.LIGHT_GRAY;
 		else if(room.isHallway()) return Color.WHITE;
@@ -98,7 +115,10 @@ public class Board
 		else return Color.DARK_GRAY;
 	}
 
-	private void weaponStartPoints(){
+	/**
+	 * Add weapons randomly to the board
+	 */
+	private void placeWeapons(){
 		List<RoomCard> roomValues = new ArrayList<>(RoomCard.getRooms());
 		List<WeaponCard> weapons = new ArrayList<>(WeaponCard.getWeapons());
 		Random rand = new Random();
@@ -149,7 +169,7 @@ public class Board
 			if (sc.hasNext()) right = sc.next();
 		}
 		updateCellDirections();
-		weaponStartPoints();
+		placeWeapons();
 	}
 
 	/**
@@ -217,6 +237,12 @@ public class Board
 		return board[row][col].isUsedInRound() || board[row][col].getObject() != null;
 	}
 
+	/**
+	 * Retrieve a cell's neighbour based on given direction
+	 * @param cell cell to travel from
+	 * @param dir direction to travel to
+	 * @return neighbour cell
+	 */
 	public Cell getNeighbourCell(Cell cell, Cell.Direction dir){
 		Position position = cell.getPosition();
 		int row = position.getRow();
@@ -248,19 +274,19 @@ public class Board
 		int row = playerPos.getRow();
 		int col = playerPos.getCol();
 		Cell south = board[row + 1][col];
-		if(!south.getRoom().toString().equals("_") && south.getRoom().getRoomSize() > 1){
+		if(south.getRoom().isProperRoom()){
 			return south.getRoom();
 		}
 		Cell north = board[row - 1][col];
-		if(!north.getRoom().toString().equals("_") && north.getRoom().getRoomSize()> 1){
+		if(north.getRoom().isProperRoom()){
 			return north.getRoom();
 		}
 		Cell east = board[row][col + 1];
-		if(!east.getRoom().toString().equals("_") && east.getRoom().getRoomSize() > 1 ){
+		if(east.getRoom().isProperRoom()){
 			return east.getRoom();
 		}
 		Cell west = board[row][col - 1];
-		if(!west.getRoom().toString().equals("_") && west.getRoom().getRoomSize() > 1){
+		if(west.getRoom().isProperRoom()){
 			return west.getRoom();
 		}
 		return null;
